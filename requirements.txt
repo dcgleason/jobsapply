@@ -3,4 +3,4 @@ gunicorn==20.1.0
 selenium==3.141.0
 webdriver-manager==3.4.2
 PyYAML
-Werkzeug>=2.0.0
+Werkzeug
