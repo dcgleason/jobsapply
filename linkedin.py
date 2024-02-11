@@ -7,46 +7,64 @@ import constants
 import config
 import pickle
 import hashlib
+import yaml
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-
+from selenium.webdriver.chrome.options import Options
 from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.service import Service as ChromeService
 
-
 class Linkedin:
-    def __init__(self):
+    def __init__(self, additional_questions_path='additionalQuestions.yaml'):
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
-        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=utils.chromeBrowserOptions())
-        
+
+        # Load additional questions
+        self.additional_questions = self.load_additional_questions(additional_questions_path)
+
+        # Set Chrome options for headless execution
+        chrome_options = Options()
+        chrome_options.add_argument("--headless")
+        chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
+        chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
+        chrome_options.add_argument("--window-size=1920x1080")  # Specify window size
+
+        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+
         # Ensure the cookies directory exists
         cookies_dir = os.path.join(os.getcwd(), 'cookies')
         if not os.path.exists(cookies_dir):
             os.makedirs(cookies_dir)
-        
+
         self.cookies_path = f"{cookies_dir}/{self.getHash(config.email)}.pkl"
-        
+
         self.driver.get('https://www.linkedin.com')
         self.loadCookies()
 
         if not self.isLoggedIn():
-            self.driver.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
-            utils.prYellow("🔄 Trying to log in Linkedin...")
-            try:
-                self.driver.find_element("id", "username").send_keys(config.email)
-                time.sleep(2)
-                self.driver.find_element("id", "password").send_keys(config.password)
-                time.sleep(2)
-                self.driver.find_element("xpath", '//button[@type="submit"]').click()
-                time.sleep(30)
-            except:
-                utils.prRed("❌ Couldn't log in Linkedin by using Chrome. Please check your Linkedin credentials on config files line 7 and 8.")
-
-            self.saveCookies()
-        # start application
+            self.login()
+        # Start application
         self.linkJobApply()
+
+    def load_additional_questions(self, file_path):
+        """Load additional questions from a YAML file."""
+        with open(file_path, 'r') as file:
+            return yaml.safe_load(file)
+
+    def login(self):
+        self.driver.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
+        utils.prYellow("🔄 Trying to log in Linkedin...")
+        try:
+            self.driver.find_element("id", "username").send_keys(config.email)
+            time.sleep(2)
+            self.driver.find_element("id", "password").send_keys(config.password)
+            time.sleep(2)
+            self.driver.find_element("xpath", '//button[@type="submit"]').click()
+            time.sleep(30)
+        except:
+            utils.prRed("❌ Couldn't log in Linkedin by using Chrome. Please check your Linkedin credentials on config files line 7 and 8.")
+        self.saveCookies()
 
     def getHash(self, string):
         return hashlib.md5(string.encode('utf-8')).hexdigest()
@@ -69,6 +87,7 @@ class Linkedin:
         except:
             pass
         return False
+
     
     def generateUrls(self):
         if not os.path.exists('data'):
