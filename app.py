@@ -8,6 +8,7 @@ app = Flask(__name__)
 def home():
     return "HOME"
 
+
 @app.route('/apply', methods=['POST'])
 def apply_jobs():
     # Extract credentials and additional questions from the request
@@ -25,3 +26,4 @@ def apply_jobs():
 if __name__ == "__main__":
     port = int(os.environ.get("PORT", 5000))
     app.run(host='0.0.0.0', port=port)
+
