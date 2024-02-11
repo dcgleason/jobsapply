@@ -4,6 +4,10 @@ from linkedin import Linkedin  # Make sure to adjust the import path based on yo
 
 app = Flask(__name__)
 
+@app.route('/')
+def home():
+    return "HOME"
+
 @app.route('/apply', methods=['POST'])
 def apply_jobs():
     # Extract credentials and additional questions from the request
