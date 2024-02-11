@@ -1,6 +1,7 @@
 from flask import Flask, request, jsonify
 import os
-from linkedin import Linkedin  # Make sure to adjust the import path based on your project structure
+from linkedin import Linkedin  
+
 
 app = Flask(__name__)
 
