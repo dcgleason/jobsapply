@@ -1,30 +1,28 @@
-from flask import Flask, request, jsonify
-import os
-from linkedin import Linkedin  
+from fastapi import FastAPI, HTTPException
+from pydantic import BaseModel
+from linkedin import Linkedin  # Ensure this import path is correct for your project structure
 
+app = FastAPI()
 
-app = Flask(__name__)
+class ApplicationData(BaseModel):
+    email: str
+    password: str
+    additional_questions_path: str
 
-@app.route('/')
-def home():
-    return "HOME"
+@app.get("/")
+def read_root():
+    return {"message": "HOME"}
 
-
-@app.route('/apply', methods=['POST'])
-def apply_jobs():
-    # Extract credentials and additional questions from the request
-    data = request.json
-    email = data['email']
-    password = data['password']
-    additional_questions_path = data['additional_questions_path']
-    
-    # Initialize and run the Linkedin bot
-    bot = Linkedin(email=email, password=password, additional_questions_path=additional_questions_path)
-    result = bot.linkJobApply()  # Ensure this method returns some result or status
-    
-    return jsonify({"message": "Application process completed.", "result": result})
-
-if __name__ == "__main__":
-    port = int(os.environ.get("PORT", 5000))
-    app.run(host='0.0.0.0', port=port)
-
+@app.post("/apply")
+def apply_jobs(application_data: ApplicationData):
+    try:
+        # Initialize and run the Linkedin bot
+        bot = Linkedin(
+            email=application_data.email, 
+            password=application_data.password, 
+            additional_questions_path=application_data.additional_questions_path
+        )
+        result = bot.linkJobApply()  # Ensure this method returns some result or status
+        return {"message": "Application process completed.", "result": result}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
