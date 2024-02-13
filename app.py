@@ -1,16 +1,20 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, EmailStr, constr
 from typing import Optional
+import linkedin_scraper  # Import the module here
 
 
-# Define your Pydantic model to represent the request body
+
+
 class ApplyModel(BaseModel):
     email: EmailStr
-    phone_country_code: constr(regex=r'^\+\d{1,3}$')
-    mobile_phone_number: constr(regex=r'^\d{10,15}$')
+    phone_country_code: constr(regex=r'^\+\d{1,3}$')  # Constrains the phone country code
+    mobile_phone_number: constr(regex=r'^\d{10,15}$')  # Constrains the mobile phone number
     has_technical_experience: bool
     has_teaching_experience: bool
     is_us_citizen: bool
+    has_bachelors_degree: bool  # New field for education level
+    years_experience_servicenow: int  # New field for years of experience with ServiceNow
 
 app = FastAPI()
 
@@ -45,3 +49,13 @@ def apply_jobs(apply_details: ApplyModel):
 
 # Ensure you have `uvicorn` installed to run FastAPI apps
 # Run the app with: uvicorn main:app --reload
+
+
+def init_driver(headless=True):
+    options = Options()
+    if headless:
+        options.add_argument("--headless")
+    options.add_argument("--no-sandbox")
+    options.add_argument("--disable-dev-shm-usage")
+    driver = webdriver.Chrome(options=options)
+    return driver
