@@ -9,11 +9,23 @@ import pickle
 import hashlib
 import yaml
 
+
 from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.chrome.options import Options
-from webdriver_manager.chrome import ChromeDriverManager
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service as ChromeService
+from webdriver_manager.chrome import ChromeDriverManager
+
+from selenium.webdriver.chrome.options import Options
+from selenium.webdriver.common.action_chains import ActionChains
+
+
+options = webdriver.ChromeOptions()
+options.add_argument("--headless")  # Optional: if you want to run Chrome in headless mode
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+
 
 class Linkedin:
     def __init__(self, additional_questions_path='additionalQuestions.yaml'):
@@ -75,6 +87,62 @@ class Linkedin:
             self.driver.delete_all_cookies()
             for cookie in cookies:
                 self.driver.add_cookie(cookie)
+
+
+
+    def get_job_links(self, search_query, num_jobs=10):
+        self.driver.get(f"https://www.linkedin.com/jobs/search/?keywords={search_query}")
+        time.sleep(5)
+        job_links = []
+        for i in range(num_jobs):
+            job_link = self.driver.find_element(By.XPATH, f"(//a[contains(@href, '/jobs/view/')])[{i + 1}]")
+            job_links.append(job_link.get_attribute('href'))
+        return job_links
+    
+    
+    def scrape_easy_apply_questions(self, job_url):
+        self.driver.get(job_url)
+        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[contains(@class, 'jobs-apply-button')]")))
+        easy_apply_button = self.driver.find_element(By.XPATH, "//button[contains(@class, 'jobs-apply-button')]")
+        easy_apply_button.click()
+
+        questions_and_options = []
+
+        def scrape_modal():
+            # Wait for the modal to become visible
+            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".artdeco-modal__content")))
+            time.sleep(2)  # Additional wait for all elements to load properly
+
+            # Scrape all questions
+            questions_elements = self.driver.find_elements(By.CSS_SELECTOR, "label")
+            for element in questions_elements:
+                question_text = element.text.strip()
+                if question_text != "":
+                    # Check if the question is a dropdown
+                    parent = element.find_element(By.XPATH, "./..")
+                    dropdown = parent.find_elements(By.CSS_SELECTOR, "select")
+                    if dropdown:
+                        # It's a dropdown, capture options
+                        options = [opt.text for opt in dropdown[0].find_elements(By.TAG_NAME, "option")]
+                        questions_and_options.append((question_text, options))
+                    else:
+                        # Not a dropdown, just a regular question
+                        questions_and_options.append((question_text, None))
+
+            # Check for "Next" button and click if present, else look for "Review" to end
+            next_button = self.driver.find_elements(By.XPATH, "//button[contains(@data-control-name, 'continue')]")
+            if next_button:
+                next_button[0].click()
+                scrape_modal()  # Recursively scrape the next modal
+            else:
+                review_button = self.driver.find_elements(By.XPATH, "//button[contains(@data-control-name, 'review')]")
+                if review_button:
+                    return  # Reached the review step, end recursion
+
+            scrape_modal()
+            return questions_and_options
+
+
 
     def saveCookies(self):
         pickle.dump(self.driver.get_cookies(), open(self.cookies_path, "wb"))
