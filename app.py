@@ -1,15 +1,16 @@
 from fastapi import FastAPI, BackgroundTasks
-from pydantic import BaseModel, EmailStr, constr
+from pydantic import BaseModel, EmailStr, Field
 import threading
+from linkedin import Linkedin
 # Assuming linkedin_scraper.py contains the Linkedin class with the linkJobApply method
-from linkedin_scraper import Linkedin
+# from linkedin_scraper import Linkedin
 
 app = FastAPI()
 
 class ApplyModel(BaseModel):
-    email: EmailStr
-    phone_country_code: constr(regex=r'^\+\d{1,3}$')
-    mobile_phone_number: constr(regex=r'^\d{10,15}$')
+    email: str
+    phone_country_code: str
+    mobile_phone_number: str
     has_technical_experience: bool
     has_teaching_experience: bool
     is_us_citizen: bool

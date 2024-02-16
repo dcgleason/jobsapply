@@ -37,7 +37,7 @@ class Linkedin:
 
         # Set Chrome options for headless execution
         chrome_options = Options()
-        chrome_options.add_argument("--headless")
+        # chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
         chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
         chrome_options.add_argument("--window-size=1920x1080")  # Specify window size
@@ -99,7 +99,7 @@ class Linkedin:
             job_links.append(job_link.get_attribute('href'))
         return job_links
     
-    
+
     def scrape_easy_apply_questions(self, job_url):
         self.driver.get(job_url)
         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[contains(@class, 'jobs-apply-button')]")))
@@ -355,7 +355,7 @@ class Linkedin:
     def element_exists(self, parent, by, selector):
         return len(parent.find_elements(by, selector)) > 0
 
-start = time.time()
-Linkedin().linkJobApply()
-end = time.time()
-utils.prYellow("---Took: " + str(round((time.time() - start)/60)) + " minute(s).")
+# start = time.time()
+# Linkedin().linkJobApply()
+# end = time.time()
+# utils.prYellow("---Took: " + str(round((time.time() - start)/60)) + " minute(s).")
