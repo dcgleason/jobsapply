@@ -8,14 +8,17 @@ from linkedin import Linkedin
 app = FastAPI()
 
 class ApplyModel(BaseModel):
-    email: str
-    phone_country_code: str
-    mobile_phone_number: str
+    email: EmailStr
+    phone_country_code: str = Field(..., min_length=1, max_length=4)
+    mobile_phone_number: str = Field(..., min_length=5, max_length=15)
     has_technical_experience: bool
     has_teaching_experience: bool
     is_us_citizen: bool
     has_bachelors_degree: bool
     years_experience_servicenow: int
+    # Add custom questions here
+    favorite_technology: str
+    reason_for_applying: str
 
 @app.get("/")
 def home():
@@ -29,10 +32,10 @@ def apply_jobs(apply_details: ApplyModel, background_tasks: BackgroundTasks):
     return {"message": "Application process initiated. Running in background."}
 
 def run_linkedin_application(apply_details: ApplyModel):
-    # Initialize the LinkedIn application logic with any necessary details from apply_details.
-    # For this example, we're not passing anything to Linkedin(), but you might want to customize this.
-    linkedin_app = Linkedin()
+    # Initialize with user-provided details
+    linkedin_app = Linkedin(apply_details=apply_details.dict())
     linkedin_app.linkJobApply()
+
 
 # Ensure you have `uvicorn` installed to run FastAPI apps
 # Run the app with: uvicorn app:app --reload
