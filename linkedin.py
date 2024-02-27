@@ -301,6 +301,19 @@ class Linkedin:
         # Add additional steps as needed based on the subsequent modals/forms
 
 
+    def submit_job_application(self):
+        # Wait for the page and the submit button to load
+        time.sleep(2)  # Consider using WebDriverWait for better reliability
+
+        # Locate the "Submit application" button by its aria-label attribute
+        submit_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Submit application')]")
+
+        # Click the "Submit application" button
+        submit_button.click()
+
+        # Optionally, add a wait or confirmation step here to ensure the application has been submitted successfully
+        print("Application submitted.")
+
     def linkJobApply(self):
         self.generateUrls()
         countApplied = 0
