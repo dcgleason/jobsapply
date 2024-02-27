@@ -30,11 +30,12 @@ def apply_jobs(apply_details: ApplyModel, background_tasks: BackgroundTasks):
     # For simplicity, we're just initiating the LinkedIn application process in the background.
     background_tasks.add_task(run_linkedin_application, apply_details)
     return {"message": "Application process initiated. Running in background."}
-
 def run_linkedin_application(apply_details: ApplyModel):
-    # Initialize with user-provided details
-    linkedin_app = Linkedin(apply_details=apply_details.dict())
+    # Convert Pydantic model to dict using model_dump
+    apply_details_dict = apply_details.model_dump()
+    linkedin_app = Linkedin(apply_details=apply_details_dict)
     linkedin_app.linkJobApply()
+
 
 
 # Ensure you have `uvicorn` installed to run FastAPI apps

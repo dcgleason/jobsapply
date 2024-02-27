@@ -28,7 +28,9 @@ driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install())
 
 
 class Linkedin:
-    def __init__(self, additional_questions_path='additionalQuestions.yaml'):
+    def __init__(self, apply_details=None, additional_questions_path='additionalQuestions.yaml'):
+        # Use apply_details as needed
+        self.apply_details = apply_details
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
 
@@ -168,6 +170,136 @@ class Linkedin:
             utils.prGreen("✅ Apply urls are created successfully, now the bot will visit those urls.")
         except:
             utils.prRed("❌ Couldn't generate urls, make sure you have editted config file line 25-39")
+
+    def linkJobApplyTwo(self, max_jobs_to_apply=10):
+        # Navigate to the job search page (assuming the URL is already set)
+        # self.driver.get("Your LinkedIn job search URL")
+        time.sleep(5)  # Wait for the page to load
+
+        # Find all job listing elements
+        job_listings = self.driver.find_elements(By.CSS_SELECTOR, "li.jobs-search-results__list-item")
+        applied_count = 0
+
+        for job_listing in job_listings:
+            if applied_count >= max_jobs_to_apply:
+                break
+
+            # Extract the job link
+            try:
+                job_link_element = job_listing.find_element(By.CSS_SELECTOR, "a.job-card-container__link")
+                job_link = job_link_element.get_attribute('href')
+                print(f"Applying to: {job_link}")
+
+                # Call the apply_to_job method with the job link
+                self.apply_to_job(job_link)
+
+                applied_count += 1
+                print(f"Successfully applied to {applied_count} jobs")
+            except Exception as e:
+                print(f"Could not apply to job: {e}")
+            finally:
+                # Go back to the job listings page to continue the loop if necessary
+                # This might be optional depending on whether the apply_to_job method navigates away from the job page
+                # self.driver.get("Your LinkedIn job search URL")
+                time.sleep(2)
+
+        print(f"Finished applying to {applied_count} jobs")
+
+    def apply_to_job(self, job_url):
+        # Navigate to the job's detail page
+        self.driver.get(job_url)
+        time.sleep(5)  # Wait for the page to load
+
+        try:
+            # Click the "Easy Apply" button
+            easy_apply_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Easy Apply')]")
+            easy_apply_button.click()
+            time.sleep(2)  # Wait for the application form to load
+
+            # TODO: Add steps to fill out the application form if necessary
+            # Example:
+            # self.driver.find_element(By.ID, 'form-field-id').send_keys('Your answer')
+
+            # Submit the application
+            submit_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Submit application')]")
+            submit_button.click()
+            time.sleep(2)  # Wait for submission to complete
+
+            print("Application submitted successfully.")
+        except Exception as e:
+            print(f"Failed to apply to job: {e}")
+
+
+    def fill_out_easy_apply_form(self, email, country_code, phone_number):
+        # Wait for the modal to load
+        time.sleep(2)
+
+        # Select the email address
+        email_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833898-multipleChoice")
+        for option in email_dropdown.find_elements(By.TAG_NAME, 'option'):
+            if option.text == email:
+                option.click()
+                break
+
+        # Wait for the next elements to be interactable
+        time.sleep(1)
+
+        # Select the phone country code
+        country_code_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-country")
+        for option in country_code_dropdown.find_elements(By.TAG_NAME, 'option'):
+            if option.text == country_code:
+                option.click()
+                break
+
+        # Wait for the next elements to be interactable
+        time.sleep(1)
+
+        # Enter the mobile phone number
+        phone_number_field = self.driver.find_element(By.ID, "single-line-text-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-nationalNumber")
+        phone_number_field.send_keys(phone_number)
+
+        # Click the Next button to proceed to the next step of the application
+        next_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Continue to next step')]")
+        next_button.click()
+
+        # Add additional steps as needed based on the subsequent modals/forms
+
+    def select_first_resume_and_continue(self):
+        # Wait for the modal content to load
+        time.sleep(2)
+
+        # Assuming the first resume is already selected by default based on your HTML snippet
+        # If you need to select it explicitly, uncomment the following lines and adjust the selector as needed
+        # first_resume = self.driver.find_element(By.CSS_SELECTOR, "input[type='radio'][id^='jobsDocumentCardToggle-']")
+        # first_resume.click()
+        # time.sleep(1)  # Wait for selection to be processed
+
+        # Click the "Next" button to proceed
+        next_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Continue to next step')]")
+        next_button.click()
+
+        # Add additional steps as needed based on the subsequent modals/forms
+
+    def answer_citizenship_question_and_continue(self, is_us_citizen_or_gch):
+        # Wait for the modal content to load
+        time.sleep(2)
+
+        # Find the dropdown for the citizenship question
+        citizenship_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833874-multipleChoice")
+        
+        # Create a Select object for the dropdown
+        select = Select(citizenship_dropdown)
+        
+        # Select the option based on the user's answer
+        select.select_by_visible_text(is_us_citizen_or_gch)
+        time.sleep(1)  # Wait for the selection to be processed
+
+        # Click the "Review" button to proceed
+        review_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Review your application')]")
+        review_button.click()
+
+        # Add additional steps as needed based on the subsequent modals/forms
+
 
     def linkJobApply(self):
         self.generateUrls()
