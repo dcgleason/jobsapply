@@ -53,6 +53,18 @@ class GPT4Response(BaseModel):
 def home():
     return {"message": "HOME"}
 
+@app.post("/apply")
+def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
+    # Pass the entire ApplyDetails instance, which includes the configuration
+    background_tasks.add_task(run_linkedin_application, apply_details)
+    return {"message": "Application process initiated. Running in background."}
+
+def run_linkedin_application(apply_details: ApplyDetails):
+    # No need to call model_dump() or dict() anymore
+    # Directly pass apply_details object which now includes user-configured settings
+    linkedin_app = Linkedin(apply_details=apply_details)
+    linkedin_app.linkJobApply()
+
 @app.post("/ask-gpt4/", response_model=GPT4Response)
 async def ask_gpt4(request: GPT4Request):
     # Assuming you have your OpenAI API key stored in an environment variable
@@ -100,6 +112,7 @@ def generate_prompt(question: str, question_type: str, options: Optional[List[st
     else:
         prompt += "Answer:"
     return prompt
+
 # Ensure you have `uvicorn` installed to run FastAPI apps
 # Run the app with: uvicorn app:app --reload
 
