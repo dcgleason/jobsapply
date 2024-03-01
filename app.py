@@ -14,7 +14,8 @@ from typing import List, Optional
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from dotenv import load_dotenv
 import os
-import openai
+from openai import OpenAI
+client = OpenAI()
 
 import httpx
 from schemas import ApplyDetails
@@ -80,25 +81,17 @@ async def ask_gpt4(request: GPT4Request):
     if not OPENAI_API_KEY:
         raise HTTPException(status_code=500, detail="OpenAI API key not configured.")
     
-    openai.api_key = OPENAI_API_KEY
-
     # Constructing the prompt for OpenAI API
     prompt = generate_prompt(request.question, request.question_type, request.options)
 
     try:
-        response = openai.Completion.create(
-            engine="gpt-4",  # Update this to the GPT-4 model you have access to
-            prompt=prompt,
-            max_tokens=150,
-            temperature=0.7,
-            top_p=1,
-            n=1,
-            stop=None,
-            logprobs=None,
+        completion = client.chat.completions.create(
+        model="gpt-4-turbo-preview",
+        messages=[
+            {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},
+            {"role": "user", "content": prompt}
+        ]
         )
-        # Extracting the text from the response
-        answer = response.choices[0].text.strip()
-        return GPT4Response(answers=answer)
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
