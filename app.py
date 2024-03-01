@@ -6,6 +6,9 @@ from linkedin import Linkedin
 # Assuming linkedin_scraper.py contains the Linkedin class with the linkJobApply method
 # from linkedin_scraper import Linkedin
 
+import requests
+import logging
+
 app = FastAPI()
 
 class ApplyModel(BaseModel):
@@ -22,6 +25,40 @@ class ApplyModel(BaseModel):
 
 class OpenAIResponseModel(BaseModel):
     answers: list
+
+def ask_gpt4(question: str, api_url: str, api_key: str) -> str:
+    """
+    Send a question to the GPT-4 model through the FastAPI route.
+
+    Args:
+        question (str): The question to be answered.
+        api_url (str): The URL of the FastAPI service.
+        api_key (str): The API key for authentication.
+
+    Returns:
+        str: The answer from GPT-4 or an error message.
+    """
+    try:
+        response = requests.post(
+            f"{api_url}/ask-gpt4/",
+            headers={
+                "Authorization": f"Bearer {api_key}",
+                "Content-Type": "application/json",
+            },
+            json={"prompt": question, "max_tokens": 150},
+            timeout=10  # Timeout for the request
+        )
+
+        if response.status_code == 200:
+            return response.json()["answers"]
+        else:
+            logging.error(f"Error in GPT-4 response: {response.text}")
+            return "Error in getting response from GPT-4"
+    except requests.RequestException as e:
+        logging.error(f"Request failed: {e}")
+        return "Failed to send request to GPT-4"
+
+
 
 @app.get("/")
 def home():

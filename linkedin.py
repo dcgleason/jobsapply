@@ -316,6 +316,93 @@ class Linkedin:
         # Optionally, add a wait or confirmation step here to ensure the application has been submitted successfully
         print("Application submitted.")
 
+    # def linkJobApply(self):
+    #     self.generateUrls()
+    #     countApplied = 0
+    #     countJobs = 0
+
+    #     urlData = utils.getUrlDataFile()
+
+    #     for url in urlData:        
+    #         self.driver.get(url)
+    #         time.sleep(random.uniform(1, constants.botSpeed))
+
+    #         totalJobs = self.driver.find_element(By.XPATH,'//small').text 
+    #         totalPages = utils.jobsToPages(totalJobs)
+
+    #         urlWords =  utils.urlToKeywords(url)
+    #         lineToWrite = "\n Category: " + urlWords[0] + ", Location: " +urlWords[1] + ", Applying " +str(totalJobs)+ " jobs."
+    #         self.displayWriteResults(lineToWrite)
+
+    #         for page in range(totalPages):
+    #             currentPageJobs = constants.jobsPerPage * page
+    #             url = url +"&start="+ str(currentPageJobs)
+    #             self.driver.get(url)
+    #             time.sleep(random.uniform(1, constants.botSpeed))
+
+    #             offersPerPage = self.driver.find_elements(By.XPATH, '//li[@data-occludable-job-id]')
+    #             offerIds = [(offer.get_attribute(
+    #                 "data-occludable-job-id").split(":")[-1]) for offer in offersPerPage]
+    #             time.sleep(random.uniform(1, constants.botSpeed))
+
+    #             for offer in offersPerPage:
+    #                 if not self.element_exists(offer, By.XPATH, ".//*[contains(text(), 'Applied')]"):
+    #                     offerId = offer.get_attribute("data-occludable-job-id")
+    #                     offerIds.append(int(offerId.split(":")[-1]))
+
+    #             for jobID in offerIds:
+    #                 offerPage = 'https://www.linkedin.com/jobs/view/' + str(jobID)
+    #                 self.driver.get(offerPage)
+    #                 time.sleep(random.uniform(1, constants.botSpeed))
+
+    #                 countJobs += 1
+
+    #                 jobProperties = self.getJobProperties(countJobs)
+    #                 if "blacklisted" in jobProperties: 
+    #                     lineToWrite = jobProperties + " | " + "* 🤬 Blacklisted Job, skipped!: " +str(offerPage)
+    #                     self.displayWriteResults(lineToWrite)
+                    
+    #                 else :                    
+    #                     easyApplybutton = self.easyApplyButton()
+
+    #                     if easyApplybutton is not False:
+    #                         easyApplybutton.click()
+    #                         time.sleep(random.uniform(1, constants.botSpeed))
+                            
+    #                         try:
+    #                             self.chooseResume()
+    #                             self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
+    #                             time.sleep(random.uniform(1, constants.botSpeed))
+
+    #                             lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: "  +str(offerPage)
+    #                             self.displayWriteResults(lineToWrite)
+    #                             countApplied += 1
+
+    #                         except:
+    #                             try:
+    #                                 self.driver.find_element(By.CSS_SELECTOR,"button[aria-label='Continue to next step']").click()
+    #                                 time.sleep(random.uniform(1, constants.botSpeed))
+    #                                 self.chooseResume()
+    #                                 comPercentage = self.driver.find_element(By.XPATH,'html/body/div[3]/div/div/div[2]/div/div/span').text
+    #                                 percenNumber = int(comPercentage[0:comPercentage.index("%")])
+    #                                 result = self.applyProcess(percenNumber,offerPage)
+    #                                 lineToWrite = jobProperties + " | " + result
+    #                                 self.displayWriteResults(lineToWrite)
+                                
+    #                             except Exception: 
+    #                                 self.chooseResume()
+    #                                 lineToWrite = jobProperties + " | " + "* 🥵 Cannot apply to this Job! " +str(offerPage)
+    #                                 self.displayWriteResults(lineToWrite)
+    #                     else:
+    #                         lineToWrite = jobProperties + " | " + "* 🥳 Already applied! Job: " +str(offerPage)
+    #                         self.displayWriteResults(lineToWrite)
+
+
+    #         utils.prYellow("Category: " + urlWords[0] + "," +urlWords[1]+ " applied: " + str(countApplied) +
+    #               " jobs out of " + str(countJobs) + ".")
+        
+    #     utils.donate(self)
+
     def linkJobApply(self):
         self.generateUrls()
         countApplied = 0
@@ -327,42 +414,34 @@ class Linkedin:
             self.driver.get(url)
             time.sleep(random.uniform(1, constants.botSpeed))
 
-            totalJobs = self.driver.find_element(By.XPATH,'//small').text 
+            totalJobs = self.driver.find_element(By.XPATH, '//small').text 
             totalPages = utils.jobsToPages(totalJobs)
 
-            urlWords =  utils.urlToKeywords(url)
-            lineToWrite = "\n Category: " + urlWords[0] + ", Location: " +urlWords[1] + ", Applying " +str(totalJobs)+ " jobs."
+            urlWords = utils.urlToKeywords(url)
+            lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
             self.displayWriteResults(lineToWrite)
 
             for page in range(totalPages):
                 currentPageJobs = constants.jobsPerPage * page
-                url = url +"&start="+ str(currentPageJobs)
-                self.driver.get(url)
+                pageUrl = url + "&start=" + str(currentPageJobs)
+                self.driver.get(pageUrl)
                 time.sleep(random.uniform(1, constants.botSpeed))
 
                 offersPerPage = self.driver.find_elements(By.XPATH, '//li[@data-occludable-job-id]')
-                offerIds = [(offer.get_attribute(
-                    "data-occludable-job-id").split(":")[-1]) for offer in offersPerPage]
+                offerIds = [offer.get_attribute("data-occludable-job-id").split(":")[-1] for offer in offersPerPage]
                 time.sleep(random.uniform(1, constants.botSpeed))
 
-                for offer in offersPerPage:
-                    if not self.element_exists(offer, By.XPATH, ".//*[contains(text(), 'Applied')]"):
-                        offerId = offer.get_attribute("data-occludable-job-id")
-                        offerIds.append(int(offerId.split(":")[-1]))
-
-                for jobID in offerIds:
-                    offerPage = 'https://www.linkedin.com/jobs/view/' + str(jobID)
+                for offerId in offerIds:
+                    offerPage = 'https://www.linkedin.com/jobs/view/' + str(offerId)
                     self.driver.get(offerPage)
                     time.sleep(random.uniform(1, constants.botSpeed))
 
                     countJobs += 1
-
                     jobProperties = self.getJobProperties(countJobs)
-                    if "blacklisted" in jobProperties: 
-                        lineToWrite = jobProperties + " | " + "* 🤬 Blacklisted Job, skipped!: " +str(offerPage)
+                    if "blacklisted" in jobProperties:
+                        lineToWrite = jobProperties + " | " + "* 🤬 Blacklisted Job, skipped!: " + str(offerPage)
                         self.displayWriteResults(lineToWrite)
-                    
-                    else :                    
+                    else:
                         easyApplybutton = self.easyApplyButton()
 
                         if easyApplybutton is not False:
@@ -371,38 +450,44 @@ class Linkedin:
                             
                             try:
                                 self.chooseResume()
+                                # Handling the job application questions
+                                self.handleApplicationQuestions()
+
                                 self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
                                 time.sleep(random.uniform(1, constants.botSpeed))
 
-                                lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: "  +str(offerPage)
+                                lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                 self.displayWriteResults(lineToWrite)
                                 countApplied += 1
 
-                            except:
-                                try:
-                                    self.driver.find_element(By.CSS_SELECTOR,"button[aria-label='Continue to next step']").click()
-                                    time.sleep(random.uniform(1, constants.botSpeed))
-                                    self.chooseResume()
-                                    comPercentage = self.driver.find_element(By.XPATH,'html/body/div[3]/div/div/div[2]/div/div/span').text
-                                    percenNumber = int(comPercentage[0:comPercentage.index("%")])
-                                    result = self.applyProcess(percenNumber,offerPage)
-                                    lineToWrite = jobProperties + " | " + result
-                                    self.displayWriteResults(lineToWrite)
-                                
-                                except Exception: 
-                                    self.chooseResume()
-                                    lineToWrite = jobProperties + " | " + "* 🥵 Cannot apply to this Job! " +str(offerPage)
-                                    self.displayWriteResults(lineToWrite)
+                            except Exception as e:
+                                lineToWrite = jobProperties + " | " + "* 🥵 Cannot apply to this Job! " + str(offerPage)
+                                self.displayWriteResults(lineToWrite)
+
                         else:
-                            lineToWrite = jobProperties + " | " + "* 🥳 Already applied! Job: " +str(offerPage)
+                            lineToWrite = jobProperties + " | " + "* 🥳 Already applied! Job: " + str(offerPage)
                             self.displayWriteResults(lineToWrite)
 
-
-            utils.prYellow("Category: " + urlWords[0] + "," +urlWords[1]+ " applied: " + str(countApplied) +
-                  " jobs out of " + str(countJobs) + ".")
+            utils.prYellow("Category: " + urlWords[0] + "," + urlWords[1] + " applied: " + str(countApplied) +
+                           " jobs out of " + str(countJobs) + ".")
         
         utils.donate(self)
 
+    def handleApplicationQuestions(self):
+        question_elements = self.driver.find_elements(By.XPATH, "//input[@type='text']")
+        for question_element in question_elements:
+            question_text = question_element.get_attribute("placeholder")  # Example to get the question
+            answer = self.ask_gpt4(question_text)
+            question_element.send_keys(answer)
+
+    def ask_gpt4(self, question):
+        # Replace 'http://your-fastapi-endpoint-url' with the URL of your FastAPI endpoint
+        fastapi_endpoint = 'http://your-fastapi-endpoint-url/ask-gpt4/'
+        response = requests.post(fastapi_endpoint, json={'question': question})
+        if response.status_code == 200:
+            return response.json()['answers']
+        else:
+            raise Exception('Failed to get a response from GPT-4')
 
     def extract_text_from_page(self) -> str:
         """Extract text from the current job page.
