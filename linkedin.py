@@ -23,7 +23,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-
+import config
 
 
 options = webdriver.ChromeOptions()
@@ -32,8 +32,8 @@ driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install())
 
 
 class Linkedin:
-    def __init__(self, apply_details=None, additional_questions_path='additionalQuestions.yaml'):
-        # Use apply_details as needed
+     def __init__(self, apply_details=None, config=None):
+        self.config = config  # Use this config object throughout your class methods
         self.apply_details = apply_details
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
@@ -489,15 +489,29 @@ class Linkedin:
     def handleTextInputFields(self):
         text_input_elements = self.driver.find_elements(By.XPATH, "//input[@type='text']")
         for element in text_input_elements:
-            question_text = element.get_attribute("input")  # Adjust based on actual attribute containing the question
+            # Attempt to find the parent container of the input element
+            parent_container = element.find_element(By.XPATH, "./..")
+            # Within this container, try to locate the label element that contains the question
+            label = parent_container.find_element(By.TAG_NAME, "label")
+            question_text = label.text if label else "Default Question"
+            
             answer = self.ask_gpt4(question_text)
             element.send_keys(answer)
 
     def handleSelectDropdowns(self):
+        # Find all select elements and their corresponding labels for questions
         select_elements = self.driver.find_elements(By.TAG_NAME, "select")
         for element in select_elements:
-            # Assuming the first option is the placeholder like "Select an option", and actual options follow
-            Select(element).select_by_index(1)  # Adjust this logic based on your needs
+            label = self.find_corresponding_label(element)
+            question_text = label.text
+            options = [option.text for option in Select(element).options]
+            answer = self.ask_gpt4(question_text, options)
+            Select(element).select_by_visible_text(answer)
+
+    def find_corresponding_label(self, element):
+        # Implement logic to find the label corresponding to an input/select element
+        label_for = element.get_attribute("id")
+        return self.driver.find_element(By.XPATH, f"//label[@for='{label_for}']")
 
     def handleRadioButtons(self):
         # This method needs to be more dynamic to handle various questions and radio button options

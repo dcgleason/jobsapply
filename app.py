@@ -9,9 +9,21 @@ from linkedin import Linkedin
 import requests
 import logging
 
-app = FastAPI()
+from typing import List, Optional
 
-class ApplyModel(BaseModel):
+class LinkedinConfig(BaseModel):
+    headless: bool
+    chromeProfilePath: Optional[str] = None
+    location: List[str]
+    keywords: List[str]
+    experienceLevels: List[str]
+    datePosted: List[str]
+    jobType: List[str]
+    remote: List[str]
+    salary: List[str]
+    sort: List[str]
+
+class ApplyDetails(BaseModel):
     email: EmailStr
     phone_country_code: str = Field(..., min_length=1, max_length=4)
     mobile_phone_number: str = Field(..., min_length=5, max_length=15)
@@ -22,6 +34,11 @@ class ApplyModel(BaseModel):
     years_experience_servicenow: int
     favorite_technology: str
     reason_for_applying: str
+    config: LinkedinConfig
+
+
+app = FastAPI()
+
 
 class OpenAIResponseModel(BaseModel):
     answers: list
@@ -65,15 +82,13 @@ def home():
     return {"message": "HOME"}
 
 @app.post("/apply")
-def apply_jobs(apply_details: ApplyModel, background_tasks: BackgroundTasks):
-    # Here, you might want to use the apply_details for something relevant to your LinkedIn logic.
-    # For simplicity, we're just initiating the LinkedIn application process in the background.
+def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
     background_tasks.add_task(run_linkedin_application, apply_details)
     return {"message": "Application process initiated. Running in background."}
-def run_linkedin_application(apply_details: ApplyModel):
-    # Convert Pydantic model to dict using model_dump
-    apply_details_dict = apply_details.model_dump()
-    linkedin_app = Linkedin(apply_details=apply_details_dict)
+
+def run_linkedin_application(apply_details: ApplyDetails):
+    apply_details_dict = apply_details.model_dump()  # Use model_dump() instead of dict()
+    linkedin_app = Linkedin(apply_details=apply_details_dict["config"])
     linkedin_app.linkJobApply()
 
 
@@ -83,12 +98,12 @@ async def ask_gpt4(question: str):
     response = requests.post(
         "https://api.openai.com/v1/engines/davinci-codex/completions",
         headers={
-            "Authorization": f"Bearer {your_openai_api_key}",  # Replace with your OpenAI API Key
+            "Authorization": f"Bearer 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",  # Replace with your OpenAI API Key
             "Content-Type": "application/json",
         },
         json={
             "prompt": question,
-            "max_tokens": 150
+            "max_tokens": 1050
         },
     )
     if response.status_code == 200:
