@@ -102,12 +102,14 @@ def donate(self):
         prRed("Error in donate: " +str(e))
 
 class LinkedinUrlGenerate:
-    def generateUrlLinks(self):
+    def generateUrlLinks(self, config):
         path = []
-        for location in config.location:
-            for keyword in config.keywords:
-                    url = constants.linkJobUrl + "?f_AL=true&keywords=" +keyword+self.jobType()+self.remote()+self.checkJobLocation(location)+self.jobExp()+self.datePosted()+self.salary()+self.sortBy()
-                    path.append(url)
+        # Use config.location and config.keywords instead of the global config
+        for location in config['location']:
+            for keyword in config['keywords']:
+                # Update URL generation logic using the config parameter
+                url = constants.linkJobUrl + "?f_AL=true&keywords=" + keyword + self.jobType(config) + self.remote(config) + self.checkJobLocation(location, config) + self.jobExp(config) + self.datePosted(config) + self.salary(config) + self.sortBy(config)
+                path.append(url)
         return path
 
     def checkJobLocation(self,job):

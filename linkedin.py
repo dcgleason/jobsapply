@@ -38,54 +38,43 @@ driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install())
 class Linkedin:
     def __init__(self, apply_details):
         self.apply_details = apply_details
-        self.config = apply_details.config 
+        self.config = apply_details.config
+        self.credentials = self.config.credentials  # Extracting credentials from the config
+
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
 
-        # Load additional questions
-        self.additional_questions = self.load_additional_questions(additional_questions_path)
-
-        # Set Chrome options for headless execution
+        # Set Chrome options
         chrome_options = Options()
-        # chrome_options.add_argument("--headless")
-        chrome_options.add_argument("--no-sandbox")  # Bypass OS security model
-        chrome_options.add_argument("--disable-dev-shm-usage")  # Overcome limited resource problems
-        chrome_options.add_argument("--window-size=1920x1080")  # Specify window size
+        chrome_options.add_argument("--no-sandbox")
+        chrome_options.add_argument("--disable-dev-shm-usage")
+        chrome_options.add_argument("--window-size=1920x1080")
 
         self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
-        # Ensure the cookies directory exists
         cookies_dir = os.path.join(os.getcwd(), 'cookies')
         if not os.path.exists(cookies_dir):
             os.makedirs(cookies_dir)
 
-        self.cookies_path = f"{cookies_dir}/{self.getHash(config.email)}.pkl"
+        self.cookies_path = f"{cookies_dir}/{self.getHash(self.credentials.linkedin_email)}.pkl"
 
         self.driver.get('https://www.linkedin.com')
         self.loadCookies()
 
         if not self.isLoggedIn():
             self.login()
-        # Start application
-        self.linkJobApply()
-
-    def load_additional_questions(self, file_path):
-        """Load additional questions from a YAML file."""
-        with open(file_path, 'r') as file:
-            return yaml.safe_load(file)
 
     def login(self):
-        self.driver.get("https://www.linkedin.com/login?trk=guest_homepage-basic_nav-header-signin")
+        self.driver.get("https://www.linkedin.com/login")
         utils.prYellow("🔄 Trying to log in Linkedin...")
         try:
-            self.driver.find_element("id", "username").send_keys(config.email)
-            time.sleep(2)
-            self.driver.find_element("id", "password").send_keys(config.password)
-            time.sleep(2)
-            self.driver.find_element("xpath", '//button[@type="submit"]').click()
-            time.sleep(30)
-        except:
-            utils.prRed("❌ Couldn't log in Linkedin by using Chrome. Please check your Linkedin credentials on config files line 7 and 8.")
+            self.driver.find_element(By.ID, "username").send_keys(self.credentials.linkedin_email)
+            self.driver.find_element(By.ID, "password").send_keys(self.credentials.linkedin_password)
+            self.driver.find_element(By.XPATH, '//button[@type="submit"]').click()
+            WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.ID, "global-nav-typeahead")))
+        except Exception as e:
+            utils.prRed(f"❌ Couldn't log in Linkedin. Error: {e}")
+
         self.saveCookies()
 
     def getHash(self, string):
@@ -168,50 +157,54 @@ class Linkedin:
 
     
     def generateUrls(self):
+        # Ensure the 'data' directory exists
         if not os.path.exists('data'):
             os.makedirs('data')
-        try: 
-            with open('data/urlData.txt', 'w',encoding="utf-8" ) as file:
-                linkedinJobLinks = utils.LinkedinUrlGenerate().generateUrlLinks()
+        try:
+            with open('data/urlData.txt', 'w', encoding="utf-8") as file:
+                # Instantiate LinkedinUrlGenerate
+                url_generator = LinkedinUrlGenerate()
+                # Call generateUrlLinks with self.config
+                linkedinJobLinks = url_generator.generateUrlLinks(self.config)
                 for url in linkedinJobLinks:
-                    file.write(url+ "\n")
+                    file.write(url + "\n")
             utils.prGreen("✅ Apply urls are created successfully, now the bot will visit those urls.")
-        except:
-            utils.prRed("❌ Couldn't generate urls, make sure you have editted config file line 25-39")
+        except Exception as e:
+            utils.prRed(f"❌ Couldn't generate urls. Error: {e}")
 
-    def linkJobApplyTwo(self, max_jobs_to_apply=10):
-        # Navigate to the job search page (assuming the URL is already set)
-        # self.driver.get("Your LinkedIn job search URL")
-        time.sleep(5)  # Wait for the page to load
+    # def linkJobApplyTwo(self, max_jobs_to_apply=10):
+    #     # Navigate to the job search page (assuming the URL is already set)
+    #     # self.driver.get("Your LinkedIn job search URL")
+    #     time.sleep(5)  # Wait for the page to load
 
-        # Find all job listing elements
-        job_listings = self.driver.find_elements(By.CSS_SELECTOR, "li.jobs-search-results__list-item")
-        applied_count = 0
+    #     # Find all job listing elements
+    #     job_listings = self.driver.find_elements(By.CSS_SELECTOR, "li.jobs-search-results__list-item")
+    #     applied_count = 0
 
-        for job_listing in job_listings:
-            if applied_count >= max_jobs_to_apply:
-                break
+    #     for job_listing in job_listings:
+    #         if applied_count >= max_jobs_to_apply:
+    #             break
 
-            # Extract the job link
-            try:
-                job_link_element = job_listing.find_element(By.CSS_SELECTOR, "a.job-card-container__link")
-                job_link = job_link_element.get_attribute('href')
-                print(f"Applying to: {job_link}")
+    #         # Extract the job link
+    #         try:
+    #             job_link_element = job_listing.find_element(By.CSS_SELECTOR, "a.job-card-container__link")
+    #             job_link = job_link_element.get_attribute('href')
+    #             print(f"Applying to: {job_link}")
 
-                # Call the apply_to_job method with the job link
-                self.apply_to_job(job_link)
+    #             # Call the apply_to_job method with the job link
+    #             self.apply_to_job(job_link)
 
-                applied_count += 1
-                print(f"Successfully applied to {applied_count} jobs")
-            except Exception as e:
-                print(f"Could not apply to job: {e}")
-            finally:
-                # Go back to the job listings page to continue the loop if necessary
-                # This might be optional depending on whether the apply_to_job method navigates away from the job page
-                # self.driver.get("Your LinkedIn job search URL")
-                time.sleep(2)
+    #             applied_count += 1
+    #             print(f"Successfully applied to {applied_count} jobs")
+    #         except Exception as e:
+    #             print(f"Could not apply to job: {e}")
+    #         finally:
+    #             # Go back to the job listings page to continue the loop if necessary
+    #             # This might be optional depending on whether the apply_to_job method navigates away from the job page
+    #             # self.driver.get("Your LinkedIn job search URL")
+    #             time.sleep(2)
 
-        print(f"Finished applying to {applied_count} jobs")
+    #     print(f"Finished applying to {applied_count} jobs")
 
     def apply_to_job(self, job_url):
         # Navigate to the job's detail page

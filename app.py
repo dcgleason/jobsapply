@@ -20,7 +20,12 @@ from pydantic import BaseModel, EmailStr, Field
 
 load_dotenv()  
 
+class LinkedinCredentials(BaseModel):
+    linkedin_email: EmailStr
+    linkedin_password: str
+
 class LinkedinConfig(BaseModel):
+    credentials: LinkedinCredentials
     headless: bool
     chromeProfilePath: Optional[str] = None
     location: List[str]
@@ -97,6 +102,7 @@ def run_linkedin_application(apply_details: ApplyDetails):
     # Directly pass apply_details object which now includes user-configured settings
     linkedin_app = Linkedin(apply_details=apply_details)
     linkedin_app.linkJobApply()
+
 
 
 @app.post("/ask-gpt4/")
