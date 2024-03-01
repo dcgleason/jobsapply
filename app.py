@@ -66,7 +66,7 @@ def run_linkedin_application(apply_details: ApplyDetails):
 @router.post("/ask-gpt4/", response_model=GPT4Response)
 async def ask_gpt4(request: GPT4Request):
     # Assuming you have your OpenAI API key stored in an environment variable
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    OPENAI_API_KEY = os.getenv("OPENAI_KEY")
     if not OPENAI_API_KEY:
         raise HTTPException(status_code=500, detail="OpenAI API key not configured.")
 
