@@ -77,7 +77,7 @@ class Linkedin:
             self.driver.find_element(By.ID, "password").send_keys(password)
                 # Submit the login form
             self.driver.find_element(By.XPATH, '//button[@type="submit"]').click()
-            time.sleep(5)  # Adjust timing as necessary
+            time.sleep(15)  # Adjust timing as necessary
         except Exception as e:
             utils.prRed(f"❌ Couldn't log in Linkedin by using Chrome. Please check your Linkedin credentials. Error: {str(e)}")
         self.saveCookies()
@@ -97,7 +97,7 @@ class Linkedin:
 
     def get_job_links(self, search_query, num_jobs=10):
         self.driver.get(f"https://www.linkedin.com/jobs/search/?keywords={search_query}")
-        time.sleep(5)
+        time.sleep(10)
         job_links = []
         for i in range(num_jobs):
             job_link = self.driver.find_element(By.XPATH, f"(//a[contains(@href, '/jobs/view/')])[{i + 1}]")
@@ -116,7 +116,7 @@ class Linkedin:
         def scrape_modal():
             # Wait for the modal to become visible
             WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".artdeco-modal__content")))
-            time.sleep(2)  # Additional wait for all elements to load properly
+            time.sleep(5)  # Additional wait for all elements to load properly
 
             # Scrape all questions
             questions_elements = self.driver.find_elements(By.CSS_SELECTOR, "label")
@@ -211,13 +211,13 @@ class Linkedin:
     def apply_to_job(self, job_url):
         # Navigate to the job's detail page
         self.driver.get(job_url)
-        time.sleep(5)  # Wait for the page to load
+        time.sleep(10)  # Wait for the page to load
 
         try:
             # Click the "Easy Apply" button
             easy_apply_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Easy Apply')]")
             easy_apply_button.click()
-            time.sleep(2)  # Wait for the application form to load
+            time.sleep(5)  # Wait for the application form to load
 
             # TODO: Add steps to fill out the application form if necessary
             # Example:
@@ -226,7 +226,7 @@ class Linkedin:
             # Submit the application
             submit_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Submit application')]")
             submit_button.click()
-            time.sleep(2)  # Wait for submission to complete
+            time.sleep(5)  # Wait for submission to complete
 
             print("Application submitted successfully.")
         except Exception as e:
@@ -235,7 +235,7 @@ class Linkedin:
 
     def fill_out_easy_apply_form(self, email, country_code, phone_number):
         # Wait for the modal to load
-        time.sleep(2)
+        time.sleep(5)
 
         # Select the email address
         email_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833898-multipleChoice")
@@ -245,7 +245,7 @@ class Linkedin:
                 break
 
         # Wait for the next elements to be interactable
-        time.sleep(1)
+        time.sleep(2)
 
         # Select the phone country code
         country_code_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-country")
@@ -255,7 +255,7 @@ class Linkedin:
                 break
 
         # Wait for the next elements to be interactable
-        time.sleep(1)
+        time.sleep(2)
 
         # Enter the mobile phone number
         phone_number_field = self.driver.find_element(By.ID, "single-line-text-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-nationalNumber")
@@ -285,7 +285,7 @@ class Linkedin:
 
     def answer_citizenship_question_and_continue(self, is_us_citizen_or_gch):
         # Wait for the modal content to load
-        time.sleep(2)
+        time.sleep(4)
 
         # Find the dropdown for the citizenship question
         citizenship_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833874-multipleChoice")
@@ -295,7 +295,7 @@ class Linkedin:
         
         # Select the option based on the user's answer
         select.select_by_visible_text(is_us_citizen_or_gch)
-        time.sleep(1)  # Wait for the selection to be processed
+        time.sleep(2)  # Wait for the selection to be processed
 
         # Click the "Review" button to proceed
         review_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Review your application')]")
@@ -409,7 +409,6 @@ class Linkedin:
         # self.generateUrls()
         countApplied = 0
         countJobs = 0
-        url_generator = LinkedinUrlGenerate()
         url_generator = LinkedinUrlGenerate()
         job_urls = url_generator.generateUrlLinks(self.config)  # self.config is an instance of LinkedinConfig
         for url in job_urls:

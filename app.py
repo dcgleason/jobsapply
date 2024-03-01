@@ -76,7 +76,7 @@ async def ask_gpt4(request: GPT4Request):
         "Authorization": f"Bearer {OPENAI_API_KEY}"
     }
     data = {
-        "model": "gpt-4-0125-preview",  
+        "model": "gpt-4",  
         "prompt": generate_prompt(request.question, request.question_type, request.options),
         "temperature": 0.7,
         "max_tokens": 150,
