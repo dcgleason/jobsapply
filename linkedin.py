@@ -8,6 +8,7 @@ import config
 import pickle
 import hashlib
 import yaml
+import requests
 from typing import List
 
 
@@ -23,7 +24,7 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
-import config
+
 
 
 options = webdriver.ChromeOptions()
@@ -32,7 +33,7 @@ driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install())
 
 
 class Linkedin:
-     def __init__(self, apply_details=None, config=None):
+    def __init__(self, apply_details=None, config=None):
         self.config = config  # Use this config object throughout your class methods
         self.apply_details = apply_details
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
@@ -536,52 +537,44 @@ class Linkedin:
             except TimeoutException:
                 print("Timeout waiting for radio button question.")
 
-    def ask_gpt4(self, question):
-        # Replace 'http://your-fastapi-endpoint-url' with the URL of your FastAPI endpoint
-        fastapi_endpoint = 'http://your-fastapi-endpoint-url/ask-gpt4/'
-        response = requests.post(fastapi_endpoint, json={'question': question})
-        if response.status_code == 200:
-            return response.json()['answers']
-        else:
-            raise Exception('Failed to get a response from GPT-4')
+    def ask_gpt4(self, question: str, question_type: str = "string", options: list = None):
+            """
+            Send a question to GPT-4 and get an answer, dynamically handling the question type.
+            
+            Args:
+                question (str): The question to be answered by GPT-4.
+                question_type (str): The type of the question (e.g., "string", "select", "radio").
+                options (list): Options for the question, applicable for "select" or "radio" types.
+            
+            Returns:
+                The answer from GPT-4, formatted according to the question type.
+            """
+            # Define the FastAPI endpoint URL
+            fastapi_endpoint = 'http://your-fastapi-endpoint-url/ask-gpt4/'
+            # Prepare the JSON payload for the request
+            payload = {
+                "question": question,
+                "question_type": question_type,
+                "options": options
+            }
+            # Make the POST request to the FastAPI endpoint
+            response = requests.post(fastapi_endpoint, json=payload)
+            if response.status_code == 200:
+                # Process the response based on the question type
+                answer = response.json()['answers']
+                if question_type in ["select", "radio"] and options:
+                    # Convert answer index back to the option text if necessary
+                    try:
+                        # Assuming the answer is an index for select/radio types
+                        answer_idx = int(answer) - 1
+                        return options[answer_idx]
+                    except (ValueError, IndexError):
+                        raise Exception(f"Invalid answer index returned by GPT-4: {answer}")
+                return answer
+            else:
+                raise Exception(f"Failed to get a response from GPT-4: {response.text}")
 
-    def extract_text_from_page(self) -> str:
-        """Extract text from the current job page.
 
-         Returns:
-            str: Extracted text from the page.
-         """
-            # Placeholder for extracting text from the page
-        page_text = self.driver.find_element(By.TAG_NAME, "body").text
-        return page_text
-
-    def detect_questions(self, text: str) -> List[str]:
-        """Detect questions in the given text.
-
-        Args:
-            text (str): Text from the job page.
-
-        Returns:
-            List[str]: List of detected questions.
-        """
-        # Placeholder for question detection logic
-        # This can be a simple regex or a more complex NLP-based approach
-        questions = ["Detected question 1", "Detected question 2"]  # Example
-        return questions
-
-    def ask_gpt4(self, questions: List[str]) -> List[str]:
-        """Send questions to OpenAI GPT-4 API and get answers.
-
-        Args:
-            questions (List[str]): List of questions to ask.
-
-        Returns:
-            List[str]: List of answers from GPT-4.
-        """
-        # Placeholder for API interaction
-        # Here you will use the OpenAI API to send the questions and receive answers
-        answers = ["Answer to question 1", "Answer to question 2"]  # Example
-        return answers
 
     def process_job_page(self):
         """Process the current job page."""

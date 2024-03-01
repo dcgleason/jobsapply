@@ -8,8 +8,12 @@ from linkedin import Linkedin
 
 import requests
 import logging
+from fastapi import HTTPException
 
 from typing import List, Optional
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from dotenv import load_dotenv
+load_dotenv()  
 
 class LinkedinConfig(BaseModel):
     headless: bool
@@ -37,43 +41,14 @@ class ApplyDetails(BaseModel):
     config: LinkedinConfig
 
 
-app = FastAPI()
-
 
 class OpenAIResponseModel(BaseModel):
-    answers: list
+    answers: str
 
-def ask_gpt4(question: str, api_url: str, api_key: str) -> str:
-    """
-    Send a question to the GPT-4 model through the FastAPI route.
 
-    Args:
-        question (str): The question to be answered.
-        api_url (str): The URL of the FastAPI service.
-        api_key (str): The API key for authentication.
 
-    Returns:
-        str: The answer from GPT-4 or an error message.
-    """
-    try:
-        response = requests.post(
-            f"{api_url}/ask-gpt4/",
-            headers={
-                "Authorization": f"Bearer {api_key}",
-                "Content-Type": "application/json",
-            },
-            json={"prompt": question, "max_tokens": 150},
-            timeout=10  # Timeout for the request
-        )
+app = FastAPI()
 
-        if response.status_code == 200:
-            return response.json()["answers"]
-        else:
-            logging.error(f"Error in GPT-4 response: {response.text}")
-            return "Error in getting response from GPT-4"
-    except requests.RequestException as e:
-        logging.error(f"Request failed: {e}")
-        return "Failed to send request to GPT-4"
 
 
 
@@ -92,24 +67,52 @@ def run_linkedin_application(apply_details: ApplyDetails):
     linkedin_app.linkJobApply()
 
 
-
 @app.post("/ask-gpt4/")
-async def ask_gpt4(question: str):
+async def ask_gpt4(question: str, question_type: str, options: list = None):
+    """
+    Send a question to the OpenAI GPT-4 model specifically tailored for form completion.
+    - `question`: The prompt or question to be answered.
+    - `question_type`: The type of the question ("string", "radio", "select").
+    - `options`: The options for "select" or "radio" type questions.
+    """
+
+    bearer_token = os.getenv("OPENAI_KEY")
+    prompt = f"We're filling out a form and need to answer the following question accurately and succinctly: '{question}'. This is a {question_type} question."
+    if options:
+        prompt += f" The options are: {', '.join([f'{idx+1}. {opt}' for idx, opt in enumerate(options)])}. Provide your answer in numerical form to indicate the chosen option."
+
     response = requests.post(
-        "https://api.openai.com/v1/engines/davinci-codex/completions",
+        "https://api.openai.com/v1/completions",
         headers={
-            "Authorization": f"Bearer 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",  # Replace with your OpenAI API Key
+            "Authorization": f"Bearer {bearer_token}",
             "Content-Type": "application/json",
         },
         json={
-            "prompt": question,
-            "max_tokens": 1050
+            "model": "gpt-4-turbo-preview",  # Specify the model here
+            "prompt": prompt,
+            "max_tokens": 50,
+            "temperature": 0.7,
+            "top_p": 1,
+            "frequency_penalty": 0,
+            "presence_penalty": 0,
+            "stop": ["\n"]
         },
     )
     if response.status_code == 200:
-        return OpenAIResponseModel(answers=response.json()["choices"][0]["text"])
+        answer = response.json()["choices"][0]["text"].strip()
+        # Post-process the answer based on the question type if necessary
+        if question_type in ["radio", "select"] and options:
+            # Ensure the answer is a valid option index
+            try:
+                answer_idx = int(answer) - 1
+                if answer_idx < 0 or answer_idx >= len(options):
+                    raise ValueError("Invalid option number")
+                return OpenAIResponseModel(answers=options[answer_idx])
+            except ValueError:
+                raise HTTPException(status_code=400, detail="Invalid answer format for the question type")
+        return OpenAIResponseModel(answers=answer)
     else:
-        return {"error": "Failed to get a response from OpenAI GPT-4"}
+        raise HTTPException(status_code=500, detail="Failed to get a response from OpenAI GPT-4")
 
 # Ensure you have `uvicorn` installed to run FastAPI apps
 # Run the app with: uvicorn app:app --reload
