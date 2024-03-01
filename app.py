@@ -13,6 +13,8 @@ from fastapi import HTTPException
 from typing import List, Optional
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from dotenv import load_dotenv
+import os
+
 load_dotenv()  
 
 class LinkedinConfig(BaseModel):
