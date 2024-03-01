@@ -8,6 +8,8 @@ import config
 import pickle
 import hashlib
 import yaml
+from typing import List
+
 
 
 from selenium import webdriver
@@ -400,6 +402,53 @@ class Linkedin:
                   " jobs out of " + str(countJobs) + ".")
         
         utils.donate(self)
+
+
+    def extract_text_from_page(self) -> str:
+        """Extract text from the current job page.
+
+         Returns:
+            str: Extracted text from the page.
+         """
+            # Placeholder for extracting text from the page
+        page_text = self.driver.find_element(By.TAG_NAME, "body").text
+        return page_text
+
+    def detect_questions(self, text: str) -> List[str]:
+        """Detect questions in the given text.
+
+        Args:
+            text (str): Text from the job page.
+
+        Returns:
+            List[str]: List of detected questions.
+        """
+        # Placeholder for question detection logic
+        # This can be a simple regex or a more complex NLP-based approach
+        questions = ["Detected question 1", "Detected question 2"]  # Example
+        return questions
+
+    def ask_gpt4(self, questions: List[str]) -> List[str]:
+        """Send questions to OpenAI GPT-4 API and get answers.
+
+        Args:
+            questions (List[str]): List of questions to ask.
+
+        Returns:
+            List[str]: List of answers from GPT-4.
+        """
+        # Placeholder for API interaction
+        # Here you will use the OpenAI API to send the questions and receive answers
+        answers = ["Answer to question 1", "Answer to question 2"]  # Example
+        return answers
+
+    def process_job_page(self):
+        """Process the current job page."""
+        page_text = self.extract_text_from_page()
+        questions = self.detect_questions(page_text)
+        answers = self.ask_gpt4(questions)
+        for question, answer in zip(questions, answers):
+            print(f"Q: {question}\nA: {answer}\n")
 
     def chooseResume(self):
         try:
