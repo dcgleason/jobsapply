@@ -1,6 +1,7 @@
 import math,constants,config,time
 from typing import List
 from selenium import webdriver
+import os
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
 
 def chromeBrowserOptions():
@@ -35,15 +36,6 @@ def prGreen(prt):
 def prYellow(prt):
     print(f"\033[93m{prt}\033[00m")
 
-def getUrlDataFile():
-    urlData = ""
-    try:
-        file = open('data/urlData.txt', 'r')
-        urlData = file.readlines()
-    except FileNotFoundError:
-        text = "FileNotFound:urlData.txt file is not found. Please run ./data folder exists and check config.py values of yours. Then run the bot again"
-        prRed(text)
-    return urlData
 
 def jobsToPages(numOfJobs: str) -> int:
   number_of_pages = 1
@@ -102,16 +94,37 @@ def donate(self):
         prRed("Error in donate: " +str(e))
 
 class LinkedinUrlGenerate:
-    def generateUrlLinks(self, config: LinkedinConfig):
+    def generateUrlLinks(self, config: LinkedinConfig) -> List[str]:
         path = []
+        linkJobUrl = "https://www.linkedin.com/jobs/search/"
         # Iterate over locations and keywords from the dynamic config
         for location in config.location:
             for keyword in config.keywords:
                 # Construct the URL using attributes from the dynamic config
-                url = f"{constants.LINKEDIN_JOB_URL}?f_AL=true&keywords={keyword}{self.jobType(config)}{self.remote(config)}{self.checkJobLocation(location, config)}{self.jobExp(config)}{self.datePosted(config)}{self.salary(config)}{self.sortBy(config)}"
+                url = f"{linkJobUrl}?f_AL=true&keywords={keyword}{self.jobType(config)}{self.remote(config)}{self.checkJobLocation(config)}{self.jobExp(config)}{self.datePosted(config)}{self.salary(config)}{self.sortBy(config)}"
                 path.append(url)
+        
+        # Optionally, read additional URLs from a file
+        additional_urls = self.getUrlDataFromFile()
+        if additional_urls:
+            path.extend(additional_urls)  # Merge the lists if additional URLs exist
+
         return path
 
+
+    def getUrlDataFromFile(self) -> List[str]:
+        filePath = 'data/urlData.txt'
+        urlData = []
+        if os.path.exists(filePath):
+            try:
+                with open(filePath, 'r') as file:
+                    urlData = file.readlines()
+                    urlData = [url.strip() for url in urlData]  # Remove any newline characters
+            except FileNotFoundError:
+                print("FileNotFound: urlData.txt file is not found. Please ensure the './data' folder exists and check your file paths.")
+            except Exception as e:
+                print(f"An error occurred while reading from urlData.txt: {e}")
+        return urlData
 
     def checkJobLocation(self,config):
         jobLoc = "&location=" +config

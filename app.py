@@ -14,7 +14,7 @@ from typing import List, Optional
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from dotenv import load_dotenv
 import os
-from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
+from schemas import ApplyDetails
 
 
 from typing import List, Optional
