@@ -86,7 +86,7 @@ async def ask_gpt4(request: GPT4Request):
         "model": "gpt-4-turbo-preview",
         "prompt": prompt,
         "temperature": 0.7,
-        "max_tokens": 150,
+        "max_tokens": 1050,
         "n": 1,
         "stop": None,
     }
