@@ -537,42 +537,21 @@ class Linkedin:
                 print("Timeout waiting for radio button question.")
 
     def ask_gpt4(self, question: str, question_type: str = "string", options: list = None):
-            """
-            Send a question to GPT-4 and get an answer, dynamically handling the question type.
-            
-            Args:
-                question (str): The question to be answered by GPT-4.
-                question_type (str): The type of the question (e.g., "string", "select", "radio").
-                options (list): Options for the question, applicable for "select" or "radio" types.
-            
-            Returns:
-                The answer from GPT-4, formatted according to the question type.
-            """
-            # Define the FastAPI endpoint URL
-            fastapi_endpoint = 'http://127.0.0.1:8000/ask-gpt4/'
-            # Prepare the JSON payload for the request
-            payload = {
-                "question": question,
-                "question_type": question_type,
-                "options": options
-            }
-            # Make the POST request to the FastAPI endpoint
-            response = requests.post(fastapi_endpoint, json=payload)
-            if response.status_code == 200:
-                # Process the response based on the question type
-                answer = response.json()['answers']
-                if question_type in ["select", "radio"] and options:
-                    # Convert answer index back to the option text if necessary
-                    try:
-                        # Assuming the answer is an index for select/radio types
-                        answer_idx = int(answer) - 1
-                        return options[answer_idx]
-                    except (ValueError, IndexError):
-                        raise Exception(f"Invalid answer index returned by GPT-4: {answer}")
-                return answer
-            else:
-                raise Exception(f"Failed to get a response from GPT-4: {response.text}")
-
+        fastapi_endpoint = 'http://127.0.0.1:8000/ask-gpt4/'
+        payload = {
+            "question": question,
+            "question_type": question_type,
+            "options": options or []  # Ensure it's a list, even if it's empty
+        }
+        # Include headers to specify JSON content type
+        headers = {'Content-Type': 'application/json'}
+        response = requests.post(fastapi_endpoint, json=payload, headers=headers)
+        if response.status_code == 200:
+            answer = response.json().get('answers')
+            return answer
+        else:
+            print(f"Failed to get a response from GPT-4: {response.text}")
+            return None
 
 
     def process_job_page(self):

@@ -97,17 +97,13 @@ class LinkedinUrlGenerate:
     def generateUrlLinks(self, config: LinkedinConfig) -> List[str]:
         path = []
         linkJobUrl = "https://www.linkedin.com/jobs/search/"
-        # Iterate over locations and keywords from the dynamic config
         for location in config.location:
             for keyword in config.keywords:
-                # Construct the URL using attributes from the dynamic config
                 url = f"{linkJobUrl}?f_AL=true&keywords={keyword}{self.jobType(config)}{self.remote(config)}{self.checkJobLocation(location)}{self.jobExp(config)}{self.datePosted(config)}{self.salary(config)}{self.sortBy(config)}"
                 path.append(url)
-        
-        # Optionally, read additional URLs from a file
         additional_urls = self.getUrlDataFromFile()
         if additional_urls:
-            path.extend(additional_urls)  # Merge the lists if additional URLs exist
+            path.extend(additional_urls)
         return path
 
     def getUrlDataFromFile(self) -> List[str]:
@@ -125,21 +121,20 @@ class LinkedinUrlGenerate:
         return urlData
 
     def checkJobLocation(self, location: str) -> str:
-        jobLoc = "&location=" +config
-        match config.casefold():
+        jobLoc = "&location=" + location
+        match location.lower(): 
             case "asia":
                 jobLoc += "&geoId=102393603"
             case "europe":
                 jobLoc += "&geoId=100506914"
             case "northamerica":
-                jobLoc += "&geoId=102221843&"
+                jobLoc += "&geoId=102221843"
             case "southamerica":
-                jobLoc +=  "&geoId=104514572"
+                jobLoc += "&geoId=104514572"
             case "australia":
-                jobLoc +=  "&geoId=101452733"
+                jobLoc += "&geoId=101452733"
             case "africa":
                 jobLoc += "&geoId=103537801"
-
         return jobLoc
 
     def jobExp(self, config: LinkedinConfig) -> str:

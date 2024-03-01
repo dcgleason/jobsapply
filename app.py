@@ -1,4 +1,4 @@
-from fastapi import FastAPI, BackgroundTasks
+from fastapi import FastAPI, BackgroundTasks, APIRouter
 from pydantic import BaseModel, EmailStr, Field
 import requests
 import threading
@@ -29,9 +29,21 @@ class OpenAIResponseModel(BaseModel):
 
 
 
+
+
 app = FastAPI()
 
+# Initialize your APIRouter
+router = APIRouter()
 
+# Define your request and response models
+class GPT4Request(BaseModel):
+    question: str
+    question_type: str
+    options: Optional[List[str]] = None
+
+class GPT4Response(BaseModel):
+    answers: str
 
 
 @app.get("/")
@@ -50,54 +62,45 @@ def run_linkedin_application(apply_details: ApplyDetails):
     linkedin_app = Linkedin(apply_details=apply_details)
     linkedin_app.linkJobApply()
 
+# Define your route
+@router.post("/ask-gpt4/", response_model=GPT4Response)
+async def ask_gpt4(request: GPT4Request):
+    # Assuming you have your OpenAI API key stored in an environment variable
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
+    if not OPENAI_API_KEY:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured.")
 
-
-@app.post("/ask-gpt4/")
-async def ask_gpt4(question: str, question_type: str, options: list = None):
-    """
-    Send a question to the OpenAI GPT-4 model specifically tailored for form completion.
-    - `question`: The prompt or question to be answered.
-    - `question_type`: The type of the question ("string", "radio", "select").
-    - `options`: The options for "select" or "radio" type questions.
-    """
-
-    bearer_token = os.getenv("OPENAI_KEY")
-    prompt = f"We're filling out a form and need to answer the following question accurately and succinctly: '{question}'. This is a {question_type} question."
-    if options:
-        prompt += f" The options are: {', '.join([f'{idx+1}. {opt}' for idx, opt in enumerate(options)])}. Provide your answer in numerical form to indicate the chosen option."
-
-    response = requests.post(
-        "https://api.openai.com/v1/completions",
-        headers={
-            "Authorization": f"Bearer {bearer_token}",
-            "Content-Type": "application/json",
-        },
-        json={
-            "model": "gpt-4-turbo-preview",  # Specify the model here
-            "prompt": prompt,
-            "max_tokens": 50,
-            "temperature": 0.7,
-            "top_p": 1,
-            "frequency_penalty": 0,
-            "presence_penalty": 0,
-            "stop": ["\n"]
-        },
-    )
+    headers = {
+        "Authorization": f"Bearer {OPENAI_API_KEY}"
+    }
+    data = {
+        "model": "gpt-4-0125-preview",  
+        "prompt": generate_prompt(request.question, request.question_type, request.options),
+        "temperature": 0.7,
+        "max_tokens": 150,
+        "n": 1,
+        "stop": None,
+    }
+    
+    response = requests.post("https://api.openai.com/v1/completions", json=data, headers=headers)
+    
     if response.status_code == 200:
-        answer = response.json()["choices"][0]["text"].strip()
-        # Post-process the answer based on the question type if necessary
-        if question_type in ["radio", "select"] and options:
-            # Ensure the answer is a valid option index
-            try:
-                answer_idx = int(answer) - 1
-                if answer_idx < 0 or answer_idx >= len(options):
-                    raise ValueError("Invalid option number")
-                return OpenAIResponseModel(answers=options[answer_idx])
-            except ValueError:
-                raise HTTPException(status_code=400, detail="Invalid answer format for the question type")
-        return OpenAIResponseModel(answers=answer)
+        answer = response.json()['choices'][0]['text'].strip()
+        return GPT4Response(answers=answer)
     else:
-        raise HTTPException(status_code=500, detail="Failed to get a response from OpenAI GPT-4")
+        raise HTTPException(status_code=response.status_code, detail="Failed to fetch response from OpenAI.")
+
+def generate_prompt(question: str, question_type: str, options: Optional[List[str]] = None) -> str:
+    """
+    Generate a prompt for GPT-4 based on the question, its type, and optional options.
+    """
+    prompt = f"Question: {question}\nType: {question_type}\n"
+    if options:
+        options_text = '\n'.join([f"Option {index + 1}: {option}" for index, option in enumerate(options)])
+        prompt += f"Options:\n{options_text}\nAnswer:"
+    else:
+        prompt += "Answer:"
+    return prompt
 
 # Ensure you have `uvicorn` installed to run FastAPI apps
 # Run the app with: uvicorn app:app --reload
