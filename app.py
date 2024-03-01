@@ -14,8 +14,10 @@ from typing import List, Optional
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from dotenv import load_dotenv
 import os
+load_dotenv() # Load environment variables from a .env file
+
 from openai import OpenAI
-client = OpenAI()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 import httpx
 from schemas import ApplyDetails
@@ -25,7 +27,6 @@ from schemas import ApplyDetails
 from typing import List, Optional
 from pydantic import BaseModel, EmailStr, Field
 
-load_dotenv() # Load environment variables from a .env file
 
 
 
@@ -38,8 +39,6 @@ class OpenAIResponseModel(BaseModel):
 
 app = FastAPI()
 
-# Initialize your APIRouter
-router = APIRouter()
 
 # Define your route
 class GPT4Request(BaseModel):
@@ -77,7 +76,7 @@ class GPT4Response(BaseModel):
 @app.post("/ask-gpt4/", response_model=GPT4Response)
 async def ask_gpt4(request: GPT4Request):
     # Your OpenAI API key should be loaded from environment variables
-    OPENAI_API_KEY = os.getenv("OPENAI_KEY")
+    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
     if not OPENAI_API_KEY:
         raise HTTPException(status_code=500, detail="OpenAI API key not configured.")
     
@@ -92,6 +91,7 @@ async def ask_gpt4(request: GPT4Request):
             {"role": "user", "content": prompt}
         ]
         )
+        return completion.choices[0].message.content
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

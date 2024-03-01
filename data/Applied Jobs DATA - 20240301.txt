@@ -20,4 +20,71 @@
  Category: ServiceNow, Location: United States, Applying 53 results jobs.
 
  Category: ServiceNow Developer, Location: United States, Applying 3,921 results jobs.
-1 | Java Software Engineer<!----> | Emonics LLC | Texas, United States | 8 minutes ago | 13 applicants | On-site | Full-time | * 🥵 Cannot apply to this Job! https://www.linkedin.com/jobs/view/3840546218 Exception: 'NoneType' object is not iterable
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,925 results jobs.
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000104bf2814 chromedriver + 4040724
+1   chromedriver                        0x0000000104beaa18 chromedriver + 4008472
+2   chromedriver                        0x000000010485d870 chromedriver + 284784
+3   chromedriver                        0x00000001048a1080 chromedriver + 561280
+4   chromedriver                        0x0000000104896ee8 chromedriver + 519912
+5   chromedriver                        0x00000001048db048 chromedriver + 798792
+6   chromedriver                        0x000000010489574c chromedriver + 513868
+7   chromedriver                        0x0000000104896044 chromedriver + 516164
+8   chromedriver                        0x0000000104bb7a3c chromedriver + 3799612
+9   chromedriver                        0x0000000104bbbf1c chromedriver + 3817244
+10  chromedriver                        0x0000000104ba0298 chromedriver + 3703448
+11  chromedriver                        0x0000000104bbca64 chromedriver + 3820132
+12  chromedriver                        0x0000000104b93054 chromedriver + 3649620
+13  chromedriver                        0x0000000104bd9e74 chromedriver + 3939956
+14  chromedriver                        0x0000000104bd9fec chromedriver + 3940332
+15  chromedriver                        0x0000000104bea698 chromedriver + 4007576
+16  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+17  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000104bf2814 chromedriver + 4040724
+1   chromedriver                        0x0000000104beaa18 chromedriver + 4008472
+2   chromedriver                        0x000000010485d870 chromedriver + 284784
+3   chromedriver                        0x00000001048a1080 chromedriver + 561280
+4   chromedriver                        0x0000000104896ee8 chromedriver + 519912
+5   chromedriver                        0x00000001048db048 chromedriver + 798792
+6   chromedriver                        0x000000010489574c chromedriver + 513868
+7   chromedriver                        0x0000000104896044 chromedriver + 516164
+8   chromedriver                        0x0000000104bb7a3c chromedriver + 3799612
+9   chromedriver                        0x0000000104bbbf1c chromedriver + 3817244
+10  chromedriver                        0x0000000104ba0298 chromedriver + 3703448
+11  chromedriver                        0x0000000104bbca64 chromedriver + 3820132
+12  chromedriver                        0x0000000104b93054 chromedriver + 3649620
+13  chromedriver                        0x0000000104bd9e74 chromedriver + 3939956
+14  chromedriver                        0x0000000104bd9fec chromedriver + 3940332
+15  chromedriver                        0x0000000104bea698 chromedriver + 4007576
+16  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+17  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000104bf2814 chromedriver + 4040724
+1   chromedriver                        0x0000000104beaa18 chromedriver + 4008472
+2   chromedriver                        0x000000010485d870 chromedriver + 284784
+3   chromedriver                        0x00000001048a1080 chromedriver + 561280
+4   chromedriver                        0x0000000104896ee8 chromedriver + 519912
+5   chromedriver                        0x00000001048db048 chromedriver + 798792
+6   chromedriver                        0x000000010489574c chromedriver + 513868
+7   chromedriver                        0x0000000104896044 chromedriver + 516164
+8   chromedriver                        0x0000000104bb7a3c chromedriver + 3799612
+9   chromedriver                        0x0000000104bbbf1c chromedriver + 3817244
+10  chromedriver                        0x0000000104ba0298 chromedriver + 3703448
+11  chromedriver                        0x0000000104bbca64 chromedriver + 3820132
+12  chromedriver                        0x0000000104b93054 chromedriver + 3649620
+13  chromedriver                        0x0000000104bd9e74 chromedriver + 3939956
+14  chromedriver                        0x0000000104bd9fec chromedriver + 3940332
+15  chromedriver                        0x0000000104bea698 chromedriver + 4007576
+16  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+17  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,925 results jobs.
+2 | Azure Cloud Engineer<!----> | SOLV Energy | San Diego Metropolitan Area | 6 minutes ago | 3 applicants | Hybrid | Full-time | * 🥵 Cannot apply to this Job! https://www.linkedin.com/jobs/view/3840545387 Exception: HTTPConnectionPool(host='localhost', port=49590): Max retries exceeded with url: /session/ab4b14843eb69cc85da525982674c0cc/elements (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10a50d010>: Failed to establish a new connection: [Errno 61] Connection refused'))
