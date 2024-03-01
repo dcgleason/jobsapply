@@ -36,6 +36,7 @@ app = FastAPI()
 # Initialize your APIRouter
 router = APIRouter()
 
+app.include_router(router)
 # Define your request and response models
 class GPT4Request(BaseModel):
     question: str
