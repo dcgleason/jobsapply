@@ -22,6 +22,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
+
 
 
 options = webdriver.ChromeOptions()
@@ -450,35 +452,75 @@ class Linkedin:
                             
                             try:
                                 self.chooseResume()
-                                # Handling the job application questions
+                                # Handling the job application questions more dynamically
                                 self.handleApplicationQuestions()
 
-                                self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
-                                time.sleep(random.uniform(1, constants.botSpeed))
-
-                                lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                self.displayWriteResults(lineToWrite)
-                                countApplied += 1
-
+                                # Submit the application
+                                submit_button = self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']")
+                                if submit_button:
+                                    submit_button.click()
+                                    time.sleep(random.uniform(1, constants.botSpeed))
+                                    lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                    self.displayWriteResults(lineToWrite)
+                                    countApplied += 1
+                                else:
+                                    raise Exception("Submit button not found")
                             except Exception as e:
-                                lineToWrite = jobProperties + " | " + "* 🥵 Cannot apply to this Job! " + str(offerPage)
+                                lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)} Exception: {str(e)}"
                                 self.displayWriteResults(lineToWrite)
-
-                        else:
-                            lineToWrite = jobProperties + " | " + "* 🥳 Already applied! Job: " + str(offerPage)
-                            self.displayWriteResults(lineToWrite)
-
-            utils.prYellow("Category: " + urlWords[0] + "," + urlWords[1] + " applied: " + str(countApplied) +
-                           " jobs out of " + str(countJobs) + ".")
-        
-        utils.donate(self)
 
     def handleApplicationQuestions(self):
-        question_elements = self.driver.find_elements(By.XPATH, "//input[@type='text']")
-        for question_element in question_elements:
-            question_text = question_element.get_attribute("placeholder")  # Example to get the question
+        # Check for different types of input fields
+        self.handleTextInputFields()
+        self.handleSelectDropdowns()
+        self.handleRadioButtons()
+
+        # Assuming there might be a "Next" button to navigate through modal pages
+        next_buttons = self.driver.find_elements(By.XPATH, "//button[contains(text(), 'Next')]")
+        for next_button in next_buttons:
+            try:
+                if next_button.is_displayed() and next_button.is_enabled():
+                    next_button.click()
+                    time.sleep(random.uniform(1, constants.botSpeed))
+                    self.handleApplicationQuestions()  # Recursively handle questions on the next page
+            except Exception as e:
+                print(f"Error navigating modal pages: {e}")
+
+    def handleTextInputFields(self):
+        text_input_elements = self.driver.find_elements(By.XPATH, "//input[@type='text']")
+        for element in text_input_elements:
+            question_text = element.get_attribute("input")  # Adjust based on actual attribute containing the question
             answer = self.ask_gpt4(question_text)
-            question_element.send_keys(answer)
+            element.send_keys(answer)
+
+    def handleSelectDropdowns(self):
+        select_elements = self.driver.find_elements(By.TAG_NAME, "select")
+        for element in select_elements:
+            # Assuming the first option is the placeholder like "Select an option", and actual options follow
+            Select(element).select_by_index(1)  # Adjust this logic based on your needs
+
+    def handleRadioButtons(self):
+        # This method needs to be more dynamic to handle various questions and radio button options
+        fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
+        for fieldset in fieldsets:
+            try:
+                legend = fieldset.find_element(By.TAG_NAME, 'legend').text
+                if not legend:
+                    # Attempt to get the question from associated label if legend is not directly available
+                    legend = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, ".//legend/span"))).text
+                answer = self.ask_gpt4(legend)
+                # Logic to decide which radio button to click based on the answer from GPT-4
+                # This is a simplified example. You'll need to adjust this logic based on the expected answers from GPT-4
+                if "yes" in answer.lower():
+                    yes_button = fieldset.find_element(By.XPATH, ".//input[@type='radio' and @value='Yes']")
+                    yes_button.click()
+                elif "no" in answer.lower():
+                    no_button = fieldset.find_element(By.XPATH, ".//input[@type='radio' and @value='No']")
+                    no_button.click()
+            except NoSuchElementException:
+                print("Radio button or question not found.")
+            except TimeoutException:
+                print("Timeout waiting for radio button question.")
 
     def ask_gpt4(self, question):
         # Replace 'http://your-fastapi-endpoint-url' with the URL of your FastAPI endpoint
