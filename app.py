@@ -37,6 +37,7 @@ app = FastAPI()
 router = APIRouter()
 
 app.include_router(router)
+
 # Define your request and response models
 class GPT4Request(BaseModel):
     question: str
@@ -64,7 +65,7 @@ def run_linkedin_application(apply_details: ApplyDetails):
     linkedin_app.linkJobApply()
 
 # Define your route
-@router.post("/ask-gpt4/", response_model=GPT4Response)
+@app.post("/ask-gpt4/", response_model=GPT4Response)
 async def ask_gpt4(request: GPT4Request):
     # Assuming you have your OpenAI API key stored in an environment variable
     OPENAI_API_KEY = os.getenv("OPENAI_KEY")
