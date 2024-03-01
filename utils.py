@@ -2,7 +2,7 @@ import math,constants,config,time
 from typing import List
 from selenium import webdriver
 import os
-from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
+from schemas import LinkedinConfig
 
 def chromeBrowserOptions():
     options = webdriver.ChromeOptions()
@@ -101,16 +101,14 @@ class LinkedinUrlGenerate:
         for location in config.location:
             for keyword in config.keywords:
                 # Construct the URL using attributes from the dynamic config
-                url = f"{linkJobUrl}?f_AL=true&keywords={keyword}{self.jobType(config)}{self.remote(config)}{self.checkJobLocation(config)}{self.jobExp(config)}{self.datePosted(config)}{self.salary(config)}{self.sortBy(config)}"
+                url = f"{linkJobUrl}?f_AL=true&keywords={keyword}{self.jobType(config)}{self.remote(config)}{self.checkJobLocation(location)}{self.jobExp(config)}{self.datePosted(config)}{self.salary(config)}{self.sortBy(config)}"
                 path.append(url)
         
         # Optionally, read additional URLs from a file
         additional_urls = self.getUrlDataFromFile()
         if additional_urls:
             path.extend(additional_urls)  # Merge the lists if additional URLs exist
-
         return path
-
 
     def getUrlDataFromFile(self) -> List[str]:
         filePath = 'data/urlData.txt'
@@ -126,7 +124,7 @@ class LinkedinUrlGenerate:
                 print(f"An error occurred while reading from urlData.txt: {e}")
         return urlData
 
-    def checkJobLocation(self,config):
+    def checkJobLocation(self, location: str) -> str:
         jobLoc = "&location=" +config
         match config.casefold():
             case "asia":
@@ -144,7 +142,7 @@ class LinkedinUrlGenerate:
 
         return jobLoc
 
-    def jobExp(self, config):
+    def jobExp(self, config: LinkedinConfig) -> str:
         jobtExpArray = config.experienceLevels
         firstJobExp = jobtExpArray[0]
         jobExp = ""
@@ -178,7 +176,7 @@ class LinkedinUrlGenerate:
 
         return jobExp
 
-    def datePosted(self, config):
+    def datePosted(self, config: LinkedinConfig) -> str:
         datePosted = ""
         match config.datePosted[0]:
             case "Any Time":
@@ -191,7 +189,7 @@ class LinkedinUrlGenerate:
                 datePosted = "&f_TPR=r86400&"
         return datePosted
 
-    def jobType(self, config):
+    def jobType(self, config: LinkedinConfig) -> str:
         jobTypeArray = config.jobType
         firstjobType = jobTypeArray[0]
         jobType = ""
@@ -229,7 +227,7 @@ class LinkedinUrlGenerate:
         jobType += "&"
         return jobType
 
-    def remote(self, config):
+    def remote(self, config: LinkedinConfig) -> str:
         remoteArray = config.remote
         firstJobRemote = remoteArray[0]
         jobRemote = ""
@@ -251,7 +249,7 @@ class LinkedinUrlGenerate:
 
         return jobRemote
 
-    def salary(self, config):
+    def salary(self, config: LinkedinConfig) -> str:
         salary = ""
         match config.salary[0]:
             case "$40,000+":
@@ -274,7 +272,7 @@ class LinkedinUrlGenerate:
                 salary = "f_SB2=9&"                  
         return salary
 
-    def sortBy(self, config):
+    def sortBy(self, config: LinkedinConfig) -> str:
         sortBy = ""
         match config.sort[0]:
             case "Recent":

@@ -410,11 +410,9 @@ class Linkedin:
         countApplied = 0
         countJobs = 0
         url_generator = LinkedinUrlGenerate()
-        job_urls = url_generator.generateUrlLinks(self.config)
-
-        # urlData = utils.getUrlDataFile()
-
-        for url in job_urls:  # Use job_urls instead of urlData
+        url_generator = LinkedinUrlGenerate()
+        job_urls = url_generator.generateUrlLinks(self.config)  # self.config is an instance of LinkedinConfig
+        for url in job_urls:
             self.driver.get(url)
             time.sleep(random.uniform(1, constants.botSpeed))
 
