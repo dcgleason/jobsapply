@@ -10,6 +10,7 @@ import hashlib
 import yaml
 import requests
 from typing import List
+from utils import LinkedinUrlGenerate
 
 
 
@@ -24,6 +25,8 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.webdriver.support.ui import Select
+
 
 
 
@@ -33,9 +36,9 @@ driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install())
 
 
 class Linkedin:
-    def __init__(self, apply_details=None, config=None):
-        self.config = config  # Use this config object throughout your class methods
+    def __init__(self, apply_details):
         self.apply_details = apply_details
+        self.config = apply_details.config 
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
 
@@ -407,9 +410,12 @@ class Linkedin:
     #     utils.donate(self)
 
     def linkJobApply(self):
-        self.generateUrls()
+        
+        # self.generateUrls()
         countApplied = 0
         countJobs = 0
+        url_generator = LinkedinUrlGenerate()
+        job_urls = url_generator.generateUrlLinks(self.config)
 
         urlData = utils.getUrlDataFile()
 
@@ -550,7 +556,7 @@ class Linkedin:
                 The answer from GPT-4, formatted according to the question type.
             """
             # Define the FastAPI endpoint URL
-            fastapi_endpoint = 'http://your-fastapi-endpoint-url/ask-gpt4/'
+            fastapi_endpoint = 'http://127.0.0.1:8000/ask-gpt4/'
             # Prepare the JSON payload for the request
             payload = {
                 "question": question,

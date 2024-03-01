@@ -15,6 +15,9 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from dotenv import load_dotenv
 import os
 
+from typing import List, Optional
+from pydantic import BaseModel, EmailStr, Field
+
 load_dotenv()  
 
 class LinkedinConfig(BaseModel):
@@ -28,6 +31,29 @@ class LinkedinConfig(BaseModel):
     remote: List[str]
     salary: List[str]
     sort: List[str]
+    blacklistCompanies: List[str] = []
+    blackListTitles: List[str] = []
+    followCompanies: bool
+    preferredCv: int
+    outputSkippedQuestions: bool
+    useAiAutocomplete: bool
+    onlyApplyCompanies: List[str] = []
+    onlyApplyTitles: List[str] = []
+    blockHiringMember: List[str] = []
+    onlyApplyHiringMember: List[str] = []
+    onlyApplyMaxApplications: List[str] = []
+    onlyApplyMinApplications: List[str] = []
+    onlyApplyJobDescription: List[str] = []
+    blockJobDescription: List[str] = []
+    onlyApplyMimEmployee: List[str] = []
+    onlyApplyLinkedinRecommending: bool
+    onlyApplySkilledBages: bool
+    saveBeforeApply: bool
+    messageToHiringManager: Optional[str] = None
+    listNonEasyApplyJobsUrl: bool
+    defaultRadioOption: int
+    answerAllCheckboxes: Optional[bool] = None
+    outputFileType: List[str]
 
 class ApplyDetails(BaseModel):
     email: EmailStr
@@ -40,7 +66,9 @@ class ApplyDetails(BaseModel):
     years_experience_servicenow: int
     favorite_technology: str
     reason_for_applying: str
-    config: LinkedinConfig
+    config: LinkedinConfig  # Use this to pass configuration dynamically
+
+
 
 
 
@@ -60,12 +88,14 @@ def home():
 
 @app.post("/apply")
 def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
+    # Pass the entire ApplyDetails instance, which includes the configuration
     background_tasks.add_task(run_linkedin_application, apply_details)
     return {"message": "Application process initiated. Running in background."}
 
 def run_linkedin_application(apply_details: ApplyDetails):
-    apply_details_dict = apply_details.model_dump()  # Use model_dump() instead of dict()
-    linkedin_app = Linkedin(apply_details=apply_details_dict["config"])
+    # No need to call model_dump() or dict() anymore
+    # Directly pass apply_details object which now includes user-configured settings
+    linkedin_app = Linkedin(apply_details=apply_details)
     linkedin_app.linkJobApply()
 
 
