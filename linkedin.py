@@ -11,6 +11,8 @@ import yaml
 import requests
 from typing import List
 from utils import LinkedinUrlGenerate
+from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
+
 
 
 
@@ -66,16 +68,20 @@ class Linkedin:
 
     def login(self):
         self.driver.get("https://www.linkedin.com/login")
-        utils.prYellow("🔄 Trying to log in Linkedin...")
-        try:
-            self.driver.find_element(By.ID, "username").send_keys(self.credentials.linkedin_email)
-            self.driver.find_element(By.ID, "password").send_keys(self.credentials.linkedin_password)
-            self.driver.find_element(By.XPATH, '//button[@type="submit"]').click()
-            WebDriverWait(self.driver, 30).until(EC.presence_of_element_located((By.ID, "global-nav-typeahead")))
-        except Exception as e:
-            utils.prRed(f"❌ Couldn't log in Linkedin. Error: {e}")
+            # Accessing credentials from the dynamic configuration
+        email = self.apply_details.config.credentials.linkedin_email
+        password = self.apply_details.config.credentials.linkedin_password
 
+        try:
+            self.driver.find_element(By.ID, "username").send_keys(email)
+            self.driver.find_element(By.ID, "password").send_keys(password)
+                # Submit the login form
+            self.driver.find_element(By.XPATH, '//button[@type="submit"]').click()
+            time.sleep(5)  # Adjust timing as necessary
+        except Exception as e:
+            utils.prRed(f"❌ Couldn't log in Linkedin by using Chrome. Please check your Linkedin credentials. Error: {str(e)}")
         self.saveCookies()
+
 
     def getHash(self, string):
         return hashlib.md5(string.encode('utf-8')).hexdigest()
@@ -154,23 +160,19 @@ class Linkedin:
         except:
             pass
         return False
-
     
     def generateUrls(self):
-        # Ensure the 'data' directory exists
         if not os.path.exists('data'):
             os.makedirs('data')
         try:
             with open('data/urlData.txt', 'w', encoding="utf-8") as file:
-                # Instantiate LinkedinUrlGenerate
                 url_generator = LinkedinUrlGenerate()
-                # Call generateUrlLinks with self.config
-                linkedinJobLinks = url_generator.generateUrlLinks(self.config)
+                linkedinJobLinks = url_generator.generateUrlLinks(self.config)  # Pass self.config here
                 for url in linkedinJobLinks:
                     file.write(url + "\n")
             utils.prGreen("✅ Apply urls are created successfully, now the bot will visit those urls.")
         except Exception as e:
-            utils.prRed(f"❌ Couldn't generate urls. Error: {e}")
+            utils.prRed(f"❌ Couldn't generate urls, make sure you have edited config file line 25-39. Error: {str(e)}")
 
     # def linkJobApplyTwo(self, max_jobs_to_apply=10):
     #     # Navigate to the job search page (assuming the URL is already set)
