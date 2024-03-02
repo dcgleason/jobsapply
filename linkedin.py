@@ -15,7 +15,6 @@ from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
 
 
-=
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
