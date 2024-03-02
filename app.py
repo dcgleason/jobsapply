@@ -16,8 +16,8 @@ from dotenv import load_dotenv
 import os
 load_dotenv() # Load environment variables from a .env file
 
-from openai import OpenAI
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+from openai import AsyncOpenAI
+client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 import httpx
 from schemas import ApplyDetails
@@ -40,10 +40,9 @@ class OpenAIResponseModel(BaseModel):
 app = FastAPI()
 
 
-# Define your route
 class GPT4Request(BaseModel):
     question: str
-    question_type: str
+    question_type: str = "text"
     options: Optional[List[str]] = None
 
 class GPT4Response(BaseModel):
@@ -84,14 +83,17 @@ async def ask_gpt4(request: GPT4Request):
     prompt = generate_prompt(request.question, request.question_type, request.options)
 
     try:
-        completion = client.chat.completions.create(
+        completion = await client.chat.completions.create(
         model="gpt-4-turbo-preview",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},
-            {"role": "user", "content": prompt}
+            {"role": "user", "content": "Please answer the following question with the appropraite answer that is based on this info. Info: I am from the USA, my phone number is 555-402-5518, and I have 4 years of ServiceNow experience, and I have a bachelors degree." + prompt }
         ]
         )
-        return completion.choices[0].message.content
+        answer = completion.choices[0].message.content
+        return GPT4Response(answers=answer)
+    
+    
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 

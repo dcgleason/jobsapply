@@ -9,12 +9,13 @@ import pickle
 import hashlib
 import yaml
 import requests
+import httpx
 from typing import List
 from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
 
 
-
+=
 
 from selenium import webdriver
 from selenium.webdriver.common.by import By
@@ -485,72 +486,79 @@ class Linkedin:
             except Exception as e:
                 print(f"Error navigating modal pages: {e}")
 
-    def handleTextInputFields(self):
+    async def handleTextInputFields(self):
         text_input_elements = self.driver.find_elements(By.XPATH, "//input[@type='text']")
         for element in text_input_elements:
-            # Attempt to find the parent container of the input element
-            parent_container = element.find_element(By.XPATH, "./..")
-            # Within this container, try to locate the label element that contains the question
-            label = parent_container.find_element(By.TAG_NAME, "label")
-            question_text = label.text if label else "Default Question"
-            
-            answer = self.ask_gpt4(question_text)
-            element.send_keys(answer)
+            try:
+                # Traverse up to the common parent and then find the label within that scope
+                parent_container = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 'jobs-easy-apply-form-element')]")
+                label = parent_container.find_element(By.XPATH, ".//label")
+                question_text = label.text if label else "Default Question"
+                
+                # Assuming ask_gpt4 is an async function. If not, you'll need to adjust this part.
+                answer = await self.ask_gpt4(question_text)
+                element.send_keys(answer)
+            except Exception as e:
+                print(f"Failed to process text input field: {e}")
 
-    def handleSelectDropdowns(self):
+    async def handleSelectDropdowns(self):
         # Find all select elements and their corresponding labels for questions
-        select_elements = self.driver.find_elements(By.TAG_NAME, "select")
-        for element in select_elements:
-            label = self.find_corresponding_label(element)
-            question_text = label.text
-            options = [option.text for option in Select(element).options]
-            answer = self.ask_gpt4(question_text, options)
-            Select(element).select_by_visible_text(answer)
+        select_elements = self.driver.find_elements(By.XPATH, "//select[contains(@data-test-text-entity-list-form-select, '')]")
+        for select_element in select_elements:
+            # Find the label associated with the select element
+            # Assuming the label is a direct preceding sibling of the select's parent div
+            label = select_element.find_element(By.XPATH, "./preceding-sibling::label")
+            question_text = label.text.strip() if label else "Default Question"
+            
+            # Extract options from the select element
+            options = [option.text.strip() for option in Select(select_element).options if option.text.strip() != "Select an option"]
+            
+            # Assuming ask_gpt4 is a synchronous function that returns the answer as a string
+            # If it's asynchronous, you'll need to adjust the call accordingly
+            answer = await self.ask_gpt4(question_text, options)
+            
+            # Select the option that matches the answer returned by GPT-4
+            try:
+                Select(select_element).select_by_visible_text(answer)
+            except Exception as e:
+                print(f"Error selecting option: {e}")
 
     def find_corresponding_label(self, element):
         # Implement logic to find the label corresponding to an input/select element
         label_for = element.get_attribute("id")
         return self.driver.find_element(By.XPATH, f"//label[@for='{label_for}']")
 
-    def handleRadioButtons(self):
-        # This method needs to be more dynamic to handle various questions and radio button options
+    async def handleRadioButtons(self):
         fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
         for fieldset in fieldsets:
             try:
-                legend = fieldset.find_element(By.TAG_NAME, 'legend').text
-                if not legend:
-                    # Attempt to get the question from associated label if legend is not directly available
-                    legend = WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, ".//legend/span"))).text
-                answer = self.ask_gpt4(legend)
-                # Logic to decide which radio button to click based on the answer from GPT-4
-                # This is a simplified example. You'll need to adjust this logic based on the expected answers from GPT-4
-                if "yes" in answer.lower():
-                    yes_button = fieldset.find_element(By.XPATH, ".//input[@type='radio' and @value='Yes']")
-                    yes_button.click()
-                elif "no" in answer.lower():
-                    no_button = fieldset.find_element(By.XPATH, ".//input[@type='radio' and @value='No']")
-                    no_button.click()
+                question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip()
+                # Use await to get the answer asynchronously
+                answer_index = int(await ask_gpt4(question_text)) - 1
+                
+                radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
+                if 0 <= answer_index < len(radio_buttons):
+                    radio_buttons[answer_index].click()
+                else:
+                    print(f"Invalid answer index received from GPT-4: {answer_index}")
             except NoSuchElementException:
-                print("Radio button or question not found.")
-            except TimeoutException:
-                print("Timeout waiting for radio button question.")
+                print("Question text or radio button not found.")
+            except Exception as e:
+                print(f"Error handling radio buttons: {str(e)}")
+                
 
-    def ask_gpt4(self, question: str, question_type: str = "string", options: list = None):
-        fastapi_endpoint = 'http://127.0.0.1:8000/ask-gpt4/'
-        payload = {
-            "question": question,
-            "question_type": question_type,
-            "options": options or []  # Ensure it's a list, even if it's empty
-        }
-        # Include headers to specify JSON content type
-        headers = {'Content-Type': 'application/json'}
-        response = requests.post(fastapi_endpoint, json=payload, headers=headers)
-        if response.status_code == 200:
-            answer = response.json().get('answers')
-            return answer
-        else:
-            print(f"Failed to get a response from GPT-4: {response.text}")
-            return None
+    # Example of an asynchronous ask_gpt4 function
+    async def ask_gpt4(question: str, question_type: str = "string", options: list = None):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                'http://127.0.0.1:8000/ask-gpt4/',
+                json={"question": question, "question_type": question_type, "options": options}
+            )
+            if response.status_code == 200:
+                answer_data = response.json()
+                return answer_data['answers']
+            else:
+                raise Exception(f"Failed to get response from GPT-4: {response.text}")
 
 
     def process_job_page(self):

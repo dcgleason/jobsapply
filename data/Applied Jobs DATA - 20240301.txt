@@ -89,4 +89,81 @@ Stacktrace:
  Category: ServiceNow Developer, Location: United States, Applying 3,925 results jobs.
 
  Category: ServiceNow Developer, Location: United States, Applying 3,932 results jobs.
-1 | Senior Java Full Stack Developer - Equities Trading<!----> | Solomon Page | New York City Metropolitan Area | 3 minutes ago | 2 applicants | * 🥵 Cannot apply to this Job! https://www.linkedin.com/jobs/view/3840543488 Exception: 'NoneType' object is not iterable
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,926 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,918 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,950 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,950 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,958 results jobs.
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x00000001027e2814 chromedriver + 4040724
+1   chromedriver                        0x00000001027daa18 chromedriver + 4008472
+2   chromedriver                        0x000000010244d870 chromedriver + 284784
+3   chromedriver                        0x0000000102491080 chromedriver + 561280
+4   chromedriver                        0x0000000102486ee8 chromedriver + 519912
+5   chromedriver                        0x00000001024cb048 chromedriver + 798792
+6   chromedriver                        0x000000010248574c chromedriver + 513868
+7   chromedriver                        0x0000000102486044 chromedriver + 516164
+8   chromedriver                        0x00000001027a7a3c chromedriver + 3799612
+9   chromedriver                        0x00000001027abf1c chromedriver + 3817244
+10  chromedriver                        0x0000000102790298 chromedriver + 3703448
+11  chromedriver                        0x00000001027aca64 chromedriver + 3820132
+12  chromedriver                        0x0000000102783054 chromedriver + 3649620
+13  chromedriver                        0x00000001027c9e74 chromedriver + 3939956
+14  chromedriver                        0x00000001027c9fec chromedriver + 3940332
+15  chromedriver                        0x00000001027da698 chromedriver + 4007576
+16  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+17  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x00000001027e2814 chromedriver + 4040724
+1   chromedriver                        0x00000001027daa18 chromedriver + 4008472
+2   chromedriver                        0x000000010244d870 chromedriver + 284784
+3   chromedriver                        0x0000000102491080 chromedriver + 561280
+4   chromedriver                        0x0000000102486ee8 chromedriver + 519912
+5   chromedriver                        0x00000001024cb048 chromedriver + 798792
+6   chromedriver                        0x000000010248574c chromedriver + 513868
+7   chromedriver                        0x0000000102486044 chromedriver + 516164
+8   chromedriver                        0x00000001027a7a3c chromedriver + 3799612
+9   chromedriver                        0x00000001027abf1c chromedriver + 3817244
+10  chromedriver                        0x0000000102790298 chromedriver + 3703448
+11  chromedriver                        0x00000001027aca64 chromedriver + 3820132
+12  chromedriver                        0x0000000102783054 chromedriver + 3649620
+13  chromedriver                        0x00000001027c9e74 chromedriver + 3939956
+14  chromedriver                        0x00000001027c9fec chromedriver + 3940332
+15  chromedriver                        0x00000001027da698 chromedriver + 4007576
+16  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+17  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x00000001027e2814 chromedriver + 4040724
+1   chromedriver                        0x00000001027daa18 chromedriver + 4008472
+2   chromedriver                        0x000000010244d870 chromedriver + 284784
+3   chromedriver                        0x0000000102491080 chromedriver + 561280
+4   chromedriver                        0x0000000102486ee8 chromedriver + 519912
+5   chromedriver                        0x00000001024cb048 chromedriver + 798792
+6   chromedriver                        0x000000010248574c chromedriver + 513868
+7   chromedriver                        0x0000000102486044 chromedriver + 516164
+8   chromedriver                        0x00000001027a7a3c chromedriver + 3799612
+9   chromedriver                        0x00000001027abf1c chromedriver + 3817244
+10  chromedriver                        0x0000000102790298 chromedriver + 3703448
+11  chromedriver                        0x00000001027aca64 chromedriver + 3820132
+12  chromedriver                        0x0000000102783054 chromedriver + 3649620
+13  chromedriver                        0x00000001027c9e74 chromedriver + 3939956
+14  chromedriver                        0x00000001027c9fec chromedriver + 3940332
+15  chromedriver                        0x00000001027da698 chromedriver + 4007576
+16  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+17  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,958 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,959 results jobs.
+1 | Data Engineer<!----> | Inceed | Oklahoma City, OK | Reposted 12 minutes ago | Over 100 applicants | Hybrid | Full-time | * 🥳 Just Applied to this job: https://www.linkedin.com/jobs/view/3836380697
