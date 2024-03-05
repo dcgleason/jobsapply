@@ -70,4 +70,10 @@ Stacktrace:
 15  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
 16  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
 
-2 | Senior Machine Learning Engineer<!----> | Strativ Group | Cambridge, MA | 25 minutes ago | 4 applicants | Hybrid | Full-time | * 🥵 Cannot apply to this Job! https://www.linkedin.com/jobs/view/3847028545 Exception: HTTPConnectionPool(host='localhost', port=64326): Max retries exceeded with url: /session/9ba483f6851f223fb3e82ecaf951dbac/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10b212850>: Failed to establish a new connection: [Errno 61] Connection refused'))
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,085 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,085 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,085 results jobs.
+2 | AI Engineer<!----> | Hillview Consulting Solutions | New York, NY | 14 minutes ago | 5 applicants | On-site | Full-time | * 🥵 Cannot apply to this Job! https://www.linkedin.com/jobs/view/3843024393 Exception: HTTPConnectionPool(host='localhost', port=59695): Max retries exceeded with url: /session/3a2bd71221997227a87b0fba06ebbd47/elements (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10bdceb90>: Failed to establish a new connection: [Errno 61] Connection refused'))

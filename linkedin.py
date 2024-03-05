@@ -453,8 +453,8 @@ class Linkedin:
                             try:
 
 
-                                await self.fill_all_string_inputs(self)
-                                await self.fill_all_select_inputs(self)
+                                await self.fill_all_string_inputs()
+                                await self.fill_all_select_inputs()
 
                                 next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
                                 next_button.click()
@@ -530,20 +530,20 @@ class Linkedin:
         submit_button.click()
 
    
-    # Example of an asynchronous ask_gpt4 function
-    async def ask_gpt4(question: str, question_type: str = "string", options: list = None):
+    async def ask_gpt4(questions: list, question_type: str = "string", options: list = None):
+        answers = []
         async with httpx.AsyncClient() as client:
-            response = await client.post(
-                'http://127.0.0.1:8000/ask-gpt4/',
-                json={"question": question, "question_type": question_type, "options": options}
-            )
-            if response.status_code == 200:
-                answer_data = response.json()
-                return answer_data['answers']
-            else:
-                raise Exception(f"Failed to get response from GPT-4: {response.text}")
-            
-
+            for question in questions:
+                response = await client.post(
+                    'http://127.0.0.1:8000/ask-gpt4/',
+                    json={"question": question, "question_type": question_type, "options": options}
+                )
+                if response.status_code == 200:
+                    answer_data = response.json()
+                    answers.append(answer_data['answers'])
+                else:
+                    raise Exception(f"Failed to get response from GPT-4 for question '{question}': {response.text}")
+        return answers
     async def fill_all_string_inputs(self):
         # Find all parent divs
         parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
@@ -557,8 +557,10 @@ class Linkedin:
                 except Exception as e:
                     label = "Please provide input"  # Default prompt if no label is found
 
-                # Use ask_gpt4 to generate an answer for the label/question
-                answer = await self.ask_gpt4(question=label, question_type="string")
+                # Assuming label extraction remains the same
+                answers = await self.ask_gpt4([label], "string")
+                answer = answers[0]  # Extract the first (and only) answer
+
 
                 # Clear the input field before sending keys
                 input_field.clear()
@@ -595,7 +597,10 @@ class Linkedin:
                 options = [opt for opt in options if opt.lower() != "select an option"]
 
                 # Use ask_gpt4 to generate an answer for the label/question with options
-                selected_option = await self.ask_gpt4(question=label, question_type="choice", options=options)
+                 # Assuming label and options extraction remains the same
+                selected_options = await self.ask_gpt4([label], "choice", options=options)
+                selected_option = selected_options[0]  # Extract the first (and only) selected option
+
 
                 # Select the generated answer in the select element
                 Select(select_element).select_by_value(selected_option)
