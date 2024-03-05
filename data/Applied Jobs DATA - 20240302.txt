@@ -1,0 +1,29 @@
+---- Applied Jobs Data ---- created at: 20240302
+---- Number | Job Title | Company | Location | Work Place | Posted Date | Applications | Result 
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,912 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,912 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 3,912 results jobs.
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000100b9e814 chromedriver + 4040724
+1   chromedriver                        0x0000000100b96a18 chromedriver + 4008472
+2   chromedriver                        0x0000000100809870 chromedriver + 284784
+3   chromedriver                        0x000000010084d080 chromedriver + 561280
+4   chromedriver                        0x0000000100887048 chromedriver + 798792
+5   chromedriver                        0x000000010084174c chromedriver + 513868
+6   chromedriver                        0x0000000100842044 chromedriver + 516164
+7   chromedriver                        0x0000000100b63a3c chromedriver + 3799612
+8   chromedriver                        0x0000000100b67f1c chromedriver + 3817244
+9   chromedriver                        0x0000000100b4c298 chromedriver + 3703448
+10  chromedriver                        0x0000000100b68a64 chromedriver + 3820132
+11  chromedriver                        0x0000000100b3f054 chromedriver + 3649620
+12  chromedriver                        0x0000000100b85e74 chromedriver + 3939956
+13  chromedriver                        0x0000000100b85fec chromedriver + 3940332
+14  chromedriver                        0x0000000100b96698 chromedriver + 4007576
+15  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+2 | Senior Full Stack AI Engineer - LLMs<!----> | CyberCoders | Los Angeles, CA | Reposted 9 minutes ago | Over 100 applicants | Remote | Full-time | * 🥳 Just Applied to this job: https://www.linkedin.com/jobs/view/3810024500

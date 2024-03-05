@@ -533,7 +533,7 @@ class Linkedin:
             try:
                 question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip()
                 # Use await to get the answer asynchronously
-                answer_index = int(await ask_gpt4(question_text)) - 1
+                answer_index = int(await self.ask_gpt4(question_text)) - 1
                 
                 radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
                 if 0 <= answer_index < len(radio_buttons):
