@@ -58,11 +58,11 @@ def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
     background_tasks.add_task(run_linkedin_application, apply_details)
     return {"message": "Application process initiated. Running in background."}
 
-def run_linkedin_application(apply_details: ApplyDetails):
+async def run_linkedin_application(apply_details: ApplyDetails):
     # No need to call model_dump() or dict() anymore
     # Directly pass apply_details object which now includes user-configured settings
     linkedin_app = Linkedin(apply_details=apply_details)
-    linkedin_app.linkJobApply()
+    await linkedin_app.linkJobApply()
 
 class GPT4Request(BaseModel):
     question: str

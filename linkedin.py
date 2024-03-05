@@ -10,6 +10,7 @@ import hashlib
 import yaml
 import requests
 import httpx
+import asyncio
 from typing import List
 from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
@@ -105,47 +106,47 @@ class Linkedin:
         return job_links
     
 
-    def scrape_easy_apply_questions(self, job_url):
-        self.driver.get(job_url)
-        WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[contains(@class, 'jobs-apply-button')]")))
-        easy_apply_button = self.driver.find_element(By.XPATH, "//button[contains(@class, 'jobs-apply-button')]")
-        easy_apply_button.click()
+    # def scrape_easy_apply_questions(self, job_url):
+    #     self.driver.get(job_url)
+    #     WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.XPATH, "//button[contains(@class, 'jobs-apply-button')]")))
+    #     easy_apply_button = self.driver.find_element(By.XPATH, "//button[contains(@class, 'jobs-apply-button')]")
+    #     easy_apply_button.click()
 
-        questions_and_options = []
+    #     questions_and_options = []
 
-        def scrape_modal():
-            # Wait for the modal to become visible
-            WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".artdeco-modal__content")))
-            time.sleep(5)  # Additional wait for all elements to load properly
+    #     def scrape_modal():
+    #         # Wait for the modal to become visible
+    #         WebDriverWait(self.driver, 10).until(EC.visibility_of_element_located((By.CSS_SELECTOR, ".artdeco-modal__content")))
+    #         time.sleep(5)  # Additional wait for all elements to load properly
 
-            # Scrape all questions
-            questions_elements = self.driver.find_elements(By.CSS_SELECTOR, "label")
-            for element in questions_elements:
-                question_text = element.text.strip()
-                if question_text != "":
-                    # Check if the question is a dropdown
-                    parent = element.find_element(By.XPATH, "./..")
-                    dropdown = parent.find_elements(By.CSS_SELECTOR, "select")
-                    if dropdown:
-                        # It's a dropdown, capture options
-                        options = [opt.text for opt in dropdown[0].find_elements(By.TAG_NAME, "option")]
-                        questions_and_options.append((question_text, options))
-                    else:
-                        # Not a dropdown, just a regular question
-                        questions_and_options.append((question_text, None))
+    #         # Scrape all questions
+    #         questions_elements = self.driver.find_elements(By.CSS_SELECTOR, "label")
+    #         for element in questions_elements:
+    #             question_text = element.text.strip()
+    #             if question_text != "":
+    #                 # Check if the question is a dropdown
+    #                 parent = element.find_element(By.XPATH, "./..")
+    #                 dropdown = parent.find_elements(By.CSS_SELECTOR, "select")
+    #                 if dropdown:
+    #                     # It's a dropdown, capture options
+    #                     options = [opt.text for opt in dropdown[0].find_elements(By.TAG_NAME, "option")]
+    #                     questions_and_options.append((question_text, options))
+    #                 else:
+    #                     # Not a dropdown, just a regular question
+    #                     questions_and_options.append((question_text, None))
 
-            # Check for "Next" button and click if present, else look for "Review" to end
-            next_button = self.driver.find_elements(By.XPATH, "//button[contains(@data-control-name, 'continue')]")
-            if next_button:
-                next_button[0].click()
-                scrape_modal()  # Recursively scrape the next modal
-            else:
-                review_button = self.driver.find_elements(By.XPATH, "//button[contains(@data-control-name, 'review')]")
-                if review_button:
-                    return  # Reached the review step, end recursion
+    #         # Check for "Next" button and click if present, else look for "Review" to end
+    #         next_button = self.driver.find_elements(By.XPATH, "//button[contains(@data-control-name, 'continue')]")
+    #         if next_button:
+    #             next_button[0].click()
+    #             scrape_modal()  # Recursively scrape the next modal
+    #         else:
+    #             review_button = self.driver.find_elements(By.XPATH, "//button[contains(@data-control-name, 'review')]")
+    #             if review_button:
+    #                 return  # Reached the review step, end recursion
 
-            scrape_modal()
-            return questions_and_options
+    #         scrape_modal()
+    #         return questions_and_options
 
 
 
@@ -404,7 +405,7 @@ class Linkedin:
         
     #     utils.donate(self)
 
-    def linkJobApply(self):
+    async def linkJobApply(self):
         
         # self.generateUrls()
         countApplied = 0
@@ -413,7 +414,7 @@ class Linkedin:
         job_urls = url_generator.generateUrlLinks(self.config)  # self.config is an instance of LinkedinConfig
         for url in job_urls:
             self.driver.get(url)
-            time.sleep(random.uniform(1, constants.botSpeed))
+            await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
             totalJobs = self.driver.find_element(By.XPATH, '//small').text 
             totalPages = utils.jobsToPages(totalJobs)
@@ -426,16 +427,16 @@ class Linkedin:
                 currentPageJobs = constants.jobsPerPage * page
                 pageUrl = url + "&start=" + str(currentPageJobs)
                 self.driver.get(pageUrl)
-                time.sleep(random.uniform(1, constants.botSpeed))
+                await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
                 offersPerPage = self.driver.find_elements(By.XPATH, '//li[@data-occludable-job-id]')
                 offerIds = [offer.get_attribute("data-occludable-job-id").split(":")[-1] for offer in offersPerPage]
-                time.sleep(random.uniform(1, constants.botSpeed))
+                await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
                 for offerId in offerIds:
-                    offerPage = 'https://www.linkedin.com/jobs/view/' + str(offerId)
+                    offerPage = f'https://www.linkedin.com/jobs/view/{offerId}'
                     self.driver.get(offerPage)
-                    time.sleep(random.uniform(1, constants.botSpeed))
+                    await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
                     countJobs += 1
                     jobProperties = self.getJobProperties(countJobs)
@@ -447,18 +448,50 @@ class Linkedin:
 
                         if easyApplybutton is not False:
                             easyApplybutton.click()
-                            time.sleep(random.uniform(1, constants.botSpeed))
+                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
                             
                             try:
+
+
+                                await self.fill_all_string_inputs(self)
+                                await self.fill_all_select_inputs(self)
+
+                                next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
+                                next_button.click()
+
+                                await asyncio.sleep(random.uniform(1, 3))
+
+
                                 self.chooseResume()
-                                # Handling the job application questions more dynamically
-                                self.handleApplicationQuestions()
+                                await asyncio.sleep(random.uniform(1, constants.botSpeed))
+                                next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
+                                next_button.click()
+                                await asyncio.sleep(random.uniform(1, constants.botSpeed))
+
+
+                                try:
+                                    # Wait for the div element to be present in the DOM and be visible.
+                                    grouping_div = WebDriverWait(driver, 10).until(
+                                        EC.visibility_of_element_located((By.CLASS_NAME, 'jobs-easy-apply-form-section__grouping'))
+                                    )
+                                    
+                                    # Find the nested divs till we reach the fifth child and then get the label within it.
+                                    label = grouping_div.find_element(By.XPATH, './/div/div/div/div/div/label').text
+                                    
+                                    # Store the label text in a variable
+                                    label_text = label
+
+                                    # Return the label text
+                                    print(label_text)
+                                except Exception as e:
+                                    print(f'Error finding label: {e}')
+
 
                                 # Submit the application
                                 submit_button = self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']")
                                 if submit_button:
                                     submit_button.click()
-                                    time.sleep(random.uniform(1, constants.botSpeed))
+                                    await asyncio.sleep(random.uniform(1, constants.botSpeed))
                                     lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                     self.displayWriteResults(lineToWrite)
                                     countApplied += 1
@@ -467,6 +500,114 @@ class Linkedin:
                             except Exception as e:
                                 lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)} Exception: {str(e)}"
                                 self.displayWriteResults(lineToWrite)
+
+    async def wait_and_click(self, xpath):
+        """Wait for an element to be clickable and click it."""
+        try:
+            element = WebDriverWait(self.driver, 10).until(
+                EC.element_to_be_clickable((By.XPATH, xpath))
+            )
+            element.click()
+            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+        except TimeoutException:
+            print(f"Element with xpath {xpath} not clickable.")
+
+    async def apply_to_job(self, job_url, resume_path, phone_number):
+        self.driver.get(job_url)
+        apply_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Easy Apply"]')
+        apply_button.click()
+        
+        await self.upload_resume(resume_path)
+        await self.fill_contact_info(phone_number)
+        
+        next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
+        next_button.click()
+        
+        # Handling additional questions dynamically
+        await self.handle_additional_questions()
+
+        submit_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Submit application"]')
+        submit_button.click()
+
+   
+    # Example of an asynchronous ask_gpt4 function
+    async def ask_gpt4(question: str, question_type: str = "string", options: list = None):
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                'http://127.0.0.1:8000/ask-gpt4/',
+                json={"question": question, "question_type": question_type, "options": options}
+            )
+            if response.status_code == 200:
+                answer_data = response.json()
+                return answer_data['answers']
+            else:
+                raise Exception(f"Failed to get response from GPT-4: {response.text}")
+            
+
+    async def fill_all_string_inputs(self):
+        # Find all parent divs
+        parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
+        for parent_div in parent_divs:
+            # Check if the div has an input element
+            input_fields = parent_div.find_elements(By.TAG_NAME, 'input')
+            for input_field in input_fields:
+                # Find the label for the input field within the parent div
+                try:
+                    label = parent_div.find_element(By.XPATH, './/label').text
+                except Exception as e:
+                    label = "Please provide input"  # Default prompt if no label is found
+
+                # Use ask_gpt4 to generate an answer for the label/question
+                answer = await self.ask_gpt4(question=label, question_type="string")
+
+                # Clear the input field before sending keys
+                input_field.clear()
+                # Send the generated answer to the input field
+                input_field.send_keys(answer)
+                # Wait for a random time between 1 and 3 seconds
+                await asyncio.sleep(random.uniform(1, 3))
+
+        # Locate the input element within the parent div
+        input_field = parent_div.find_element(By.TAG_NAME, 'input')
+        # Clear the input field before sending keys
+        input_field.clear()
+        # Send the generated answer to the input field
+        input_field.send_keys(answer)
+        # Wait for a random time between 1 and 3 seconds
+        await asyncio.sleep(random.uniform(1, 3))
+        
+    async def fill_all_select_inputs(self):
+        # Find all parent divs
+        parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
+        for parent_div in parent_divs:
+            # Check if the div has a select element
+            select_elements = parent_div.find_elements(By.TAG_NAME, 'select')
+            for select_element in select_elements:
+                # Find the label for the select element within the parent div
+                try:
+                    label = parent_div.find_element(By.XPATH, './/label').text #maybe do by.CSS_SELECTOR
+                except Exception as e:
+                    label = "Please select an option"  # Default prompt if no label is found
+
+                # Extract options from the select element
+                options = [option.get_attribute('value') for option in select_element.find_elements(By.TAG_NAME, 'option')]
+                # Remove placeholder if necessary
+                options = [opt for opt in options if opt.lower() != "select an option"]
+
+                # Use ask_gpt4 to generate an answer for the label/question with options
+                selected_option = await self.ask_gpt4(question=label, question_type="choice", options=options)
+
+                # Select the generated answer in the select element
+                Select(select_element).select_by_value(selected_option)
+                # Wait for a random time between 1 and 3 seconds
+                await asyncio.sleep(random.uniform(1, 3))
+        
+    async def handle_additional_questions(self):
+        # Assuming all additional questions are text input fields
+        text_input_fields = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="text"]')
+        for field in text_input_fields:
+            field.send_keys('Answer')  # Replace 'Answer' with the actual answer or dynamic logic to generate the answer
+            await asyncio.sleep(random.uniform(0.5, 1.5))
 
     def handleApplicationQuestions(self):
         # Check for different types of input fields
@@ -546,19 +687,28 @@ class Linkedin:
                 print(f"Error handling radio buttons: {str(e)}")
                 
 
-    # Example of an asynchronous ask_gpt4 function
-    async def ask_gpt4(question: str, question_type: str = "string", options: list = None):
-        async with httpx.AsyncClient() as client:
-            response = await client.post(
-                'http://127.0.0.1:8000/ask-gpt4/',
-                json={"question": question, "question_type": question_type, "options": options}
-            )
-            if response.status_code == 200:
-                answer_data = response.json()
-                return answer_data['answers']
-            else:
-                raise Exception(f"Failed to get response from GPT-4: {response.text}")
 
+
+    async def handle_modals_in_sequence(self):
+        # Interact with the first modal
+        await self.fill_out_contact_info()
+        # Click the "Next" button on the first modal
+        await self.wait_and_click("//button[contains(text(), 'Next')]")
+
+        # Interact with the second modal (e.g., uploading a resume)
+        await self.select_first_resume_and_continue()
+        # Click the "Next" button on the second modal
+        await self.wait_and_click("//button[contains(text(), 'Next')]")
+
+        # Interact with the third modal (e.g., answering additional questions)
+        await self.answer_additional_questions()
+        # Click the "Review" button on the third modal
+        await self.wait_and_click("//button[contains(text(), 'Review')]")
+
+        # Interact with the fourth modal (e.g., final review)
+        await self.final_review()
+        # Click the "Submit application" button on the fourth modal
+        await self.wait_and_click("//button[contains(text(), 'Submit application')]")
 
     def process_job_page(self):
         """Process the current job page."""

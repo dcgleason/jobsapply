@@ -1,0 +1,73 @@
+---- Applied Jobs Data ---- created at: 20240305
+---- Number | Job Title | Company | Location | Work Place | Posted Date | Applications | Result 
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,100 results jobs.
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000100a02814 chromedriver + 4040724
+1   chromedriver                        0x00000001009faa18 chromedriver + 4008472
+2   chromedriver                        0x000000010066d870 chromedriver + 284784
+3   chromedriver                        0x00000001006b1080 chromedriver + 561280
+4   chromedriver                        0x00000001006eb048 chromedriver + 798792
+5   chromedriver                        0x00000001006a574c chromedriver + 513868
+6   chromedriver                        0x00000001006a6044 chromedriver + 516164
+7   chromedriver                        0x00000001009c7a3c chromedriver + 3799612
+8   chromedriver                        0x00000001009cbf1c chromedriver + 3817244
+9   chromedriver                        0x00000001009b0298 chromedriver + 3703448
+10  chromedriver                        0x00000001009cca64 chromedriver + 3820132
+11  chromedriver                        0x00000001009a3054 chromedriver + 3649620
+12  chromedriver                        0x00000001009e9e74 chromedriver + 3939956
+13  chromedriver                        0x00000001009e9fec chromedriver + 3940332
+14  chromedriver                        0x00000001009fa698 chromedriver + 4007576
+15  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,096 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,096 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,096 results jobs.
+
+ Category: ServiceNow Developer, Location: United States, Applying 4,096 results jobs.
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x00000001028ca814 chromedriver + 4040724
+1   chromedriver                        0x00000001028c2a18 chromedriver + 4008472
+2   chromedriver                        0x0000000102535870 chromedriver + 284784
+3   chromedriver                        0x0000000102579080 chromedriver + 561280
+4   chromedriver                        0x00000001025b3048 chromedriver + 798792
+5   chromedriver                        0x000000010256d74c chromedriver + 513868
+6   chromedriver                        0x000000010256e044 chromedriver + 516164
+7   chromedriver                        0x000000010288fa3c chromedriver + 3799612
+8   chromedriver                        0x0000000102893f1c chromedriver + 3817244
+9   chromedriver                        0x0000000102878298 chromedriver + 3703448
+10  chromedriver                        0x0000000102894a64 chromedriver + 3820132
+11  chromedriver                        0x000000010286b054 chromedriver + 3649620
+12  chromedriver                        0x00000001028b1e74 chromedriver + 3939956
+13  chromedriver                        0x00000001028b1fec chromedriver + 3940332
+14  chromedriver                        0x00000001028c2698 chromedriver + 4007576
+15  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+  (Session info: chrome=121.0.6167.160); For documentation on this error, please visit: https://www.selenium.dev/documentation/webdriver/troubleshooting/errors#no-such-element-exception
+Stacktrace:
+0   chromedriver                        0x0000000102c4e814 chromedriver + 4040724
+1   chromedriver                        0x0000000102c46a18 chromedriver + 4008472
+2   chromedriver                        0x00000001028b9870 chromedriver + 284784
+3   chromedriver                        0x00000001028fd080 chromedriver + 561280
+4   chromedriver                        0x0000000102937048 chromedriver + 798792
+5   chromedriver                        0x00000001028f174c chromedriver + 513868
+6   chromedriver                        0x00000001028f2044 chromedriver + 516164
+7   chromedriver                        0x0000000102c13a3c chromedriver + 3799612
+8   chromedriver                        0x0000000102c17f1c chromedriver + 3817244
+9   chromedriver                        0x0000000102bfc298 chromedriver + 3703448
+10  chromedriver                        0x0000000102c18a64 chromedriver + 3820132
+11  chromedriver                        0x0000000102bef054 chromedriver + 3649620
+12  chromedriver                        0x0000000102c35e74 chromedriver + 3939956
+13  chromedriver                        0x0000000102c35fec chromedriver + 3940332
+14  chromedriver                        0x0000000102c46698 chromedriver + 4007576
+15  libsystem_pthread.dylib             0x000000018a5fe034 _pthread_start + 136
+16  libsystem_pthread.dylib             0x000000018a5f8e3c thread_start + 8
+
+2 | Senior Machine Learning Engineer<!----> | Strativ Group | Cambridge, MA | 25 minutes ago | 4 applicants | Hybrid | Full-time | * 🥵 Cannot apply to this Job! https://www.linkedin.com/jobs/view/3847028545 Exception: HTTPConnectionPool(host='localhost', port=64326): Max retries exceeded with url: /session/9ba483f6851f223fb3e82ecaf951dbac/element (Caused by NewConnectionError('<urllib3.connection.HTTPConnection object at 0x10b212850>: Failed to establish a new connection: [Errno 61] Connection refused'))
