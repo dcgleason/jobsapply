@@ -566,18 +566,27 @@ class Linkedin:
                             self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]//select")
         choose_resume = self.driver.find_elements(By.CLASS_NAME, "jobs-document-upload__title--is-required")
         radio_buttons = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
+        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
         submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
         select_string_resume_submit = select_and_string and choose_resume and submit_button
 
         if select_string_resume_submit:
+            print("select_string_resume_submit")
             return "select_string_resume_submit"
         elif select_and_string:
+            print("select_and_string")
             return "select_and_string"
         elif choose_resume:
+            print("choose_resume")
             return "choose_resume"
         elif radio_buttons:
+            print("radio_buttons")
             return "radio_buttons"
+        elif review_button:
+            print("review_button")
+            return "review"
         elif submit_button:
+            print("submit_button")
             return "submit"
         else:
             return "unknown"
@@ -586,7 +595,8 @@ class Linkedin:
         radio_button_fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
 
         for fieldset in radio_button_fieldsets:
-            question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip()
+            question_text = fieldset.find_element(By.XPATH, ".//legend/span/span").text.strip()
+            print(f"Question: {question_text}")
             radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
             radio_button_labels = fieldset.find_elements(By.XPATH, ".//label")
 
@@ -614,7 +624,6 @@ class Linkedin:
                     print(f"Failed to select a valid radio button after {max_retries} retries.")
 
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
-
     def determine_question_type(self, question):
         if question.find_elements(By.TAG_NAME, "input"):
             return "input"
