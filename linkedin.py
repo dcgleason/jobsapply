@@ -672,6 +672,7 @@ class Linkedin:
     #             else:
     #                 raise Exception(f"Failed to get response from GPT-4 for question '{question}': {response.text}")
     #     return answers
+            
     async def fill_all_string_inputs(self):
         # Find all parent divs
         parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
@@ -685,16 +686,34 @@ class Linkedin:
                 except Exception as e:
                     label = "Please provide input"  # Default prompt if no label is found
 
-                # Use ask_gpt4 to generate an answer for the label/question
-                answers = await self.ask_gpt4([label], "string")
-                answer = answers  # Extract the first (and only) answer and remove leading/trailing whitespace
+                max_retries = 3
+                retry_count = 0
+                while retry_count < max_retries:
+                    # Use ask_gpt4 to generate an answer for the label/question
+                    answers = await self.ask_gpt4([label], "string")
+                    answer = answers  # Extract the first (and only) answer and remove leading/trailing whitespace
 
-                # Clear the input field before sending keys
-                input_field.clear()
-                # Send the generated answer to the input field
-                input_field.send_keys(answer)
-                # Wait for a random time between 1 and 3 seconds
-                await asyncio.sleep(random.uniform(1, 3))
+                    # Clear the input field before sending keys
+                    input_field.clear()
+                    # Send the generated answer to the input field
+                    input_field.send_keys(answer)
+                    # Wait for a random time between 1 and 3 seconds
+                    await asyncio.sleep(random.uniform(1, 3))
+
+                    # Check for inline error messages
+                    error_message_elements = parent_div.find_elements(By.XPATH, ".//span[contains(@class, 'artdeco-inline-feedback__message')]")
+                    if error_message_elements:
+                        error_message = error_message_elements[0].text
+                        print(f"Error encountered: {error_message}")
+                        # Send the error message to GPT-4 for generating a new response
+                        answers = await self.ask_gpt4([f"Error: {error_message}. Please provide a valid input for: {label}"], "string")
+                        answer = answers
+                        retry_count += 1
+                    else:
+                        break
+
+                if retry_count == max_retries:
+                    print(f"Failed to fill input field after {max_retries} retries.")
 
     async def fill_all_select_inputs(self):
         # Find all parent divs
@@ -709,38 +728,120 @@ class Linkedin:
                 except NoSuchElementException:
                     label = "Please select an option"  # Default prompt if no label is found
 
-                # Extract options from the select element
-                options = [option.text for option in select_element.find_elements(By.TAG_NAME, 'option')]
-                # Remove placeholder if necessary
-                options = [opt for opt in options if opt.lower() != "select an option"]
+                max_retries = 3
+                retry_count = 0
+                while retry_count < max_retries:
+                    # Extract options from the select element
+                    options = [option.text for option in select_element.find_elements(By.TAG_NAME, 'option')]
+                    # Remove placeholder if necessary
+                    options = [opt for opt in options if opt.lower() != "select an option"]
 
-                # Use ask_gpt4 to generate an answer for the label/question with options
-                selected_options = await self.ask_gpt4([label], "choice", options=options)
-                selected_option = selected_options[0].strip()  # Extract the first (and only) selected option and remove leading/trailing whitespace
+                    # Use ask_gpt4 to generate an answer for the label/question with options
+                    selected_options = await self.ask_gpt4([label], "choice", options=options)
+                    selected_option = selected_options[0].strip()  # Extract the first (and only) selected option and remove leading/trailing whitespace
 
-                if selected_option.lower() == 'none':
-                    Select(select_element).select_by_index(0)
-                    print(f"Warning: GPT-4 responded with 'None' for the question '{label}'. Selecting the first option as a fallback.")
-                else:
-                    try:
-                        # Try to select the option by visible text first
-                        Select(select_element).select_by_visible_text(selected_option)
-                    except NoSuchElementException:
-                        # If the exact text doesn't match, try to find the option that contains the response
-                        options = select_element.find_elements(By.TAG_NAME, 'option')
-                        selected = False
-                        for option in options:
-                            if selected_option in option.text:
-                                option.click()
-                                selected = True
-                                break
-                        if not selected:
-                            # If no matching option is found, select the first option as a fallback
-                            Select(select_element).select_by_index(0)
-                            print(f"Warning: No matching option found for '{selected_option}' in the question '{label}'. Selecting the first option as a fallback.")
+                    if selected_option.lower() == 'none':
+                        Select(select_element).select_by_index(0)
+                        print(f"Warning: GPT-4 responded with 'None' for the question '{label}'. Selecting the first option as a fallback.")
+                    else:
+                        try:
+                            Select(select_element).select_by_visible_text(selected_option)
+                        except NoSuchElementException:
+                            # If the selected option is not found, try selecting by value
+                            try:
+                                Select(select_element).select_by_value(selected_option)
+                            except NoSuchElementException:
+                                Select(select_element).select_by_index(0)
+                                print(f"Warning: Selected option '{selected_option}' not found for the question '{label}'. Selecting the first option as a fallback.")
 
-                # Wait for a random time between 1 and 3 seconds
-                await asyncio.sleep(random.uniform(1, 3))
+                    # Wait for a random time between 1 and 3 seconds
+                    await asyncio.sleep(random.uniform(1, 3))
+
+                    # Check for inline error messages
+                    error_message_elements = parent_div.find_elements(By.XPATH, ".//span[contains(@class, 'artdeco-inline-feedback__message')]")
+                    if error_message_elements:
+                        error_message = error_message_elements[0].text
+                        print(f"Error encountered: {error_message}")
+                        # Send the error message to GPT-4 for generating a new response
+                        selected_options = await self.ask_gpt4([f"Error: {error_message}. Please select a valid option for: {label}"], "choice", options=options)
+                        selected_option = selected_options[0].strip()
+                        retry_count += 1
+                    else:
+                        break
+
+                if retry_count == max_retries:
+                    print(f"Failed to fill select field after {max_retries} retries.")
+
+    # original code
+    # async def fill_all_string_inputs(self):
+    #     # Find all parent divs
+    #     parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
+    #     for parent_div in parent_divs:
+    #         # Check if the div has an input element
+    #         input_fields = parent_div.find_elements(By.TAG_NAME, 'input')
+    #         for input_field in input_fields:
+    #             # Find the label for the input field within the parent div
+    #             try:
+    #                 label = parent_div.find_element(By.XPATH, './/label').text
+    #             except Exception as e:
+    #                 label = "Please provide input"  # Default prompt if no label is found
+
+    #             # Use ask_gpt4 to generate an answer for the label/question
+    #             answers = await self.ask_gpt4([label], "string")
+    #             answer = answers  # Extract the first (and only) answer and remove leading/trailing whitespace
+
+    #             # Clear the input field before sending keys
+    #             input_field.clear()
+    #             # Send the generated answer to the input field
+    #             input_field.send_keys(answer)
+    #             # Wait for a random time between 1 and 3 seconds
+    #             await asyncio.sleep(random.uniform(1, 3))
+
+    # async def fill_all_select_inputs(self):
+    #     # Find all parent divs
+    #     parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
+    #     for parent_div in parent_divs:
+    #         # Check if the div has a select element
+    #         select_elements = parent_div.find_elements(By.TAG_NAME, 'select')
+    #         for select_element in select_elements:
+    #             # Find the label for the select element within the parent div
+    #             try:
+    #                 label = parent_div.find_element(By.XPATH, './/label').text
+    #             except NoSuchElementException:
+    #                 label = "Please select an option"  # Default prompt if no label is found
+
+    #             # Extract options from the select element
+    #             options = [option.text for option in select_element.find_elements(By.TAG_NAME, 'option')]
+    #             # Remove placeholder if necessary
+    #             options = [opt for opt in options if opt.lower() != "select an option"]
+
+    #             # Use ask_gpt4 to generate an answer for the label/question with options
+    #             selected_options = await self.ask_gpt4([label], "choice", options=options)
+    #             selected_option = selected_options[0].strip()  # Extract the first (and only) selected option and remove leading/trailing whitespace
+
+    #             if selected_option.lower() == 'none':
+    #                 Select(select_element).select_by_index(0)
+    #                 print(f"Warning: GPT-4 responded with 'None' for the question '{label}'. Selecting the first option as a fallback.")
+    #             else:
+    #                 try:
+    #                     # Try to select the option by visible text first
+    #                     Select(select_element).select_by_visible_text(selected_option)
+    #                 except NoSuchElementException:
+    #                     # If the exact text doesn't match, try to find the option that contains the response
+    #                     options = select_element.find_elements(By.TAG_NAME, 'option')
+    #                     selected = False
+    #                     for option in options:
+    #                         if selected_option in option.text:
+    #                             option.click()
+    #                             selected = True
+    #                             break
+    #                     if not selected:
+    #                         # If no matching option is found, select the first option as a fallback
+    #                         Select(select_element).select_by_index(0)
+    #                         print(f"Warning: No matching option found for '{selected_option}' in the question '{label}'. Selecting the first option as a fallback.")
+
+    #             # Wait for a random time between 1 and 3 seconds
+    #             await asyncio.sleep(random.uniform(1, 3))
             
     # async def handle_additional_questions(self):
     #     # Assuming all additional questions are text input fields
