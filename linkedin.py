@@ -40,10 +40,11 @@ driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install())
 
 
 class Linkedin:
-    def __init__(self, apply_details):
+    def __init__(self, apply_details, userInfo):
         self.apply_details = apply_details
         self.config = apply_details.config
         self.credentials = self.config.credentials  # Extracting credentials from the config
+        self.userInfo = userInfo
 
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
@@ -458,15 +459,19 @@ class Linkedin:
                                         await self.fill_all_string_inputs()
                                         await self.fill_all_select_inputs()
                                         next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
                                         if next_button:
                                             await self.wait_and_click("//button[@aria-label='Continue to next step']")
-                                            break
+                                            
                                         elif review_button:
                                             await self.wait_and_click("//button[@aria-label='Review your application']")
-                                            break
+                                            
                                         elif submit_button:
-                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
-                                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+                                            await self.wait_and_click("//button[@aria-label='Submit application']")
+                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                            self.displayWriteResults(lineToWrite)
+                                            countApplied += 1
                                             break
                                         else:
                                             break
@@ -474,58 +479,55 @@ class Linkedin:
                                         await self.chooseResume()
                                         next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
                                         review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
                                         if next_button:
                                             await self.wait_and_click("//button[@aria-label='Continue to next step']")
-                                            break
+    
                                         elif review_button:
                                             await self.wait_and_click("//button[@aria-label='Review your application']")
-                                            break
                                         elif submit_button:
-                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
-                                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+                                            await self.wait_and_click("//button[@aria-label='Submit application']")
+                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                            self.displayWriteResults(lineToWrite)
+                                            countApplied += 1
+                                            break
+                                        else:
                                             break
                                     elif modal_type == "radio_buttons":
                                         await self.fill_all_radio_buttons()
                                         next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
                                         review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
                                         if next_button:
                                             await self.wait_and_click("//button[@aria-label='Continue to next step']")
-                                            break
                                         elif review_button:
                                             await self.wait_and_click("//button[@aria-label='Review your application']")
-                                            break
+                                            
                                         elif submit_button:
-                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
-                                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+                                            await self.wait_and_click("//button[@aria-label='Submit application']")
+                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                            self.displayWriteResults(lineToWrite)
+                                            countApplied += 1
                                             break
-                                    elif modal_type == "select_string_resume_submit":
-                                        await self.fill_all_string_inputs()
-                                        await self.fill_all_select_inputs()
-                                        await self.chooseResume()
-                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-                                        if submit_button:
-                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
-                                            time.sleep(random.uniform(1, constants.botSpeed))
+                                        else:
                                             break
+                                   
                                     elif modal_type == "submit":
-                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-                                        if submit_button:
-                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
-                                            time.sleep(random.uniform(1, constants.botSpeed))
+                                            submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                            await self.wait_and_click("//button[@aria-label='Submit application']")
+                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                            self.displayWriteResults(lineToWrite)
+                                            countApplied += 1
                                             break
+                                    
                                     else:
                                         break
 
-                                    lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                    self.displayWriteResults(lineToWrite)
-                                    countApplied += 1
-
-                            
                         else:
-                            lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)} Exception: {str(e)}"
-                            self.displayWriteResults(lineToWrite)
+                                lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)}"
+                                self.displayWriteResults(lineToWrite)
 
-                print(f"Applied to {countApplied} jobs out of {countJobs} total jobs.")
+                        print(f"Applied to {countApplied} jobs out of {countJobs} total jobs.")
 
     async def answer_additional_questions(self, **user_details):
         additional_questions = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]")
@@ -612,24 +614,21 @@ class Linkedin:
         return label_element.text if label_element else "Unknown Question"
 
     async def ask_gpt4(self, question, question_type, options=None, user_details=None):
-        prompt = f"Question: {question}\nType: {question_type}\n"
+        prompt = f"Statement: {question}\nType: {question_type}\n"
 
         if question_type == "string":
-            prompt += "Please provide a concise and relevant answer to the question based on the user's information.\n"
+            prompt += "Please provide a concise and relevant answer to the statement based on the user's information.\n"
         elif question_type == "choice":
             if options:
                 options_text = "Options:\n" + "\n".join([f"{opt}" for opt in options]) + "\n"
                 prompt += options_text
-                prompt += "Please select the most appropriate option from the list above by providing the exact option text. The response should only contain the selected option text, without any additional characters or explanations. If none of the options are suitable, respond with 'None'.\n"
+                prompt += "Please select the option that best fits the given statement by providing the exact option text. The response should only contain the selected option text, without any additional characters or explanations. If none of the options are suitable, respond with 'None'.\n"
             else:
                 raise ValueError("Options must be provided for question type 'choice'.")
         else:
             raise ValueError(f"Unsupported question type: {question_type}")
 
-        if user_details:
-            prompt += f"\nUser Details:\n{json.dumps(user_details, indent=2)}\n"
-
-        prompt += "Answer:"
+        prompt = f"{self.userInfo}\n\n{prompt}\nAnswer:"  # Include userInfo in the prompt
 
         print(f"Generated Prompt:\n{prompt}\n")  # Print the generated prompt
 

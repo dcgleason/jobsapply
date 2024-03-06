@@ -61,7 +61,7 @@ def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
 async def run_linkedin_application(apply_details: ApplyDetails):
     # No need to call model_dump() or dict() anymore
     # Directly pass apply_details object which now includes user-configured settings
-    linkedin_app = Linkedin(apply_details=apply_details)
+    linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo)  # Pass userInfo to the Linkedin class
     await linkedin_app.linkJobApply()
 
 class GPT4Request(BaseModel):
@@ -87,12 +87,11 @@ async def ask_gpt4(request: GPT4Request):
         model="gpt-4-turbo-preview",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},
-            {"role": "user", "content": "Please answer the following question with the appropraite answer that is based on this info. Info: I am from the USA, my phone number is 555-402-5518, and I have 4 years of ServiceNow experience, and I have a bachelors degree." + prompt }
+            {"role": "user", "content": f"{request.userInfo}\n\n{prompt}"}  # Include user input in the prompt
         ]
         )
         answer = completion.choices[0].message.content
         return GPT4Response(answers=answer)
-    
     
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))

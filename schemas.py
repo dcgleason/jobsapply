@@ -53,3 +53,4 @@ class ApplyDetails(BaseModel):
     favorite_technology: str
     reason_for_applying: str
     config: LinkedinConfig
+    userInfo: str 
