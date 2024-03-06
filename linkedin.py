@@ -10,6 +10,7 @@ import hashlib
 import yaml
 import requests
 import httpx
+import json
 import asyncio
 from typing import List
 from utils import LinkedinUrlGenerate
@@ -209,114 +210,114 @@ class Linkedin:
 
     #     print(f"Finished applying to {applied_count} jobs")
 
-    def apply_to_job(self, job_url):
-        # Navigate to the job's detail page
-        self.driver.get(job_url)
-        time.sleep(10)  # Wait for the page to load
+    # def apply_to_job(self, job_url):
+    #     # Navigate to the job's detail page
+    #     self.driver.get(job_url)
+    #     time.sleep(10)  # Wait for the page to load
 
-        try:
-            # Click the "Easy Apply" button
-            easy_apply_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Easy Apply')]")
-            easy_apply_button.click()
-            time.sleep(5)  # Wait for the application form to load
+    #     try:
+    #         # Click the "Easy Apply" button
+    #         easy_apply_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Easy Apply')]")
+    #         easy_apply_button.click()
+    #         time.sleep(5)  # Wait for the application form to load
 
-            # TODO: Add steps to fill out the application form if necessary
-            # Example:
-            # self.driver.find_element(By.ID, 'form-field-id').send_keys('Your answer')
+    #         # TODO: Add steps to fill out the application form if necessary
+    #         # Example:
+    #         # self.driver.find_element(By.ID, 'form-field-id').send_keys('Your answer')
 
-            # Submit the application
-            submit_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Submit application')]")
-            submit_button.click()
-            time.sleep(5)  # Wait for submission to complete
+    #         # Submit the application
+    #         submit_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Submit application')]")
+    #         submit_button.click()
+    #         time.sleep(5)  # Wait for submission to complete
 
-            print("Application submitted successfully.")
-        except Exception as e:
-            print(f"Failed to apply to job: {e}")
+    #         print("Application submitted successfully.")
+    #     except Exception as e:
+    #         print(f"Failed to apply to job: {e}")
 
 
-    def fill_out_easy_apply_form(self, email, country_code, phone_number):
-        # Wait for the modal to load
-        time.sleep(5)
+    # def fill_out_easy_apply_form(self, email, country_code, phone_number):
+    #     # Wait for the modal to load
+    #     time.sleep(5)
 
-        # Select the email address
-        email_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833898-multipleChoice")
-        for option in email_dropdown.find_elements(By.TAG_NAME, 'option'):
-            if option.text == email:
-                option.click()
-                break
+    #     # Select the email address
+    #     email_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833898-multipleChoice")
+    #     for option in email_dropdown.find_elements(By.TAG_NAME, 'option'):
+    #         if option.text == email:
+    #             option.click()
+    #             break
 
-        # Wait for the next elements to be interactable
-        time.sleep(2)
+    #     # Wait for the next elements to be interactable
+    #     time.sleep(2)
 
-        # Select the phone country code
-        country_code_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-country")
-        for option in country_code_dropdown.find_elements(By.TAG_NAME, 'option'):
-            if option.text == country_code:
-                option.click()
-                break
+    #     # Select the phone country code
+    #     country_code_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-country")
+    #     for option in country_code_dropdown.find_elements(By.TAG_NAME, 'option'):
+    #         if option.text == country_code:
+    #             option.click()
+    #             break
 
-        # Wait for the next elements to be interactable
-        time.sleep(2)
+    #     # Wait for the next elements to be interactable
+    #     time.sleep(2)
 
-        # Enter the mobile phone number
-        phone_number_field = self.driver.find_element(By.ID, "single-line-text-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-nationalNumber")
-        phone_number_field.send_keys(phone_number)
+    #     # Enter the mobile phone number
+    #     phone_number_field = self.driver.find_element(By.ID, "single-line-text-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833890-phoneNumber-nationalNumber")
+    #     phone_number_field.send_keys(phone_number)
 
-        # Click the Next button to proceed to the next step of the application
-        next_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Continue to next step')]")
-        next_button.click()
+    #     # Click the Next button to proceed to the next step of the application
+    #     next_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Continue to next step')]")
+    #     next_button.click()
 
-        # Add additional steps as needed based on the subsequent modals/forms
+    #     # Add additional steps as needed based on the subsequent modals/forms
 
-    def select_first_resume_and_continue(self):
-        # Wait for the modal content to load
-        time.sleep(2)
+    # def select_first_resume_and_continue(self):
+    #     # Wait for the modal content to load
+    #     time.sleep(2)
 
-        # Assuming the first resume is already selected by default based on your HTML snippet
-        # If you need to select it explicitly, uncomment the following lines and adjust the selector as needed
-        # first_resume = self.driver.find_element(By.CSS_SELECTOR, "input[type='radio'][id^='jobsDocumentCardToggle-']")
-        # first_resume.click()
-        # time.sleep(1)  # Wait for selection to be processed
+    #     # Assuming the first resume is already selected by default based on your HTML snippet
+    #     # If you need to select it explicitly, uncomment the following lines and adjust the selector as needed
+    #     # first_resume = self.driver.find_element(By.CSS_SELECTOR, "input[type='radio'][id^='jobsDocumentCardToggle-']")
+    #     # first_resume.click()
+    #     # time.sleep(1)  # Wait for selection to be processed
 
-        # Click the "Next" button to proceed
-        next_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Continue to next step')]")
-        next_button.click()
+    #     # Click the "Next" button to proceed
+    #     next_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Continue to next step')]")
+    #     next_button.click()
 
-        # Add additional steps as needed based on the subsequent modals/forms
+    #     # Add additional steps as needed based on the subsequent modals/forms
 
-    def answer_citizenship_question_and_continue(self, is_us_citizen_or_gch):
-        # Wait for the modal content to load
-        time.sleep(4)
+    # def answer_citizenship_question_and_continue(self, is_us_citizen_or_gch):
+    #     # Wait for the modal content to load
+    #     time.sleep(4)
 
-        # Find the dropdown for the citizenship question
-        citizenship_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833874-multipleChoice")
+    #     # Find the dropdown for the citizenship question
+    #     citizenship_dropdown = self.driver.find_element(By.ID, "text-entity-list-form-component-formElement-urn-li-jobs-applyformcommon-easyApplyFormElement-3826517437-112833874-multipleChoice")
         
-        # Create a Select object for the dropdown
-        select = Select(citizenship_dropdown)
+    #     # Create a Select object for the dropdown
+    #     select = Select(citizenship_dropdown)
         
-        # Select the option based on the user's answer
-        select.select_by_visible_text(is_us_citizen_or_gch)
-        time.sleep(2)  # Wait for the selection to be processed
+    #     # Select the option based on the user's answer
+    #     select.select_by_visible_text(is_us_citizen_or_gch)
+    #     time.sleep(2)  # Wait for the selection to be processed
 
-        # Click the "Review" button to proceed
-        review_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Review your application')]")
-        review_button.click()
+    #     # Click the "Review" button to proceed
+    #     review_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Review your application')]")
+    #     review_button.click()
 
-        # Add additional steps as needed based on the subsequent modals/forms
+    #     # Add additional steps as needed based on the subsequent modals/forms
 
 
-    def submit_job_application(self):
-        # Wait for the page and the submit button to load
-        time.sleep(2)  # Consider using WebDriverWait for better reliability
+    # def submit_job_application(self):
+    #     # Wait for the page and the submit button to load
+    #     time.sleep(2)  # Consider using WebDriverWait for better reliability
 
-        # Locate the "Submit application" button by its aria-label attribute
-        submit_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Submit application')]")
+    #     # Locate the "Submit application" button by its aria-label attribute
+    #     submit_button = self.driver.find_element(By.XPATH, "//button[contains(@aria-label, 'Submit application')]")
 
-        # Click the "Submit application" button
-        submit_button.click()
+    #     # Click the "Submit application" button
+    #     submit_button.click()
 
-        # Optionally, add a wait or confirmation step here to ensure the application has been submitted successfully
-        print("Application submitted.")
+    #     # Optionally, add a wait or confirmation step here to ensure the application has been submitted successfully
+    #     print("Application submitted.")
 
     # def linkJobApply(self):
     #     self.generateUrls()
@@ -444,63 +445,142 @@ class Linkedin:
                         lineToWrite = jobProperties + " | " + "* 🤬 Blacklisted Job, skipped!: " + str(offerPage)
                         self.displayWriteResults(lineToWrite)
                     else:
-                        easyApplybutton = self.easyApplyButton()
+                        easyApplyButton = self.easyApplyButton()
 
-                        if easyApplybutton is not False:
-                            easyApplybutton.click()
+                        if easyApplyButton is not False:
+                            easyApplyButton.click()
                             await asyncio.sleep(random.uniform(1, constants.botSpeed))
-                            
+
                             try:
-
-
                                 await self.fill_all_string_inputs()
+
                                 await self.fill_all_select_inputs()
 
-                                next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
-                                next_button.click()
+                                await self.wait_and_click("//button[@aria-label='Continue to next step']")
 
-                                await asyncio.sleep(random.uniform(1, 3))
+                                await self.chooseResume()
+                                await self.wait_and_click("//button[@aria-label='Continue to next step']")
 
-
-                                self.chooseResume()
-                                await asyncio.sleep(random.uniform(1, constants.botSpeed))
-                                next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
-                                next_button.click()
-                                await asyncio.sleep(random.uniform(1, constants.botSpeed))
-
-
-                                try:
-                                    # Wait for the div element to be present in the DOM and be visible.
-                                    grouping_div = WebDriverWait(driver, 10).until(
-                                        EC.visibility_of_element_located((By.CLASS_NAME, 'jobs-easy-apply-form-section__grouping'))
+                                while True:
+                                    additional_questions_filled = await self.answer_additional_questions(
+                                        has_technical_experience=self.apply_details.has_technical_experience,
+                                        has_teaching_experience=self.apply_details.has_teaching_experience,
+                                        is_us_citizen=self.apply_details.is_us_citizen,
+                                        has_bachelors_degree=self.apply_details.has_bachelors_degree,
+                                        years_experience_servicenow=self.apply_details.years_experience_servicenow,
+                                        favorite_technology=self.apply_details.favorite_technology,
+                                        reason_for_applying=self.apply_details.reason_for_applying
                                     )
-                                    
-                                    # Find the nested divs till we reach the fifth child and then get the label within it.
-                                    label = grouping_div.find_element(By.XPATH, './/div/div/div/div/div/label').text
-                                    
-                                    # Store the label text in a variable
-                                    label_text = label
 
-                                    # Return the label text
-                                    print(label_text)
-                                except Exception as e:
-                                    print(f'Error finding label: {e}')
+                                    if additional_questions_filled:
+                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
 
+                                        if next_button:
+                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                        elif review_button:
+                                            await self.wait_and_click("//button[@aria-label='Review your application']")
+                                            break
+                                        elif submit_button:
+                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
+                                            time.sleep(random.uniform(1, constants.botSpeed))
+                                            break
+                                    else:
+                                        raise Exception("Failed to fill all additional questions.")
 
-                                # Submit the application
-                                submit_button = self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']")
-                                if submit_button:
-                                    submit_button.click()
-                                    await asyncio.sleep(random.uniform(1, constants.botSpeed))
-                                    lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                    self.displayWriteResults(lineToWrite)
-                                    countApplied += 1
-                                else:
-                                    raise Exception("Submit button not found")
+                                lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                self.displayWriteResults(lineToWrite)
+                                countApplied += 1
+
                             except Exception as e:
                                 lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)} Exception: {str(e)}"
                                 self.displayWriteResults(lineToWrite)
 
+                print(f"Applied to {countApplied} jobs out of {countJobs} total jobs.")
+
+    async def answer_additional_questions(self, **user_details):
+        additional_questions = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]")
+        all_questions_answered = True
+
+        for question in additional_questions:
+            question_type = self.determine_question_type(question)
+            question_label = self.extract_question_label(question)
+
+            if question_type == "input":
+                input_field = question.find_element(By.TAG_NAME, "input")
+                answer = await self.ask_gpt4(question_label, "string", user_details)
+                input_field.send_keys(answer)
+            elif question_type == "select":
+                select_element = question.find_element(By.TAG_NAME, "select")
+                options = [option.get_attribute("value") for option in select_element.find_elements(By.TAG_NAME, "option")]
+                options = [opt for opt in options if opt.lower() != "select an option"]
+                answer = await self.ask_gpt4(question_label, "choice", options, user_details)
+                Select(select_element).select_by_value(answer)
+            elif question_type == "radio":
+                radio_buttons = question.find_elements(By.XPATH, ".//input[@type='radio']")
+                answer_index = int(await self.ask_gpt4(question_label, "choice", user_details)) - 1
+                if 0 <= answer_index < len(radio_buttons):
+                    radio_buttons[answer_index].click()
+                else:
+                    all_questions_answered = False
+            else:
+                all_questions_answered = False
+
+            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+
+        return all_questions_answered
+
+    def determine_question_type(self, question):
+        if question.find_elements(By.TAG_NAME, "input"):
+            return "input"
+        elif question.find_elements(By.TAG_NAME, "select"):
+            return "select"
+        elif question.find_elements(By.XPATH, ".//input[@type='radio']"):
+            return "radio"
+        else:
+            return "unknown"
+
+    def extract_question_label(self, question):
+        label_element = question.find_element(By.XPATH, ".//label")
+        return label_element.text if label_element else "Unknown Question"
+
+    async def ask_gpt4(self, question, question_type, options=None, user_details=None):
+        prompt = f"Question: {question}\nType: {question_type}\n"
+
+        if question_type == "string":
+            prompt += "Please provide a concise and relevant answer to the question based on the user's information.\n"
+        elif question_type == "choice":
+            if options:
+                options_text = "Options:\n" + "\n".join([f"{opt}" for opt in options]) + "\n"
+                prompt += options_text
+                prompt += "Please select the most appropriate option from the list above by providing the exact option text. The response should only contain the selected option text, without any additional characters or explanations. If none of the options are suitable, respond with 'None'.\n"
+            else:
+                raise ValueError("Options must be provided for question type 'choice'.")
+        else:
+            raise ValueError(f"Unsupported question type: {question_type}")
+
+        if user_details:
+            prompt += f"\nUser Details:\n{json.dumps(user_details, indent=2)}\n"
+
+        prompt += "Answer:"
+
+        print(f"Generated Prompt:\n{prompt}\n")  # Print the generated prompt
+
+        async with httpx.AsyncClient() as client:
+            response = await client.post(
+                "http://127.0.0.1:8000/ask-gpt4/",
+                json={"question": prompt, "question_type": question_type, "options": options}
+            )
+
+        if response.status_code == 200:
+            answer_data = response.json()
+            answer = answer_data["answers"]
+            print(f"GPT-4 Answer: {answer}\n")  # Print the received answer
+            return answer
+        else:
+            raise Exception(f"Failed to get response from GPT-4 for question '{question}': {response.text}")
+        
     async def wait_and_click(self, xpath):
         """Wait for an element to be clickable and click it."""
         try:
@@ -512,38 +592,38 @@ class Linkedin:
         except TimeoutException:
             print(f"Element with xpath {xpath} not clickable.")
 
-    async def apply_to_job(self, job_url, resume_path, phone_number):
-        self.driver.get(job_url)
-        apply_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Easy Apply"]')
-        apply_button.click()
+    # async def apply_to_job(self, job_url, resume_path, phone_number):
+    #     self.driver.get(job_url)
+    #     apply_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Easy Apply"]')
+    #     apply_button.click()
         
-        await self.upload_resume(resume_path)
-        await self.fill_contact_info(phone_number)
+    #     await self.upload_resume(resume_path)
+    #     await self.fill_contact_info(phone_number)
         
-        next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
-        next_button.click()
+    #     next_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Continue to next step"]')
+    #     next_button.click()
         
-        # Handling additional questions dynamically
-        await self.handle_additional_questions()
+    #     # Handling additional questions dynamically
+    #     await self.handle_additional_questions()
 
-        submit_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Submit application"]')
-        submit_button.click()
+    #     submit_button = self.driver.find_element(By.XPATH, '//button[@aria-label="Submit application"]')
+    #     submit_button.click()
 
    
-    async def ask_gpt4(questions: list, question_type: str = "string", options: list = None):
-        answers = []
-        async with httpx.AsyncClient() as client:
-            for question in questions:
-                response = await client.post(
-                    'http://127.0.0.1:8000/ask-gpt4/',
-                    json={"question": question, "question_type": question_type, "options": options}
-                )
-                if response.status_code == 200:
-                    answer_data = response.json()
-                    answers.append(answer_data['answers'])
-                else:
-                    raise Exception(f"Failed to get response from GPT-4 for question '{question}': {response.text}")
-        return answers
+    # async def ask_gpt4(questions: list, question_type: str = "string", options: list = None):
+    #     answers = []
+    #     async with httpx.AsyncClient() as client:
+    #         for question in questions:
+    #             response = await client.post(
+    #                 'http://127.0.0.1:8000/ask-gpt4/',
+    #                 json={"question": question, "question_type": question_type, "options": options}
+    #             )
+    #             if response.status_code == 200:
+    #                 answer_data = response.json()
+    #                 answers.append(answer_data['answers'])
+    #             else:
+    #                 raise Exception(f"Failed to get response from GPT-4 for question '{question}': {response.text}")
+    #     return answers
     async def fill_all_string_inputs(self):
         # Find all parent divs
         parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
@@ -557,10 +637,9 @@ class Linkedin:
                 except Exception as e:
                     label = "Please provide input"  # Default prompt if no label is found
 
-                # Assuming label extraction remains the same
+                # Use ask_gpt4 to generate an answer for the label/question
                 answers = await self.ask_gpt4([label], "string")
-                answer = answers[0]  # Extract the first (and only) answer
-
+                answer = answers[0].strip()  # Extract the first (and only) answer and remove leading/trailing whitespace
 
                 # Clear the input field before sending keys
                 input_field.clear()
@@ -569,15 +648,6 @@ class Linkedin:
                 # Wait for a random time between 1 and 3 seconds
                 await asyncio.sleep(random.uniform(1, 3))
 
-        # Locate the input element within the parent div
-        input_field = parent_div.find_element(By.TAG_NAME, 'input')
-        # Clear the input field before sending keys
-        input_field.clear()
-        # Send the generated answer to the input field
-        input_field.send_keys(answer)
-        # Wait for a random time between 1 and 3 seconds
-        await asyncio.sleep(random.uniform(1, 3))
-        
     async def fill_all_select_inputs(self):
         # Find all parent divs
         parent_divs = self.driver.find_elements(By.CLASS_NAME, 'jobs-easy-apply-form-element')
@@ -587,141 +657,154 @@ class Linkedin:
             for select_element in select_elements:
                 # Find the label for the select element within the parent div
                 try:
-                    label = parent_div.find_element(By.XPATH, './/label').text #maybe do by.CSS_SELECTOR
-                except Exception as e:
+                    label = parent_div.find_element(By.XPATH, './/label').text
+                except NoSuchElementException:
                     label = "Please select an option"  # Default prompt if no label is found
 
                 # Extract options from the select element
-                options = [option.get_attribute('value') for option in select_element.find_elements(By.TAG_NAME, 'option')]
+                options = [option.text for option in select_element.find_elements(By.TAG_NAME, 'option')]
                 # Remove placeholder if necessary
                 options = [opt for opt in options if opt.lower() != "select an option"]
 
                 # Use ask_gpt4 to generate an answer for the label/question with options
-                 # Assuming label and options extraction remains the same
                 selected_options = await self.ask_gpt4([label], "choice", options=options)
-                selected_option = selected_options[0]  # Extract the first (and only) selected option
+                selected_option = selected_options[0].strip()  # Extract the first (and only) selected option and remove leading/trailing whitespace
 
+                if selected_option.lower() == 'none':
+                    # If GPT-4 responds with 'None', select the first option as a fallback
+                    Select(select_element).select_by_index(0)
+                    print(f"Warning: GPT-4 responded with 'None' for the question '{label}'. Selecting the first option as a fallback.")
+                else:
+                    try:
+                        # Select the generated answer in the select element
+                        Select(select_element).select_by_visible_text(selected_option)
+                    except NoSuchElementException:
+                        # If the selected option is not found, try selecting by value
+                        try:
+                            Select(select_element).select_by_value(selected_option)
+                        except NoSuchElementException:
+                            # If the selected option is still not found, select the first option as a fallback
+                            Select(select_element).select_by_index(0)
+                            print(f"Warning: Selected option '{selected_option}' not found for the question '{label}'. Selecting the first option as a fallback.")
 
-                # Select the generated answer in the select element
-                Select(select_element).select_by_value(selected_option)
                 # Wait for a random time between 1 and 3 seconds
                 await asyncio.sleep(random.uniform(1, 3))
-        
-    async def handle_additional_questions(self):
-        # Assuming all additional questions are text input fields
-        text_input_fields = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="text"]')
-        for field in text_input_fields:
-            field.send_keys('Answer')  # Replace 'Answer' with the actual answer or dynamic logic to generate the answer
-            await asyncio.sleep(random.uniform(0.5, 1.5))
+            
+    # async def handle_additional_questions(self):
+    #     # Assuming all additional questions are text input fields
+    #     text_input_fields = self.driver.find_elements(By.CSS_SELECTOR, 'input[type="text"]')
+    #     for field in text_input_fields:
+    #         field.send_keys('Answer')  # Replace 'Answer' with the actual answer or dynamic logic to generate the answer
+    #         await asyncio.sleep(random.uniform(0.5, 1.5))
 
-    def handleApplicationQuestions(self):
-        # Check for different types of input fields
-        self.handleTextInputFields()
-        self.handleSelectDropdowns()
-        self.handleRadioButtons()
+    # def handleApplicationQuestions(self):
+    #     # Check for different types of input fields
+    #     self.handleTextInputFields()
+    #     self.handleSelectDropdowns()
+    #     self.handleRadioButtons()
 
-        # Assuming there might be a "Next" button to navigate through modal pages
-        next_buttons = self.driver.find_elements(By.XPATH, "//button[contains(text(), 'Next')]")
-        for next_button in next_buttons:
-            try:
-                if next_button.is_displayed() and next_button.is_enabled():
-                    next_button.click()
-                    time.sleep(random.uniform(1, constants.botSpeed))
-                    self.handleApplicationQuestions()  # Recursively handle questions on the next page
-            except Exception as e:
-                print(f"Error navigating modal pages: {e}")
+    #     # Assuming there might be a "Next" button to navigate through modal pages
+    #     next_buttons = self.driver.find_elements(By.XPATH, "//button[contains(text(), 'Next')]")
+    #     for next_button in next_buttons:
+    #         try:
+    #             if next_button.is_displayed() and next_button.is_enabled():
+    #                 next_button.click()
+    #                 time.sleep(random.uniform(1, constants.botSpeed))
+    #                 self.handleApplicationQuestions()  # Recursively handle questions on the next page
+    #         except Exception as e:
+    #             print(f"Error navigating modal pages: {e}")
 
-    async def handleTextInputFields(self):
-        text_input_elements = self.driver.find_elements(By.XPATH, "//input[@type='text']")
-        for element in text_input_elements:
-            try:
-                # Traverse up to the common parent and then find the label within that scope
-                parent_container = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 'jobs-easy-apply-form-element')]")
-                label = parent_container.find_element(By.XPATH, ".//label")
-                question_text = label.text if label else "Default Question"
+    # async def handleTextInputFields(self):
+    #     text_input_elements = self.driver.find_elements(By.XPATH, "//input[@type='text']")
+    #     for element in text_input_elements:
+    #         try:
+    #             # Traverse up to the common parent and then find the label within that scope
+    #             parent_container = element.find_element(By.XPATH, "./ancestor::div[contains(@class, 'jobs-easy-apply-form-element')]")
+    #             label = parent_container.find_element(By.XPATH, ".//label")
+    #             question_text = label.text if label else "Default Question"
                 
-                # Assuming ask_gpt4 is an async function. If not, you'll need to adjust this part.
-                answer = await self.ask_gpt4(question_text)
-                element.send_keys(answer)
-            except Exception as e:
-                print(f"Failed to process text input field: {e}")
+    #             # Assuming ask_gpt4 is an async function. If not, you'll need to adjust this part.
+    #             answer = await self.ask_gpt4(question_text)
+    #             element.send_keys(answer)
+    #         except Exception as e:
+    #             print(f"Failed to process text input field: {e}")
 
-    async def handleSelectDropdowns(self):
-        # Find all select elements and their corresponding labels for questions
-        select_elements = self.driver.find_elements(By.XPATH, "//select[contains(@data-test-text-entity-list-form-select, '')]")
-        for select_element in select_elements:
-            # Find the label associated with the select element
-            # Assuming the label is a direct preceding sibling of the select's parent div
-            label = select_element.find_element(By.XPATH, "./preceding-sibling::label")
-            question_text = label.text.strip() if label else "Default Question"
+    # async def handleSelectDropdowns(self):
+    #     # Find all select elements and their corresponding labels for questions
+    #     select_elements = self.driver.find_elements(By.XPATH, "//select[contains(@data-test-text-entity-list-form-select, '')]")
+    #     for select_element in select_elements:
+    #         # Find the label associated with the select element
+    #         # Assuming the label is a direct preceding sibling of the select's parent div
+    #         label = select_element.find_element(By.XPATH, "./preceding-sibling::label")
+    #         question_text = label.text.strip() if label else "Default Question"
             
-            # Extract options from the select element
-            options = [option.text.strip() for option in Select(select_element).options if option.text.strip() != "Select an option"]
+    #         # Extract options from the select element
+    #         options = [option.text.strip() for option in Select(select_element).options if option.text.strip() != "Select an option"]
             
-            # Assuming ask_gpt4 is a synchronous function that returns the answer as a string
-            # If it's asynchronous, you'll need to adjust the call accordingly
-            answer = await self.ask_gpt4(question_text, options)
+    #         # Assuming ask_gpt4 is a synchronous function that returns the answer as a string
+    #         # If it's asynchronous, you'll need to adjust the call accordingly
+    #         answer = await self.ask_gpt4(question_text, options)
             
-            # Select the option that matches the answer returned by GPT-4
-            try:
-                Select(select_element).select_by_visible_text(answer)
-            except Exception as e:
-                print(f"Error selecting option: {e}")
+    #         # Select the option that matches the answer returned by GPT-4
+    #         try:
+    #             Select(select_element).select_by_visible_text(answer)
+    #         except Exception as e:
+    #             print(f"Error selecting option: {e}")
 
     def find_corresponding_label(self, element):
         # Implement logic to find the label corresponding to an input/select element
         label_for = element.get_attribute("id")
         return self.driver.find_element(By.XPATH, f"//label[@for='{label_for}']")
 
-    async def handleRadioButtons(self):
-        fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
-        for fieldset in fieldsets:
-            try:
-                question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip()
-                # Use await to get the answer asynchronously
-                answer_index = int(await self.ask_gpt4(question_text)) - 1
+    # async def handleRadioButtons(self):
+    #     fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
+    #     for fieldset in fieldsets:
+    #         try:
+    #             question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip()
+    #             # Use await to get the answer asynchronously
+    #             answer_index = int(await self.ask_gpt4(question_text)) - 1
                 
-                radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
-                if 0 <= answer_index < len(radio_buttons):
-                    radio_buttons[answer_index].click()
-                else:
-                    print(f"Invalid answer index received from GPT-4: {answer_index}")
-            except NoSuchElementException:
-                print("Question text or radio button not found.")
-            except Exception as e:
-                print(f"Error handling radio buttons: {str(e)}")
+    #             radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
+    #             if 0 <= answer_index < len(radio_buttons):
+    #                 radio_buttons[answer_index].click()
+    #             else:
+    #                 print(f"Invalid answer index received from GPT-4: {answer_index}")
+    #         except NoSuchElementException:
+    #             print("Question text or radio button not found.")
+    #         except Exception as e:
+    #             print(f"Error handling radio buttons: {str(e)}")
                 
 
 
 
-    async def handle_modals_in_sequence(self):
-        # Interact with the first modal
-        await self.fill_out_contact_info()
-        # Click the "Next" button on the first modal
-        await self.wait_and_click("//button[contains(text(), 'Next')]")
+    # async def handle_modals_in_sequence(self):
+    #     # Interact with the first modal
+    #     await self.fill_out_contact_info()
+    #     # Click the "Next" button on the first modal
+    #     await self.wait_and_click("//button[contains(text(), 'Next')]")
 
-        # Interact with the second modal (e.g., uploading a resume)
-        await self.select_first_resume_and_continue()
-        # Click the "Next" button on the second modal
-        await self.wait_and_click("//button[contains(text(), 'Next')]")
+    #     # Interact with the second modal (e.g., uploading a resume)
+    #     await self.select_first_resume_and_continue()
+    #     # Click the "Next" button on the second modal
+    #     await self.wait_and_click("//button[contains(text(), 'Next')]")
 
-        # Interact with the third modal (e.g., answering additional questions)
-        await self.answer_additional_questions()
-        # Click the "Review" button on the third modal
-        await self.wait_and_click("//button[contains(text(), 'Review')]")
+    #     # Interact with the third modal (e.g., answering additional questions)
+    #     await self.answer_additional_questions()
+    #     # Click the "Review" button on the third modal
+    #     await self.wait_and_click("//button[contains(text(), 'Review')]")
 
-        # Interact with the fourth modal (e.g., final review)
-        await self.final_review()
-        # Click the "Submit application" button on the fourth modal
-        await self.wait_and_click("//button[contains(text(), 'Submit application')]")
+    #     # Interact with the fourth modal (e.g., final review)
+    #     await self.final_review()
+    #     # Click the "Submit application" button on the fourth modal
+    #     await self.wait_and_click("//button[contains(text(), 'Submit application')]")
 
-    def process_job_page(self):
-        """Process the current job page."""
-        page_text = self.extract_text_from_page()
-        questions = self.detect_questions(page_text)
-        answers = self.ask_gpt4(questions)
-        for question, answer in zip(questions, answers):
-            print(f"Q: {question}\nA: {answer}\n")
+    # def process_job_page(self):
+    #     """Process the current job page."""
+    #     page_text = self.extract_text_from_page()
+    #     questions = self.detect_questions(page_text)
+    #     answers = self.ask_gpt4(questions)
+    #     for question, answer in zip(questions, answers):
+    #         print(f"Q: {question}\nA: {answer}\n")
 
     def chooseResume(self):
         try:

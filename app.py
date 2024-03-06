@@ -102,11 +102,20 @@ def generate_prompt(question: str, question_type: str, options: Optional[List[st
     Generate a prompt for GPT-4 based on the question, its type, and optional options.
     """
     prompt = f"Question: {question}\nType: {question_type}\n"
-    if options:
-        options_text = "Options:\n" + "\n".join([f"{idx+1}. {opt}" for idx, opt in enumerate(options)]) + "\nAnswer:"
-        prompt += options_text
+
+    if question_type == "string":
+        prompt += "Please provide a concise and relevant answer to the question based on the user's information.\n"
+    elif question_type == "choice":
+        if options:
+            options_text = "Options:\n" + "\n".join([f"{opt}" for opt in options]) + "\n"
+            prompt += options_text
+            prompt += "Please select the most appropriate option from the list above by providing the exact option text. If none of the options are suitable, respond with 'None'.\n"
+        else:
+            raise ValueError("Options must be provided for question type 'choice'.")
     else:
-        prompt += "Answer:"
+        raise ValueError(f"Unsupported question type: {question_type}")
+
+    prompt += "Answer:"
     return prompt
 # Ensure you have `uvicorn` installed to run FastAPI apps
 # Run the app with: uvicorn app:app --reload
