@@ -567,7 +567,7 @@ class Linkedin:
 
         print(f"Generated Prompt:\n{prompt}\n")  # Print the generated prompt
 
-        async with httpx.AsyncClient() as client:
+        async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
                 "http://127.0.0.1:8000/ask-gpt4/",
                 json={"question": prompt, "question_type": question_type, "options": options}
@@ -639,7 +639,7 @@ class Linkedin:
 
                 # Use ask_gpt4 to generate an answer for the label/question
                 answers = await self.ask_gpt4([label], "string")
-                answer = answers[0].strip()  # Extract the first (and only) answer and remove leading/trailing whitespace
+                answer = answers  # Extract the first (and only) answer and remove leading/trailing whitespace
 
                 # Clear the input field before sending keys
                 input_field.clear()
@@ -671,21 +671,25 @@ class Linkedin:
                 selected_option = selected_options[0].strip()  # Extract the first (and only) selected option and remove leading/trailing whitespace
 
                 if selected_option.lower() == 'none':
-                    # If GPT-4 responds with 'None', select the first option as a fallback
                     Select(select_element).select_by_index(0)
                     print(f"Warning: GPT-4 responded with 'None' for the question '{label}'. Selecting the first option as a fallback.")
                 else:
                     try:
-                        # Select the generated answer in the select element
+                        # Try to select the option by visible text first
                         Select(select_element).select_by_visible_text(selected_option)
                     except NoSuchElementException:
-                        # If the selected option is not found, try selecting by value
-                        try:
-                            Select(select_element).select_by_value(selected_option)
-                        except NoSuchElementException:
-                            # If the selected option is still not found, select the first option as a fallback
+                        # If the exact text doesn't match, try to find the option that contains the response
+                        options = select_element.find_elements(By.TAG_NAME, 'option')
+                        selected = False
+                        for option in options:
+                            if selected_option in option.text:
+                                option.click()
+                                selected = True
+                                break
+                        if not selected:
+                            # If no matching option is found, select the first option as a fallback
                             Select(select_element).select_by_index(0)
-                            print(f"Warning: Selected option '{selected_option}' not found for the question '{label}'. Selecting the first option as a fallback.")
+                            print(f"Warning: No matching option found for '{selected_option}' in the question '{label}'. Selecting the first option as a fallback.")
 
                 # Wait for a random time between 1 and 3 seconds
                 await asyncio.sleep(random.uniform(1, 3))
