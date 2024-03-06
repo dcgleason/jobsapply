@@ -101,15 +101,15 @@ def generate_prompt(question: str, question_type: str, options: Optional[List[st
     """
     Generate a prompt for GPT-4 based on the question, its type, and optional options.
     """
-    prompt = f"Question: {question}\nType: {question_type}\n"
+    prompt = f"Statement: {question}\nType: {question_type}\n"
 
     if question_type == "string":
-        prompt += "Please provide a concise and relevant answer to the question based on the user's information.\n"
+        prompt += "Please provide a concise and relevant answer to the statement based on the user's information.\n"
     elif question_type == "choice":
         if options:
             options_text = "Options:\n" + "\n".join([f"{opt}" for opt in options]) + "\n"
             prompt += options_text
-            prompt += "Please select the most appropriate option from the list above by providing the exact option text. If none of the options are suitable, respond with 'None'.\n"
+            prompt += "Please select the option that best fits the given statement by providing the exact option text. The response should only contain the selected option text, without any additional characters or explanations. If none of the options are suitable, respond with 'None'.\n"
         else:
             raise ValueError("Options must be provided for question type 'choice'.")
     else:
