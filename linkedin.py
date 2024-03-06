@@ -460,6 +460,14 @@ class Linkedin:
                                         next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
                                         if next_button:
                                             await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                            break
+                                        elif review_button:
+                                            await self.wait_and_click("//button[@aria-label='Review your application']")
+                                            break
+                                        elif submit_button:
+                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
+                                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+                                            break
                                         else:
                                             break
                                     elif modal_type == "choose_resume":
@@ -468,8 +476,13 @@ class Linkedin:
                                         review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
                                         if next_button:
                                             await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                            break
                                         elif review_button:
                                             await self.wait_and_click("//button[@aria-label='Review your application']")
+                                            break
+                                        elif submit_button:
+                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
+                                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
                                             break
                                     elif modal_type == "radio_buttons":
                                         await self.fill_all_radio_buttons()
@@ -477,8 +490,13 @@ class Linkedin:
                                         review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
                                         if next_button:
                                             await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                            break
                                         elif review_button:
                                             await self.wait_and_click("//button[@aria-label='Review your application']")
+                                            break
+                                        elif submit_button:
+                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
+                                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
                                             break
                                     elif modal_type == "select_string_resume_submit":
                                         await self.fill_all_string_inputs()
@@ -688,26 +706,35 @@ class Linkedin:
 
                 max_retries = 3
                 retry_count = 0
+                error = False
                 while retry_count < max_retries:
                     # Use ask_gpt4 to generate an answer for the label/question
-                    answers = await self.ask_gpt4([label], "string")
-                    answer = answers  # Extract the first (and only) answer and remove leading/trailing whitespace
 
-                    # Clear the input field before sending keys
-                    input_field.clear()
-                    # Send the generated answer to the input field
-                    input_field.send_keys(answer)
-                    # Wait for a random time between 1 and 3 seconds
-                    await asyncio.sleep(random.uniform(1, 3))
+                    if error == False:
+
+                        answers = await self.ask_gpt4([label], "string")
+                        answer = answers  # Extract the first (and only) answer and remove leading/trailing whitespace
+
+                        # Clear the input field before sending keys
+                        input_field.clear()
+                        # Send the generated answer to the input field
+                        input_field.send_keys(answer)
+                        # Wait for a random time between 1 and 3 seconds
+                        await asyncio.sleep(random.uniform(1, 3))
 
                     # Check for inline error messages
                     error_message_elements = parent_div.find_elements(By.XPATH, ".//span[contains(@class, 'artdeco-inline-feedback__message')]")
                     if error_message_elements:
                         error_message = error_message_elements[0].text
                         print(f"Error encountered: {error_message}")
+                        error = True
                         # Send the error message to GPT-4 for generating a new response
                         answers = await self.ask_gpt4([f"Error: {error_message}. Please provide a valid input for: {label}"], "string")
                         answer = answers
+                        input_field.clear()
+                        # Send the generated answer to the input field
+                        input_field.send_keys(answer)
+
                         retry_count += 1
                     else:
                         break
