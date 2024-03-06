@@ -47,10 +47,11 @@ class ApplyDetails(BaseModel):
     mobile_phone_number: str = Field(..., min_length=5, max_length=15)
     has_technical_experience: bool
     has_teaching_experience: bool
+    userInfo: str 
     is_us_citizen: bool
     has_bachelors_degree: bool
     years_experience_servicenow: int
     favorite_technology: str
     reason_for_applying: str
     config: LinkedinConfig
-    userInfo: str 
+

@@ -68,6 +68,7 @@ class GPT4Request(BaseModel):
     question: str
     question_type: str = "text"
     options: Optional[List[str]] = None
+    userInfo: str
 
 class GPT4Response(BaseModel):
     answers: str
@@ -87,7 +88,7 @@ async def ask_gpt4(request: GPT4Request):
         model="gpt-4-turbo-preview",
         messages=[
             {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},
-            {"role": "user", "content": f"{request.userInfo}\n\n{prompt}"}  # Include user input in the prompt
+            {"role": "user", "content": f"{request.userInfo}\n\n{prompt}"}  # Include userInfo in the prompt
         ]
         )
         answer = completion.choices[0].message.content

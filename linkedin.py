@@ -588,14 +588,30 @@ class Linkedin:
         for fieldset in radio_button_fieldsets:
             question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip()
             radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
+            radio_button_labels = fieldset.find_elements(By.XPATH, ".//label")
 
-            answer = await self.ask_gpt4(question_text, "choice", user_details=self.apply_details)
-            answer_index = [opt.get_attribute('value') for opt in radio_buttons].index(answer)
+            options = [label.text.strip() for label in radio_button_labels]
 
-            if 0 <= answer_index < len(radio_buttons):
-                radio_buttons[answer_index].click()
-            else:
-                print(f"Invalid answer received from GPT-4: {answer}")
+            max_retries = 3
+            retry_count = 0
+            while retry_count < max_retries:
+                answer = await self.ask_gpt4(question_text, "choice", options=options)
+                print(f"GPT-4 Answer: {answer}")  # Print the received answer
+
+                try:
+                    answer_index = options.index(answer)
+                    if 0 <= answer_index < len(radio_buttons):
+                        radio_buttons[answer_index].click()
+                        break
+                    else:
+                        print(f"Invalid answer index received from GPT-4: {answer_index}")
+                        retry_count += 1
+                except ValueError:
+                    print(f"Invalid answer received from GPT-4: {answer}")
+                    retry_count += 1
+
+                if retry_count == max_retries:
+                    print(f"Failed to select a valid radio button after {max_retries} retries.")
 
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
@@ -613,7 +629,7 @@ class Linkedin:
         label_element = question.find_element(By.XPATH, ".//label")
         return label_element.text if label_element else "Unknown Question"
 
-    async def ask_gpt4(self, question, question_type, options=None, user_details=None):
+    async def ask_gpt4(self, question, question_type, options=None):
         prompt = f"Statement: {question}\nType: {question_type}\n"
 
         if question_type == "string":
@@ -635,7 +651,7 @@ class Linkedin:
         async with httpx.AsyncClient(timeout=60.0) as client:
             response = await client.post(
                 "http://127.0.0.1:8000/ask-gpt4/",
-                json={"question": prompt, "question_type": question_type, "options": options}
+                json={"question": prompt, "question_type": question_type, "options": options, "userInfo": self.userInfo}  # Include userInfo in the request payload
             )
 
         if response.status_code == 200:
