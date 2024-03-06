@@ -448,54 +448,64 @@ class Linkedin:
                         easyApplyButton = self.easyApplyButton()
 
                         if easyApplyButton is not False:
-                            easyApplyButton.click()
-                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
-
-                            try:
-                                await self.fill_all_string_inputs()
-
-                                await self.fill_all_select_inputs()
-
-                                await self.wait_and_click("//button[@aria-label='Continue to next step']")
-
-                                await self.chooseResume()
-                                await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                easyApplyButton.click()
+                                await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
                                 while True:
-                                    additional_questions_filled = await self.answer_additional_questions(
-                                        has_technical_experience=self.apply_details.has_technical_experience,
-                                        has_teaching_experience=self.apply_details.has_teaching_experience,
-                                        is_us_citizen=self.apply_details.is_us_citizen,
-                                        has_bachelors_degree=self.apply_details.has_bachelors_degree,
-                                        years_experience_servicenow=self.apply_details.years_experience_servicenow,
-                                        favorite_technology=self.apply_details.favorite_technology,
-                                        reason_for_applying=self.apply_details.reason_for_applying
-                                    )
+                                    modal_type = self.get_modal_type()
 
-                                    if additional_questions_filled:
+                                    if modal_type == "select_and_string":
+                                        await self.fill_all_string_inputs()
+                                        await self.fill_all_select_inputs()
+                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                        if next_button:
+                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                        else:
+                                            break
+                                    elif modal_type == "choose_resume":
+                                        await self.chooseResume()
                                         next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
                                         review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
-                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-
                                         if next_button:
                                             await self.wait_and_click("//button[@aria-label='Continue to next step']")
                                         elif review_button:
                                             await self.wait_and_click("//button[@aria-label='Review your application']")
                                             break
-                                        elif submit_button:
+                                    elif modal_type == "radio_buttons":
+                                        await self.fill_all_radio_buttons()
+                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                        if next_button:
+                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                        elif review_button:
+                                            await self.wait_and_click("//button[@aria-label='Review your application']")
+                                            break
+                                    elif modal_type == "select_string_resume_submit":
+                                        await self.fill_all_string_inputs()
+                                        await self.fill_all_select_inputs()
+                                        await self.chooseResume()
+                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                        if submit_button:
+                                            self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
+                                            time.sleep(random.uniform(1, constants.botSpeed))
+                                            break
+                                    elif modal_type == "submit":
+                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                        if submit_button:
                                             self.driver.find_element(By.CSS_SELECTOR, "button[aria-label='Submit application']").click()
                                             time.sleep(random.uniform(1, constants.botSpeed))
                                             break
                                     else:
-                                        raise Exception("Failed to fill all additional questions.")
+                                        break
 
-                                lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                self.displayWriteResults(lineToWrite)
-                                countApplied += 1
+                                    lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                    self.displayWriteResults(lineToWrite)
+                                    countApplied += 1
 
-                            except Exception as e:
-                                lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)} Exception: {str(e)}"
-                                self.displayWriteResults(lineToWrite)
+                            
+                        else:
+                            lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)} Exception: {str(e)}"
+                            self.displayWriteResults(lineToWrite)
 
                 print(f"Applied to {countApplied} jobs out of {countJobs} total jobs.")
 
@@ -530,6 +540,44 @@ class Linkedin:
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
         return all_questions_answered
+    
+    def get_modal_type(self):
+        select_and_string = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]//input") or \
+                            self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]//select")
+        choose_resume = self.driver.find_elements(By.CLASS_NAME, "jobs-document-upload__title--is-required")
+        radio_buttons = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
+        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+        select_string_resume_submit = select_and_string and choose_resume and submit_button
+
+        if select_string_resume_submit:
+            return "select_string_resume_submit"
+        elif select_and_string:
+            return "select_and_string"
+        elif choose_resume:
+            return "choose_resume"
+        elif radio_buttons:
+            return "radio_buttons"
+        elif submit_button:
+            return "submit"
+        else:
+            return "unknown"
+        
+    async def fill_all_radio_buttons(self):
+        radio_button_fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
+
+        for fieldset in radio_button_fieldsets:
+            question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip()
+            radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
+
+            answer = await self.ask_gpt4(question_text, "choice", user_details=self.apply_details)
+            answer_index = [opt.get_attribute('value') for opt in radio_buttons].index(answer)
+
+            if 0 <= answer_index < len(radio_buttons):
+                radio_buttons[answer_index].click()
+            else:
+                print(f"Invalid answer received from GPT-4: {answer}")
+
+            await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
     def determine_question_type(self, question):
         if question.find_elements(By.TAG_NAME, "input"):
@@ -810,22 +858,49 @@ class Linkedin:
     #     for question, answer in zip(questions, answers):
     #         print(f"Q: {question}\nA: {answer}\n")
 
-    def chooseResume(self):
-        try:
-            self.driver.find_element(
-                By.CLASS_NAME, "jobs-document-upload__title--is-required")
-            resumes = self.driver.find_elements(
-                By.XPATH, "//div[contains(@class, 'ui-attachment--pdf')]")
-            if (len(resumes) == 1 and resumes[0].get_attribute("aria-label") == "Select this resume"):
-                resumes[0].click()
-            elif (len(resumes) > 1 and resumes[config.preferredCv-1].get_attribute("aria-label") == "Select this resume"):
-                resumes[config.preferredCv-1].click()
-            elif (type(len(resumes)) != int):
-                utils.prRed(
-                    "❌ No resume has been selected please add at least one resume to your Linkedin account.")
-        except:
-            pass
+    # def chooseResume(self):
+    #     try:
+    #         self.driver.find_element(
+    #             By.CLASS_NAME, "jobs-document-upload__title--is-required")
+    #         resumes = self.driver.find_elements(
+    #             By.XPATH, "//div[contains(@class, 'ui-attachment--pdf')]")
+    #         if (len(resumes) == 1 and resumes[0].get_attribute("aria-label") == "Select this resume"):
+    #             resumes[0].click()
+    #         elif (len(resumes) > 1 and resumes[config.preferredCv-1].get_attribute("aria-label") == "Select this resume"):
+    #             resumes[config.preferredCv-1].click()
+    #         elif (type(len(resumes)) != int):
+    #             utils.prRed(
+    #                 "❌ No resume has been selected please add at least one resume to your Linkedin account.")
+    #     except:
+    #         pass
 
+    def is_choose_resume_modal(self):
+        try:
+            self.driver.find_element(By.CLASS_NAME, "jobs-document-upload__title--is-required")
+            return True
+        except:
+            return False
+
+    async def chooseResume(self):
+        try:
+            resumes = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'ui-attachment--pdf')]")
+            if resumes:
+                selected_resume = None
+                for resume in resumes:
+                    if resume.get_attribute("aria-label") == "Selected":
+                        selected_resume = resume
+                        break
+
+                if not selected_resume:
+                    if len(resumes) == 1:
+                        resumes[0].click()
+                    elif len(resumes) > 1:
+                        resumes[config.preferredCv - 1].click()
+            else:
+                utils.prRed("❌ No resume has been selected. Please add at least one resume to your LinkedIn account.")
+        except Exception as e:
+            utils.prRed(f"❌ Error while choosing resume: {str(e)}")
+            
     def getJobProperties(self, count):
         textToWrite = ""
         jobTitle = ""
