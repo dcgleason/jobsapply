@@ -595,7 +595,7 @@ class Linkedin:
         radio_button_fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
 
         for fieldset in radio_button_fieldsets:
-            question_text = fieldset.find_element(By.XPATH, ".//legend/span/span").text.strip()
+            question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip() #maybe span/span
             print(f"Question: {question_text}")
             radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
             radio_button_labels = fieldset.find_elements(By.XPATH, ".//label")
