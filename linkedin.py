@@ -738,7 +738,7 @@ class Linkedin:
 
                     # Use ask_gpt4 to generate an answer for the label/question with options
                     selected_options = await self.ask_gpt4([label], "choice", options=options)
-                    selected_option = selected_options[0].strip()  # Extract the first (and only) selected option and remove leading/trailing whitespace
+                    selected_option = selected_options # Extract the first (and only) selected option and remove leading/trailing whitespace
 
                     if selected_option.lower() == 'none':
                         Select(select_element).select_by_index(0)
@@ -764,7 +764,7 @@ class Linkedin:
                         print(f"Error encountered: {error_message}")
                         # Send the error message to GPT-4 for generating a new response
                         selected_options = await self.ask_gpt4([f"Error: {error_message}. Please select a valid option for: {label}"], "choice", options=options)
-                        selected_option = selected_options[0].strip()
+                        selected_option = selected_options
                         retry_count += 1
                     else:
                         break
