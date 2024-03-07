@@ -453,6 +453,9 @@ class Linkedin:
                                 await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
                                 while True:
+                                    modalbox_open = WebDriverWait(self.driver, 10).until(
+                                        EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']"))
+                                    )
                                     modal_type = self.get_modal_type()
 
                                     if modal_type == "select_and_string":
@@ -511,7 +514,33 @@ class Linkedin:
                                             break
                                         else:
                                             break
-                                   
+                                    elif modal_type == "radio_and_string":
+                                        await self.fill_all_radio_buttons()
+                                       # Check if string inputs are present
+                                        # string_inputs = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]//input")
+                                        # if string_inputs:
+                                        #     await self.fill_all_string_inputs()
+
+                                        # # Check if select inputs are present
+                                        # select_inputs = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]//select")
+                                        # if select_inputs:
+                                        #     await self.fill_all_select_inputs()
+                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                        if next_button:
+                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                        elif review_button:
+                                            await self.wait_and_click("//button[@aria-label='Review your application']")
+                                        elif submit_button:
+                                            await self.wait_and_click("//button[@aria-label='Submit application']")
+                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                            self.displayWriteResults(lineToWrite)
+                                            countApplied += 1
+                                            break
+                                        else:
+                                                break
+                                           
                                     elif modal_type == "submit":
                                             submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
                                             await self.wait_and_click("//button[@aria-label='Submit application']")
@@ -569,10 +598,14 @@ class Linkedin:
         review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
         submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
         select_string_resume_submit = select_and_string and choose_resume and submit_button
+        radio_and_string = radio_buttons and select_and_string
 
         if select_string_resume_submit:
             print("select_string_resume_submit")
             return "select_string_resume_submit"
+        elif radio_and_string:
+            print("radio_and_string")
+            return "radio_and_string"
         elif select_and_string:
             print("select_and_string")
             return "select_and_string"
@@ -590,41 +623,46 @@ class Linkedin:
             return "submit"
         else:
             return "unknown"
-        
-        
+            
+
     async def fill_all_radio_buttons(self):
-        radio_button_fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
-
+        print("Filling all radio buttons")
+        radio_button_fieldsets = WebDriverWait(self.driver, 10).until(
+            EC.presence_of_all_elements_located((By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]"))
+        )
         for fieldset in radio_button_fieldsets:
-            question_text = fieldset.find_element(By.XPATH, ".//legend/span").text.strip() #maybe span/span
+            question_text = WebDriverWait(fieldset, 10).until(
+                EC.presence_of_element_located((By.XPATH, ".//legend/span"))
+            ).text.strip()
             print(f"Question: {question_text}")
-            radio_buttons = fieldset.find_elements(By.XPATH, ".//input[@type='radio']")
-            radio_button_labels = fieldset.find_elements(By.XPATH, ".//label")
-
+            radio_button_labels = WebDriverWait(fieldset, 10).until(
+                EC.presence_of_all_elements_located((By.XPATH, ".//label"))
+            )
             options = [label.text.strip() for label in radio_button_labels]
-
+            
             max_retries = 3
             retry_count = 0
             while retry_count < max_retries:
                 answer = await self.ask_gpt4(question_text, "choice", options=options)
                 print(f"GPT-4 Answer: {answer}")  # Print the received answer
-
+                
                 try:
-                    answer_index = options.index(answer)
-                    if 0 <= answer_index < len(radio_buttons):
-                        radio_buttons[answer_index].click()
+                    if answer in options:
+                        answer_label = next(label for label in radio_button_labels if label.text.strip() == answer)
+                        answer_label.click()
                         break
                     else:
-                        print(f"Invalid answer index received from GPT-4: {answer_index}")
+                        print(f"Invalid answer received from GPT-4: {answer}")
                         retry_count += 1
-                except ValueError:
-                    print(f"Invalid answer received from GPT-4: {answer}")
+                except Exception as e:
+                    print(f"Error while clicking radio button label: {str(e)}")
                     retry_count += 1
+            
+            if retry_count == max_retries:
+                print(f"Failed to select a valid radio button after {max_retries} retries.")
+        
+        await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
-                if retry_count == max_retries:
-                    print(f"Failed to select a valid radio button after {max_retries} retries.")
-
-            await asyncio.sleep(random.uniform(1, constants.botSpeed))
     def determine_question_type(self, question):
         if question.find_elements(By.TAG_NAME, "input"):
             return "input"
