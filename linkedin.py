@@ -591,6 +591,7 @@ class Linkedin:
         else:
             return "unknown"
         
+        
     async def fill_all_radio_buttons(self):
         radio_button_fieldsets = self.driver.find_elements(By.XPATH, "//fieldset[contains(@data-test-form-builder-radio-button-form-component, 'true')]")
 
