@@ -35,7 +35,6 @@ from selenium.webdriver.support.ui import Select
 
 
 options = webdriver.ChromeOptions()
-options.add_argument("--headless")  # Optional: if you want to run Chrome in headless mode
 driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
 
@@ -51,9 +50,12 @@ class Linkedin:
 
         # Set Chrome options
         chrome_options = Options()
+        chrome_options.add_argument("--headless")
         chrome_options.add_argument("--no-sandbox")
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--window-size=1920x1080")
+        driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+
 
         self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
