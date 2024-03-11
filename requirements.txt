@@ -5,3 +5,4 @@ webdriver-manager==3.4.2
 PyYAML
 httpx==0.21.1
 pydantic[email]
+openai
