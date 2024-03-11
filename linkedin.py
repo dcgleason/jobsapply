@@ -35,7 +35,9 @@ from selenium.webdriver.support.ui import Select
 
 
 options = webdriver.ChromeOptions()
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
+
+chrome_version = "121.0.6167.160"
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version=chrome_version).install()), options=options)
 
 
 class Linkedin:
