@@ -45,14 +45,5 @@ class LinkedinConfig(BaseModel):
     # outputFileType: List[str]
 
 class ApplyDetails(BaseModel):
-    email: EmailStr
-    phone_country_code: str = Field(..., min_length=1, max_length=4)
-    mobile_phone_number: str = Field(..., min_length=5, max_length=15)
-    hasExpFedClients: bool
-    secretTSClearance: bool
-    comfortableWorkingOnsite: bool
-    is_us_citizen: bool
-    has_bachelors_degree: bool
-    years_experience_servicenow: int
     userInfo: str  # Include the userInfo field
     config: LinkedinConfig
