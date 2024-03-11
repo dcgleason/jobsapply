@@ -8,7 +8,7 @@ class LinkedinCredentials(BaseModel):
 class LinkedinConfig(BaseModel):
     credentials: LinkedinCredentials
     headless: bool
-    chromeProfilePath: Optional[str] = None
+    # chromeProfilePath: Optional[str] = None
     location: List[str]
     keywords: List[str]
     experienceLevels: List[str]
@@ -48,13 +48,11 @@ class ApplyDetails(BaseModel):
     email: EmailStr
     phone_country_code: str = Field(..., min_length=1, max_length=4)
     mobile_phone_number: str = Field(..., min_length=5, max_length=15)
-    has_technical_experience: bool
-    has_teaching_experience: bool
+    hasExpFedClients: bool
+    secretTSClearance: bool
+    comfortableWorkingOnsite: bool
     is_us_citizen: bool
     has_bachelors_degree: bool
-    is_h1b_transfer: bool
     years_experience_servicenow: int
-    favorite_technology: str
-    reason_for_applying: str
     userInfo: str  # Include the userInfo field
     config: LinkedinConfig
