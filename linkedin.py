@@ -34,10 +34,6 @@ from selenium.webdriver.support.ui import Select
 
 
 
-options = webdriver.ChromeOptions()
-chrome_version = "114.0.5735.90"  # Replace with the desired version
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version=chrome_version).install()), options=options)
-
 
 class Linkedin:
     def __init__(self, apply_details, userInfo):
