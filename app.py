@@ -16,8 +16,9 @@ from dotenv import load_dotenv
 import os
 load_dotenv() # Load environment variables from a .env file
 
-from openai import AsyncOpenAI
-client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+import openai
+
+#client = AsyncOpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 import httpx
 from schemas import ApplyDetails
@@ -73,22 +74,22 @@ class GPT4Response(BaseModel):
     answers: str
 
 @app.post("/ask-gpt4/", response_model=GPT4Response)
-async def ask_gpt4(request: GPT4Request):
+def ask_gpt4(request: GPT4Request):
     # Your OpenAI API key should be loaded from environment variables
-    OPENAI_API_KEY = os.getenv("OPENAI_API_KEY")
-    if not OPENAI_API_KEY:
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    if not openai.api_key:
         raise HTTPException(status_code=500, detail="OpenAI API key not configured.")
     
     # Constructing the prompt for OpenAI API
     prompt = generate_prompt(request.question, request.question_type, request.options)
 
     try:
-        completion = await client.chat.completions.create(
-        model="gpt-4-turbo-preview",
-        messages=[
-            {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},
-            {"role": "user", "content": f"{request.userInfo}\n\n{prompt}"}  # Include userInfo in the prompt
-        ]
+        completion = openai.ChatCompletion.create(
+            model="gpt-4-turbo-preview",
+            messages=[
+                {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},
+                {"role": "user", "content": f"{request.userInfo}\n\n{prompt}"}  # Include userInfo in the prompt
+            ]
         )
         answer = completion.choices[0].message.content
         return GPT4Response(answers=answer)
