@@ -18,6 +18,7 @@ class LinkedinConfig(BaseModel):
     salary: List[str]
     sort: List[str]
     blacklistCompanies: List[str] = []
+    blockCompanies: List[str] = []  # Add the missing field
     blackListTitles: List[str] = []
     followCompanies: bool
     preferredCv: int
@@ -33,13 +34,14 @@ class LinkedinConfig(BaseModel):
     blockJobDescription: List[str] = []
     onlyApplyMimEmployee: List[str] = []
     onlyApplyLinkedinRecommending: bool
-    onlyApplySkilledBages: bool
+    onlyApplySkilledBadges: bool  # Rename the field
     saveBeforeApply: bool
     messageToHiringManager: Optional[str] = None
     listNonEasyApplyJobsUrl: bool
     defaultRadioOption: int
     answerAllCheckboxes: Optional[bool] = None
     outputFileType: List[str]
+    chromeHeadless: bool  # Add the missing field
 
 class ApplyDetails(BaseModel):
     email: EmailStr
@@ -47,11 +49,11 @@ class ApplyDetails(BaseModel):
     mobile_phone_number: str = Field(..., min_length=5, max_length=15)
     has_technical_experience: bool
     has_teaching_experience: bool
-    userInfo: str 
     is_us_citizen: bool
     has_bachelors_degree: bool
+    is_h1b_transfer: bool
     years_experience_servicenow: int
     favorite_technology: str
     reason_for_applying: str
+    userInfo: str  # Include the userInfo field
     config: LinkedinConfig
-
