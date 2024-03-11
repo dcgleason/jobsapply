@@ -408,12 +408,11 @@ class Linkedin:
     #     utils.donate(self)
 
     async def linkJobApply(self):
-        
-        # self.generateUrls()
-        countApplied = 0
-        countJobs = 0
+        logs = []
+
         url_generator = LinkedinUrlGenerate()
-        job_urls = url_generator.generateUrlLinks(self.config)  # self.config is an instance of LinkedinConfig
+        job_urls = url_generator.generateUrlLinks(self.config)
+
         for url in job_urls:
             self.driver.get(url)
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
@@ -423,7 +422,8 @@ class Linkedin:
 
             urlWords = utils.urlToKeywords(url)
             lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
-            self.displayWriteResults(lineToWrite)
+            log_message = self.displayWriteResults(lineToWrite)
+            logs.append(log_message)
 
             for page in range(totalPages):
                 currentPageJobs = constants.jobsPerPage * page
@@ -444,119 +444,109 @@ class Linkedin:
                     jobProperties = self.getJobProperties(countJobs)
                     if "blacklisted" in jobProperties:
                         lineToWrite = jobProperties + " | " + "* 🤬 Blacklisted Job, skipped!: " + str(offerPage)
-                        self.displayWriteResults(lineToWrite)
+                        log_message = self.displayWriteResults(lineToWrite)
+                        logs.append(log_message)
                     else:
                         easyApplyButton = self.easyApplyButton()
 
                         if easyApplyButton is not False:
-                                easyApplyButton.click()
-                                await asyncio.sleep(random.uniform(1, constants.botSpeed))
+                            easyApplyButton.click()
+                            await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
-                                while True:
-                                    modalbox_open = WebDriverWait(self.driver, 10).until(
-                                        EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']"))
-                                    )
-                                    modal_type = self.get_modal_type()
+                            while True:
+                                modalbox_open = WebDriverWait(self.driver, 10).until(
+                                    EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']"))
+                                )
+                                modal_type = self.get_modal_type()
 
-                                    if modal_type == "select_and_string":
-                                        await self.fill_all_string_inputs()
-                                        await self.fill_all_select_inputs()
-                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
-                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
-                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-                                        if next_button:
-                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
-                                            
-                                        elif review_button:
-                                            await self.wait_and_click("//button[@aria-label='Review your application']")
-                                            
-                                        elif submit_button:
-                                            await self.wait_and_click("//button[@aria-label='Submit application']")
-                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                            self.displayWriteResults(lineToWrite)
-                                            countApplied += 1
-                                            break
-                                        else:
-                                            break
-                                    elif modal_type == "choose_resume":
-                                        await self.chooseResume()
-                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
-                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
-                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-                                        if next_button:
-                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
-    
-                                        elif review_button:
-                                            await self.wait_and_click("//button[@aria-label='Review your application']")
-                                        elif submit_button:
-                                            await self.wait_and_click("//button[@aria-label='Submit application']")
-                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                            self.displayWriteResults(lineToWrite)
-                                            countApplied += 1
-                                            break
-                                        else:
-                                            break
-                                    elif modal_type == "radio_buttons":
-                                        await self.fill_all_radio_buttons()
-                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
-                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
-                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-                                        if next_button:
-                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
-                                        elif review_button:
-                                            await self.wait_and_click("//button[@aria-label='Review your application']")
-                                            
-                                        elif submit_button:
-                                            await self.wait_and_click("//button[@aria-label='Submit application']")
-                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                            self.displayWriteResults(lineToWrite)
-                                            countApplied += 1
-                                            break
-                                        else:
-                                            break
-                                    elif modal_type == "radio_and_string":
-                                        await self.fill_all_radio_buttons()
-                                       # Check if string inputs are present
-                                        # string_inputs = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]//input")
-                                        # if string_inputs:
-                                        #     await self.fill_all_string_inputs()
-
-                                        # # Check if select inputs are present
-                                        # select_inputs = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]//select")
-                                        # if select_inputs:
-                                        #     await self.fill_all_select_inputs()
-                                        next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
-                                        review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
-                                        submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-                                        if next_button:
-                                            await self.wait_and_click("//button[@aria-label='Continue to next step']")
-                                        elif review_button:
-                                            await self.wait_and_click("//button[@aria-label='Review your application']")
-                                        elif submit_button:
-                                            await self.wait_and_click("//button[@aria-label='Submit application']")
-                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                            self.displayWriteResults(lineToWrite)
-                                            countApplied += 1
-                                            break
-                                        else:
-                                                break
-                                           
-                                    elif modal_type == "submit":
-                                            submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
-                                            await self.wait_and_click("//button[@aria-label='Submit application']")
-                                            lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
-                                            self.displayWriteResults(lineToWrite)
-                                            countApplied += 1
-                                            break
-                                    
+                                if modal_type == "select_and_string":
+                                    await self.fill_all_string_inputs()
+                                    await self.fill_all_select_inputs()
+                                    next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                    review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                    submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                    if next_button:
+                                        await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                    elif review_button:
+                                        await self.wait_and_click("//button[@aria-label='Review your application']")
+                                    elif submit_button:
+                                        await self.wait_and_click("//button[@aria-label='Submit application']")
+                                        lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                        log_message = self.displayWriteResults(lineToWrite)
+                                        logs.append(log_message)
+                                        countApplied += 1
+                                        break
                                     else:
                                         break
-
+                                elif modal_type == "choose_resume":
+                                    await self.chooseResume()
+                                    next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                    review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                    submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                    if next_button:
+                                        await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                    elif review_button:
+                                        await self.wait_and_click("//button[@aria-label='Review your application']")
+                                    elif submit_button:
+                                        await self.wait_and_click("//button[@aria-label='Submit application']")
+                                        lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                        log_message = self.displayWriteResults(lineToWrite)
+                                        logs.append(log_message)
+                                        countApplied += 1
+                                        break
+                                    else:
+                                        break
+                                elif modal_type == "radio_buttons":
+                                    await self.fill_all_radio_buttons()
+                                    next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                    review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                    submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                    if next_button:
+                                        await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                    elif review_button:
+                                        await self.wait_and_click("//button[@aria-label='Review your application']")
+                                    elif submit_button:
+                                        await self.wait_and_click("//button[@aria-label='Submit application']")
+                                        lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                        log_message = self.displayWriteResults(lineToWrite)
+                                        logs.append(log_message)
+                                        countApplied += 1
+                                        break
+                                    else:
+                                        break
+                                elif modal_type == "radio_and_string":
+                                    await self.fill_all_radio_buttons()
+                                    next_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Continue to next step']")
+                                    review_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Review your application']")
+                                    submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                    if next_button:
+                                        await self.wait_and_click("//button[@aria-label='Continue to next step']")
+                                    elif review_button:
+                                        await self.wait_and_click("//button[@aria-label='Review your application']")
+                                    elif submit_button:
+                                        await self.wait_and_click("//button[@aria-label='Submit application']")
+                                        lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                        log_message = self.displayWriteResults(lineToWrite)
+                                        logs.append(log_message)
+                                        countApplied += 1
+                                        break
+                                    else:
+                                        break
+                                elif modal_type == "submit":
+                                    submit_button = self.driver.find_elements(By.XPATH, "//button[@aria-label='Submit application']")
+                                    await self.wait_and_click("//button[@aria-label='Submit application']")
+                                    lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
+                                    log_message = self.displayWriteResults(lineToWrite)
+                                    logs.append(log_message)
+                                    countApplied += 1
+                                    break
+                                else:
+                                    break
                         else:
-                                lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)}"
-                                self.displayWriteResults(lineToWrite)
-
-                        print(f"Applied to {countApplied} jobs out of {countJobs} total jobs.")
+                            lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)}"
+                            log_message = self.displayWriteResults(lineToWrite)
+                            logs.append(log_message)
+        return logs
 
     async def answer_additional_questions(self, **user_details):
         additional_questions = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]")
@@ -1169,6 +1159,8 @@ class Linkedin:
         try:
             print(lineToWrite)
             utils.writeResults(lineToWrite)
+            return lineToWrite
+
         except Exception as e:
             utils.prRed("❌ Error in DisplayWriteResults: " +str(e))
 

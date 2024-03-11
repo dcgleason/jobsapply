@@ -53,16 +53,15 @@ def home():
     return {"message": "HOME"}
 
 @app.post("/apply")
-def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
-    # Pass the entire ApplyDetails instance, which includes the configuration
-    background_tasks.add_task(run_linkedin_application, apply_details)
-    return {"message": "Application process initiated. Running in background."}
+async def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
+    logs = await run_linkedin_application(apply_details)
+    return {"message": "Application process completed.", "logs": logs}
 
 async def run_linkedin_application(apply_details: ApplyDetails):
-    # No need to call model_dump() or dict() anymore
-    # Directly pass apply_details object which now includes user-configured settings
-    linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo)  # Pass userInfo to the Linkedin class
-    await linkedin_app.linkJobApply()
+    linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo)
+    logs = await linkedin_app.linkJobApply()
+    return logs
+
 
 class GPT4Request(BaseModel):
     question: str
