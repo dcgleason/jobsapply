@@ -26,6 +26,7 @@ from selenium.webdriver.common.keys import Keys
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 
+
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -36,9 +37,7 @@ from selenium.webdriver.support.ui import Select
 
 options = webdriver.ChromeOptions()
 
-chrome_version = "121.0.6167.160"
-driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager(version=chrome_version).install()), options=options)
-
+driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=options)
 
 class Linkedin:
     def __init__(self, apply_details, userInfo):
