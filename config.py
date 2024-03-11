@@ -8,7 +8,7 @@ email = "dan@givebundl.com"
 password = "F1e2n3n4!!"
 
 #PRO FEATURE - Optional! run browser in headless mode, no browser screen will be shown it will work in background.
-headless = False
+headless = True
 #PRO FEATURE - Optional! If you left above credentials fields empty. For Firefox or Chrome enter profile dir to run the bot to prevent logging in your account each time
 # get Firefox profile path by typing following url: about:profiles
 firefoxProfileRootDir = r""
