@@ -7,7 +7,6 @@ class LinkedinCredentials(BaseModel):
 
 class LinkedinConfig(BaseModel):
     credentials: LinkedinCredentials
-    headless: bool
     # chromeProfilePath: Optional[str] = None
     location: List[str]
     keywords: List[str]
