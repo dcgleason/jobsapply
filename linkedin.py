@@ -41,8 +41,8 @@ class Linkedin:
         self.config = apply_details.config
         self.credentials = apply_details.config.credentials
         self.userInfo = userInfo
-      #  chrome_options = utils.chromeBrowserOptions(self.config)
-        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()))
+        chrome_options = utils.chromeBrowserOptions(self.config)
+        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
