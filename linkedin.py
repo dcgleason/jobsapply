@@ -70,7 +70,7 @@ class Linkedin:
         self.driver.get("https://www.linkedin.com/login")
             # Accessing credentials from the dynamic configuration
         email = self.apply_details.config.credentials.linkedin_email
-        password = self.apply_details.config.credentials.linkedin_password
+        password = self.apply_details.config.credentials.linkedin_password.get_secret_value()
 
         try:
             self.driver.find_element(By.ID, "username").send_keys(email)
