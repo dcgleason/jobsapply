@@ -43,8 +43,8 @@ class Linkedin:
         self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
        # self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
         
-        self.driver.get('https://www.google.com')
-        print(self.driver.page_source)
+        # self.driver.get('https://www.google.com')
+        # print(self.driver.page_source)
 
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
