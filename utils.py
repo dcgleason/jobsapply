@@ -4,14 +4,14 @@ from selenium import webdriver
 import os
 from schemas import LinkedinConfig
 
-def chromeBrowserOptions():
+def chromeBrowserOptions(req: LinkedinConfig):
     options = webdriver.ChromeOptions()
     options.add_argument('--no-sandbox')
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--disable-extensions")
     options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
-    if(config.headless):
+    if(req.chromeHeadless):
         options.add_argument("--headless")
     options.add_argument("--start-maximized")
     options.add_argument("--disable-blink-features")

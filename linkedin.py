@@ -36,11 +36,13 @@ from selenium.webdriver.support.ui import Select
 
 
 class Linkedin:
-    def __init__(self, apply_details, userInfo):
+    def __init__(self, apply_details, userInfo, credentials, config):
         self.apply_details = apply_details
-        self.config = apply_details.config
-        self.credentials = self.config.credentials  # Extracting credentials from the config
+        self.config = config
+        self.credentials = credentials  # Extracting credentials from the config
         self.userInfo = userInfo
+        chrome_options = utils.chromeBrowserOptions(self.config)
+        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
         utils.prYellow("🤖 Thanks for using BeyondNow Apply bot")
         utils.prYellow("🌐 Bot will run in Chrome browser and log in Linkedin for you.")
@@ -52,7 +54,7 @@ class Linkedin:
         chrome_options.add_argument("--disable-dev-shm-usage")
         chrome_options.add_argument("--window-size=1920x1080")
 
-        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+       # self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
 
         cookies_dir = os.path.join(os.getcwd(), 'cookies')
         if not os.path.exists(cookies_dir):
@@ -69,8 +71,8 @@ class Linkedin:
     def login(self):
         self.driver.get("https://www.linkedin.com/login")
             # Accessing credentials from the dynamic configuration
-        email = self.apply_details.config.credentials.linkedin_email
-        password = self.apply_details.config.credentials.linkedin_password.get_secret_value()
+        email = self.credentials.linkedin_email
+        password = self.credentials.linkedin_password.get_secret_value()
 
         try:
             self.driver.find_element(By.ID, "username").send_keys(email)
