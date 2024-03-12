@@ -40,7 +40,7 @@ class Linkedin:
         self.credentials = apply_details.config.credentials
         self.userInfo = userInfo
         chrome_options = utils.chromeBrowserOptions(self.config)
-        self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), options=chrome_options)
+        self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"), chrome_options=chrome_options)
        # self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
         
         self.driver.get('https://www.google.com')
