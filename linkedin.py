@@ -472,7 +472,7 @@ class Linkedin:
                                         lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                         log_message = self.displayWriteResults(lineToWrite)
                                         logs.append(log_message)
-                                        countApplied += 1
+                                        
                                         break
                                     else:
                                         break
@@ -490,7 +490,6 @@ class Linkedin:
                                         lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                         log_message = self.displayWriteResults(lineToWrite)
                                         logs.append(log_message)
-                                        countApplied += 1
                                         break
                                     else:
                                         break
@@ -508,7 +507,6 @@ class Linkedin:
                                         lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                         log_message = self.displayWriteResults(lineToWrite)
                                         logs.append(log_message)
-                                        countApplied += 1
                                         break
                                     else:
                                         break
@@ -526,7 +524,6 @@ class Linkedin:
                                         lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                         log_message = self.displayWriteResults(lineToWrite)
                                         logs.append(log_message)
-                                        countApplied += 1
                                         break
                                     else:
                                         break
@@ -536,7 +533,6 @@ class Linkedin:
                                     lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                     log_message = self.displayWriteResults(lineToWrite)
                                     logs.append(log_message)
-                                    countApplied += 1
                                     break
                                 else:
                                     break
