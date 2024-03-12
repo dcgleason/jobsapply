@@ -18,6 +18,7 @@ class LinkedinConfig(BaseModel):
     salary: List[str]
     sort: List[str]
     chromeHeadless: bool  # Add the missing field
+    chromeProfilePath: Optional[str] = None
 
     # blacklistCompanies: List[str] = []
     # blockCompanies: List[str] = []  # Add the missing field

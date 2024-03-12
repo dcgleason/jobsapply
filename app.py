@@ -59,10 +59,9 @@ async def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTa
     return {"message": "Application process completed.", "logs": logs}
 
 async def run_linkedin_application(apply_details: ApplyDetails):
-    linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo, config=apply_details.config, credentials=apply_details.config.credentials)
+    linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo)
     logs = await linkedin_app.linkJobApply()
     return logs
-
 
 class GPT4Request(BaseModel):
     question: str

@@ -36,10 +36,10 @@ from selenium.webdriver.support.ui import Select
 
 
 class Linkedin:
-    def __init__(self, apply_details, userInfo, credentials, config):
+    def __init__(self, apply_details, userInfo):
         self.apply_details = apply_details
-        self.config = config
-        self.credentials = credentials  # Extracting credentials from the config
+        self.config = apply_details.config
+        self.credentials = apply_details.config.credentials
         self.userInfo = userInfo
         chrome_options = utils.chromeBrowserOptions(self.config)
         self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
