@@ -409,6 +409,7 @@ class Linkedin:
 
         url_generator = LinkedinUrlGenerate()
         job_urls = url_generator.generateUrlLinks(self.config)
+        countJobs = 0
 
         for url in job_urls:
             self.driver.get(url)
