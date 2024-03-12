@@ -13,7 +13,7 @@ headless = False
 # get Firefox profile path by typing following url: about:profiles
 firefoxProfileRootDir = r""
 # get Chrome profile path by typing following url: chrome://version/
-chromeProfilePath = r""
+chromeProfilePath = r"/Users/dannygleason/Library/Application Support/Google/Chrome/Default"
 
 # These settings are for running Linkedin job apply bot.
 # location you want to search the jobs - ex : ["Poland", "Singapore", "New York City Metropolitan Area", "Monroe County"]
