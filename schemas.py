@@ -1,9 +1,10 @@
-from pydantic import BaseModel, EmailStr, Field
+from pydantic import BaseModel, EmailStr, Field, SecretStr
 from typing import List, Optional
+
 
 class LinkedinCredentials(BaseModel):
     linkedin_email: EmailStr
-    linkedin_password: str
+    linkedin_password: SecretStr
 
 class LinkedinConfig(BaseModel):
     credentials: LinkedinCredentials
