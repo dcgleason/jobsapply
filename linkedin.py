@@ -419,7 +419,11 @@ class Linkedin:
             self.driver.get(url)
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
-            totalJobs = self.driver.find_element(By.XPATH, '//small').text 
+            # Wait for the element to be present
+            totalJobs = WebDriverWait(self.driver, 10).until(
+                EC.presence_of_element_located((By.XPATH, '//small'))
+            ).text
+
             totalPages = utils.jobsToPages(totalJobs)
 
             urlWords = utils.urlToKeywords(url)
@@ -476,7 +480,6 @@ class Linkedin:
                                         lineToWrite = jobProperties + " | " + "* 🥳 Just Applied to this job: " + str(offerPage)
                                         log_message = self.displayWriteResults(lineToWrite)
                                         logs.append(log_message)
-                                        
                                         break
                                     else:
                                         break
