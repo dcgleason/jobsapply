@@ -420,7 +420,7 @@ class Linkedin:
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
             # Wait for the element to be present
-            totalJobs = WebDriverWait(self.driver, 30).until(
+            totalJobs = WebDriverWait(self.driver, 60).until(
                 EC.presence_of_element_located((By.XPATH, '//small'))
             ).text
 
