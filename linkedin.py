@@ -424,6 +424,7 @@ class Linkedin:
                 EC.presence_of_element_located((By.XPATH, '//small'))
             ).text
 
+
             totalPages = utils.jobsToPages(totalJobs)
 
             urlWords = utils.urlToKeywords(url)
