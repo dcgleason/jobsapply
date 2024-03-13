@@ -434,23 +434,26 @@ class Linkedin:
                 self.driver.get(url)
                 await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
-                # Wait for the element to be present
+       
                 totalJobs = WebDriverWait(self.driver, 60).until(
                     EC.presence_of_element_located((By.XPATH, '//small'))
                 ).text
-
+                print(f"Found total jobs element: {totalJobs}")
+         
 
                 totalPages = utils.jobsToPages(totalJobs)
 
                 urlWords = utils.urlToKeywords(url)
                 lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
                 log_message = self.displayWriteResults(lineToWrite)
+
                 logs.append(log_message)
 
                 for page in range(totalPages):
                     currentPageJobs = constants.jobsPerPage * page
                     pageUrl = url + "&start=" + str(currentPageJobs)
                     self.driver.get(pageUrl)
+                    print(f"Accessing page URL: {pageUrl}")
                     await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
                     offersPerPage = self.driver.find_elements(By.XPATH, '//li[@data-occludable-job-id]')
@@ -473,6 +476,7 @@ class Linkedin:
 
                             if easyApplyButton is not False:
                                 easyApplyButton.click()
+                                print(f"Clicked easy apply button on {offerPage}")
                                 await asyncio.sleep(random.uniform(1, constants.botSpeed))
 
                                 while True:
@@ -480,6 +484,7 @@ class Linkedin:
                                         EC.presence_of_element_located((By.XPATH, "//div[@role='dialog']"))
                                     )
                                     modal_type = self.get_modal_type()
+                                    print(f"Modal type identified: {modal_type} on {offerPage}")
 
                                     if modal_type == "select_and_string":
                                         await self.fill_all_string_inputs()
