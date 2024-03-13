@@ -32,7 +32,6 @@ from selenium.webdriver.support.ui import Select
 
 
 
-
 class Linkedin:
     def __init__(self, apply_details, userInfo):
         self.apply_details = apply_details
