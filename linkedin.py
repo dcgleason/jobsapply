@@ -39,7 +39,16 @@ class Linkedin:
         self.credentials = apply_details.config.credentials
         self.userInfo = userInfo
         chrome_options = utils.chromeBrowserOptions(self.config)
-        self.driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH"),  chrome_options=chrome_options, service=ChromeService(ChromeDriverManager().install()))
+
+           # Set the path to the ChromeDriver executable
+        chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
+        
+        if chromedriver_path:
+            # Use the specified ChromeDriver path
+            self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chrome_options)
+        else:
+            # Use ChromeDriverManager to automatically download and install ChromeDriver
+            self.driver = webdriver.Chrome(chrome_options=chrome_options, service=ChromeService(ChromeDriverManager().install()))
        # self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
         
         # self.driver.get('https://www.google.com')
