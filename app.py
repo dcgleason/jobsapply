@@ -55,8 +55,8 @@ def home():
 
 @app.post("/apply")
 async def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
-    logs = await run_linkedin_application(apply_details)
-    return {"message": "Application process completed.", "logs": logs}
+    background_tasks.add_task(run_linkedin_application, apply_details)
+    return {"message": "Application process started in the background."}
 
 async def run_linkedin_application(apply_details: ApplyDetails):
     linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo)
