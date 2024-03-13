@@ -426,7 +426,7 @@ class Linkedin:
                 )
 
                 # Wait for the desired element
-                totalJobs = WebDriverWait(self.driver, 30).until(
+                totalJobs = WebDriverWait(self.driver, 60).until(
                     EC.presence_of_element_located((By.XPATH, '//small'))
                 ).text
 
