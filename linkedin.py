@@ -438,6 +438,10 @@ class Linkedin:
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                 totalJobs = "0"
                 try:
+                    WebDriverWait(self.driver, 30).until(
+                        EC.presence_of_element_located((By.XPATH, "//body"))
+                    )
+                    print(f"Body loaded, finding total jobs element...")
                     totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                     print(f"Found total jobs element: {totalJobs}")
                 except Exception as e:
