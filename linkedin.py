@@ -427,13 +427,14 @@ class Linkedin:
         url_generator = LinkedinUrlGenerate()
         job_urls = url_generator.generateUrlLinks(self.config)
         countJobs = 0
+        print(f"Got job urls: {job_urls}")
 
         try:   
 
             for url in job_urls:
                 self.driver.get(url)
                 await asyncio.sleep(random.uniform(1, constants.botSpeed))
-
+                print(f"Gotten to URL: {url}")
        
                 totalJobs = WebDriverWait(self.driver, 60).until(
                     EC.presence_of_element_located((By.XPATH, '//small'))
