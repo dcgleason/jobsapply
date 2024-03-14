@@ -438,9 +438,7 @@ class Linkedin:
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                 totalJobs = "0"
                 try:
-                    totalJobs = WebDriverWait(self.driver, 30).until(
-                          EC.presence_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text span"))
-                    ).text
+                    totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                     print(f"Found total jobs element: {totalJobs}")
                 except Exception as e:
                     print(f"Error occurred while finding total jobs element:")
