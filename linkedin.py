@@ -4,7 +4,6 @@ import random
 import os
 import utils
 import constants
-import config
 import pickle
 import hashlib
 import yaml
