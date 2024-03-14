@@ -435,9 +435,8 @@ class Linkedin:
                 await asyncio.sleep(random.uniform(1, constants.botSpeed))
                 print(f"Gotten to URL: {url}")
        
-                totalJobs = WebDriverWait(self.driver, 60).until(
-                    EC.presence_of_element_located((By.XPATH, '//small'))
-                ).text
+                totalJobs = self.driver.find_element(By.XPATH,'//small').text 
+
                 print(f"Found total jobs element: {totalJobs}")
          
 

@@ -20,7 +20,7 @@ chromeProfilePath = r"/Users/dannygleason/Library/Application Support/Google/Chr
 # continent locations:["Europe", "Asia", "Australia", "NorthAmerica", "SouthAmerica", "Africa", "Australia"]
 location = ["United States"]   
 # keywords related with your job search
-keywords = ["ServiceNow Developer"]
+#keywords = ["ServiceNow Developer"]
 #job experience Level - ex:  ["Internship", "Entry level" , "Associate" , "Mid-Senior level" , "Director" , "Executive"]
 experienceLevels = [ "Entry level" ]
 #job posted date - ex: ["Any Time", "Past Month" , "Past Week" , "Past 24 hours"] - select only one
