@@ -436,11 +436,14 @@ class Linkedin:
                 print(f"Gotten to URL: {url}")
        
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
-                totalJobs = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, "//small[contains(@class, 'jobs-search-results-list__text')]"))
-                ).text
+                try:
+                    totalJobs = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, "//small[contains(@class, 'jobs-search-results-list__text')]"))
+                    ).text
+                    print(f"Found total jobs element: {totalJobs}")
+                except Exception as e:
+                    print(f"Error occurred while finding total jobs element: {str(e)}")
 
-                print(f"Found total jobs element: {totalJobs}")
          
 
                 totalPages = utils.jobsToPages(totalJobs)
