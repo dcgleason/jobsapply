@@ -452,9 +452,9 @@ class Linkedin:
 
                 for attempt in range(max_retries):
                     try:
-                        WebDriverWait(self.driver, 60 + attempt * retry_delay).until(
-                            lambda driver: driver.execute_script("return document.readyState") == "complete"
-                        )
+                        # WebDriverWait(self.driver, 60 + attempt * retry_delay).until(
+                        #     lambda driver: driver.execute_script("return document.readyState") == "complete"
+                        # )
                         WebDriverWait(self.driver, 60 + attempt * retry_delay).until(
                             EC.presence_of_element_located((By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span"))
                         )
