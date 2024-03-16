@@ -464,15 +464,13 @@ class Linkedin:
                         totalJobs = "0"
                     break
                 except TimeoutException as e:
-                    if attempt == max_retries - 1:
-                        print(f"Error: Timed out waiting for the element to be located.")
-                        print(f"URL: {self.driver.current_url}")
-                        print(f"Error message: {str(e)}")
-                        print("Stacktrace:")
-                        traceback.print_exc()
-                        totalJobs = "0"
-                    else:
-                        print(f"Retry attempt {attempt + 1} failed. Retrying...")
+                   
+                    print(f"Error: Timed out waiting for the element to be located.")
+                    print(f"URL: {self.driver.current_url}")
+                    print(f"Error message: {str(e)}")
+                    print("Stacktrace:")
+                    traceback.print_exc()
+                    totalJobs = "0"
                 except NoSuchElementException as e:
                     print(f"Error: Element not found on the page.")
                     print(f"URL: {self.driver.current_url}")
