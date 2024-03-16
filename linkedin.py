@@ -441,16 +441,37 @@ class Linkedin:
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                 totalJobs = "0"
                 # Wait for a specific element that indicates the page has loaded
-                WebDriverWait(self.driver, 60).until(
-                    EC.presence_of_element_located((By.CSS_SELECTOR, "ul.jobs-search-results__list"))
-                )
-
-                # Extract the total jobs count from the page source
-                page_source = self.driver.page_source
-                total_jobs_match = re.search(r'<span>(\d+) results<', page_source)
-                if total_jobs_match:
-                    totalJobs = total_jobs_match.group(1)
-                else:
+                try:
+                    WebDriverWait(self.driver, 60).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, "ul.jobs-search-results__list"))
+                    )
+                    # Extract the total jobs count from the page source
+                    page_source = self.driver.page_source
+                    total_jobs_match = re.search(r'<span>(\d+) results<', page_source)
+                    if total_jobs_match:
+                        totalJobs = total_jobs_match.group(1)
+                    else:
+                        totalJobs = "0"
+                except TimeoutException as e:
+                    print(f"Error: Timed out waiting for the element to be located.")
+                    print(f"URL: {self.driver.current_url}")
+                    print(f"Error message: {str(e)}")
+                    print("Stacktrace:")
+                    traceback.print_exc()
+                    totalJobs = "0"
+                except NoSuchElementException as e:
+                    print(f"Error: Element not found on the page.")
+                    print(f"URL: {self.driver.current_url}")
+                    print(f"Error message: {str(e)}")
+                    print("Stacktrace:")
+                    traceback.print_exc()
+                    totalJobs = "0"
+                except Exception as e:
+                    print(f"Error: An unexpected error occurred.")
+                    print(f"URL: {self.driver.current_url}")
+                    print(f"Error message: {str(e)}")
+                    print("Stacktrace:")
+                    traceback.print_exc()
                     totalJobs = "0"
 
          
