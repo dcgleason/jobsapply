@@ -12,6 +12,7 @@ import httpx
 import json
 import asyncio
 import re
+import traceback
 from typing import List
 from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
