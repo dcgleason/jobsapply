@@ -9,7 +9,6 @@ from linkedin import Linkedin
 import requests
 import logging
 from fastapi import HTTPException
-from openai import OpenAI
 
 from typing import List, Optional
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -56,8 +55,8 @@ def home():
 
 @app.post("/apply")
 async def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
-    background_tasks.add_task(run_linkedin_application, apply_details)
-    return {"message": "Application process started in the background."}
+    logs = await run_linkedin_application(apply_details)
+    return {"message": "Application process completed.", "logs": logs}
 
 async def run_linkedin_application(apply_details: ApplyDetails):
     linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo)
@@ -76,16 +75,15 @@ class GPT4Response(BaseModel):
 @app.post("/ask-gpt4/", response_model=GPT4Response)
 def ask_gpt4(request: GPT4Request):
     # Your OpenAI API key should be loaded from environment variables
-    client = OpenAI(
-            # This is the default and can be omitted
-            api_key=os.environ.get("OPENAI_API_KEY"),
-        )
-            
+    openai.api_key = os.getenv("OPENAI_API_KEY")
+    if not openai.api_key:
+        raise HTTPException(status_code=500, detail="OpenAI API key not configured.")
+    
     # Constructing the prompt for OpenAI API
     prompt = generate_prompt(request.question, request.question_type, request.options)
 
     try:
-        completion = client.chat.completions.create(
+        completion = openai.ChatCompletion.create(
             model="gpt-4-turbo-preview",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},
