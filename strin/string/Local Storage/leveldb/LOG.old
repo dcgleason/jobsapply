@@ -1,5 +1,8 @@
-2024/03/16-15:01:21.900 3803 Reusing MANIFEST /Users/dannygleason/Desktop/BeyondNow-Apply/strin/string/Local Storage/leveldb/MANIFEST-000001
-2024/03/16-15:01:21.902 3803 Recovering log #3
-2024/03/16-15:01:21.903 3803 Reusing old log /Users/dannygleason/Desktop/BeyondNow-Apply/strin/string/Local Storage/leveldb/000003.log 
-2024/03/16-15:01:51.911 3403 Level-0 table #5: started
-2024/03/16-15:01:51.952 3403 Level-0 table #5: 16209 bytes OK
+2024/03/16-15:02:38.836 3803 Reusing MANIFEST /Users/dannygleason/Desktop/BeyondNow-Apply/strin/string/Local Storage/leveldb/MANIFEST-000001
+2024/03/16-15:02:38.838 3803 Recovering log #3
+2024/03/16-15:02:38.838 3803 Level-0 table #3: started
+2024/03/16-15:02:38.846 3803 Level-0 table #3: 16209 bytes OK
+2024/03/16-15:02:38.846 3803 Recovering log #4
+2024/03/16-15:02:38.846 3803 Reusing old log /Users/dannygleason/Desktop/BeyondNow-Apply/strin/string/Local Storage/leveldb/000004.log 
+2024/03/16-15:02:38.855 3803 Delete type=0 #3
+2024/03/16-15:02:38.855 3803 Delete type=2 #5
