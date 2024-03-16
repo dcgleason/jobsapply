@@ -444,10 +444,14 @@ class Linkedin:
                 await asyncio.sleep(random.uniform(1, constants.botSpeed))
                 print(f"Got to URL: {url}")
        
-                totalJobs = WebDriverWait(self.driver, 30).until(
-                    EC.visibility_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text span"))
-                ).text
-                print(f"Found total jobs element: {totalJobs}")
+                try: 
+                    totalJobs = WebDriverWait(self.driver, 30).until(
+                        EC.visibility_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text span"))
+                    ).text
+                    print(f"Found total jobs element: {totalJobs}")
+                except Exception as e:
+                    print(f"Error from print: {str(e)}")
+                    totalJobs = "0"
                 # totalJobs = "0"
 
                 # Wait for a specific element that indicates the page has loaded
