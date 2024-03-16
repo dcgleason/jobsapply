@@ -53,7 +53,7 @@ class Linkedin:
         if chromedriver_path:
              # Use the specified ChromeDriver path
             print(f"Using ChromeDriver from the specified path: {chromedriver_path}")
-            self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chrome_options)
+            self.driver = webdriver.Chrome(chromedriver_path, chrome_options=chrome_options)
         #     self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
 
         else:
