@@ -9,6 +9,7 @@ from linkedin import Linkedin
 import requests
 import logging
 from fastapi import HTTPException
+from openai import OpenAI
 
 from typing import List, Optional
 from selenium.common.exceptions import NoSuchElementException, TimeoutException
@@ -75,15 +76,16 @@ class GPT4Response(BaseModel):
 @app.post("/ask-gpt4/", response_model=GPT4Response)
 def ask_gpt4(request: GPT4Request):
     # Your OpenAI API key should be loaded from environment variables
-    openai.api_key = os.getenv("OPENAI_API_KEY")
-    if not openai.api_key:
-        raise HTTPException(status_code=500, detail="OpenAI API key not configured.")
-    
+    client = OpenAI(
+            # This is the default and can be omitted
+            api_key=os.environ.get("OPENAI_API_KEY"),
+        )
+            
     # Constructing the prompt for OpenAI API
     prompt = generate_prompt(request.question, request.question_type, request.options)
 
     try:
-        completion = openai.ChatCompletion.create(
+        completion = client.chat.completions.create(
             model="gpt-4-turbo-preview",
             messages=[
                 {"role": "system", "content": "You are a helpful assistant that helps fill out forms for job applications based on user input."},

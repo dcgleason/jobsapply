@@ -13,6 +13,7 @@ import json
 import asyncio
 import re
 import traceback
+import config
 from typing import List
 from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
