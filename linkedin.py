@@ -441,7 +441,7 @@ class Linkedin:
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                 totalJobs = "0"
                 # Wait for a specific element that indicates the page has loaded
-                WebDriverWait(self.driver, 30).until(
+                WebDriverWait(self.driver, 60).until(
                     EC.presence_of_element_located((By.CSS_SELECTOR, "ul.jobs-search-results__list"))
                 )
 
