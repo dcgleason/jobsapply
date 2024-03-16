@@ -445,7 +445,7 @@ class Linkedin:
                 print(f"Got to URL: {url}")
        
                 totalJobs = self.driver.find_element(By.XPATH,'//small').text 
-                totalJobs = "0"
+                # totalJobs = "0"
 
                 # Wait for a specific element that indicates the page has loaded
                 # max_retries = 3
