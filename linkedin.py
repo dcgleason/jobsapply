@@ -450,11 +450,12 @@ class Linkedin:
                             lambda driver: driver.execute_script("return document.readyState") == "complete"
                         )
                         WebDriverWait(self.driver, 90 + attempt * retry_delay).until(
-                            EC.presence_of_element_located((By.CSS_SELECTOR, "ul.jobs-search-results__list"))
+                            EC.presence_of_element_located((By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span"))
                         )
-                        # Extract the total jobs count from the page source
-                        page_source = self.driver.page_source
-                        total_jobs_match = re.search(r'<span>(\d+) results<', page_source)
+                        # Extract the total jobs count using XPath
+                        total_jobs_element = self.driver.find_element(By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span")
+                        total_jobs_text = total_jobs_element.text.strip()
+                        total_jobs_match = re.search(r'(\d+)', total_jobs_text)
                         if total_jobs_match:
                             totalJobs = total_jobs_match.group(1)
                         else:
@@ -486,7 +487,6 @@ class Linkedin:
                         traceback.print_exc()
                         totalJobs = "0"
                         break
-         
 
                 totalPages = utils.jobsToPages(totalJobs)
 
