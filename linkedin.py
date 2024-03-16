@@ -18,19 +18,18 @@ from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
 from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support import expected_conditions as EC
 
 
-from selenium import webdriver
 from selenium.webdriver.common.by import By
-from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.support import expected_conditions as EC
+from selenium.common.exceptions import TimeoutException, NoSuchElementException
+from selenium import webdriver
+from selenium.webdriver.support.ui import WebDriverWait
 from selenium.webdriver.chrome.service import Service as ChromeService
 from webdriver_manager.chrome import ChromeDriverManager
 
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from selenium.webdriver.support.ui import Select
 
 
@@ -442,39 +441,51 @@ class Linkedin:
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                 totalJobs = "0"
                 # Wait for a specific element that indicates the page has loaded
-                try:
-                    WebDriverWait(self.driver, 60).until(
-                        EC.presence_of_element_located((By.CSS_SELECTOR, "ul.jobs-search-results__list"))
-                    )
-                    # Extract the total jobs count from the page source
-                    page_source = self.driver.page_source
-                    total_jobs_match = re.search(r'<span>(\d+) results<', page_source)
-                    if total_jobs_match:
-                        totalJobs = total_jobs_match.group(1)
-                    else:
-                        totalJobs = "0"
-                except TimeoutException as e:
-                    print(f"Error: Timed out waiting for the element to be located.")
-                    print(f"URL: {self.driver.current_url}")
-                    print(f"Error message: {str(e)}")
-                    print("Stacktrace:")
-                    traceback.print_exc()
-                    totalJobs = "0"
-                except NoSuchElementException as e:
-                    print(f"Error: Element not found on the page.")
-                    print(f"URL: {self.driver.current_url}")
-                    print(f"Error message: {str(e)}")
-                    print("Stacktrace:")
-                    traceback.print_exc()
-                    totalJobs = "0"
-                except Exception as e:
-                    print(f"Error: An unexpected error occurred.")
-                    print(f"URL: {self.driver.current_url}")
-                    print(f"Error message: {str(e)}")
-                    print("Stacktrace:")
-                    traceback.print_exc()
-                    totalJobs = "0"
+                max_retries = 3
+                retry_delay = 10
 
+                for attempt in range(max_retries):
+                    try:
+                        WebDriverWait(self.driver, 90 + attempt * retry_delay).until(
+                            lambda driver: driver.execute_script("return document.readyState") == "complete"
+                        )
+                        WebDriverWait(self.driver, 90 + attempt * retry_delay).until(
+                            EC.presence_of_element_located((By.CSS_SELECTOR, "ul.jobs-search-results__list"))
+                        )
+                        # Extract the total jobs count from the page source
+                        page_source = self.driver.page_source
+                        total_jobs_match = re.search(r'<span>(\d+) results<', page_source)
+                        if total_jobs_match:
+                            totalJobs = total_jobs_match.group(1)
+                        else:
+                            totalJobs = "0"
+                        break
+                    except TimeoutException as e:
+                        if attempt == max_retries - 1:
+                            print(f"Error: Timed out waiting for the element to be located.")
+                            print(f"URL: {self.driver.current_url}")
+                            print(f"Error message: {str(e)}")
+                            print("Stacktrace:")
+                            traceback.print_exc()
+                            totalJobs = "0"
+                        else:
+                            print(f"Retry attempt {attempt + 1} failed. Retrying...")
+                    except NoSuchElementException as e:
+                        print(f"Error: Element not found on the page.")
+                        print(f"URL: {self.driver.current_url}")
+                        print(f"Error message: {str(e)}")
+                        print("Stacktrace:")
+                        traceback.print_exc()
+                        totalJobs = "0"
+                        break
+                    except Exception as e:
+                        print(f"Error: An unexpected error occurred.")
+                        print(f"URL: {self.driver.current_url}")
+                        print(f"Error message: {str(e)}")
+                        print("Stacktrace:")
+                        traceback.print_exc()
+                        totalJobs = "0"
+                        break
          
 
                 totalPages = utils.jobsToPages(totalJobs)
