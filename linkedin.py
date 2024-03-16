@@ -44,19 +44,19 @@ class Linkedin:
         
 
            # Set the path to the ChromeDriver executable
-        chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
+        # chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
         
-        if chromedriver_path:
-            # Use the specified ChromeDriver path
-            self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chrome_options)
-            self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
+        # if chromedriver_path:
+        #     # Use the specified ChromeDriver path
+        #     self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chrome_options)
+        #     self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
 
-        else:
-            # Use ChromeDriverManager to automatically download and install ChromeDriver
-            self.driver = webdriver.Chrome(chrome_options=chrome_options, service=ChromeService(ChromeDriverManager().install()))
-            self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
+        # else:
+        #     # Use ChromeDriverManager to automatically download and install ChromeDriver
+        #     self.driver = webdriver.Chrome(chrome_options=chrome_options, service=ChromeService(ChromeDriverManager().install()))
+        #     self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
 
-       # self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
         
         # self.driver.get('https://www.google.com')
         # print(self.driver.page_source)
@@ -1149,7 +1149,7 @@ class Linkedin:
                     if len(resumes) == 1:
                         resumes[0].click()
                     elif len(resumes) > 1:
-                        resumes[config.preferredCv - 1].click()
+                        resumes[1 - 1].click()
             else:
                 utils.prRed("❌ No resume has been selected. Please add at least one resume to your LinkedIn account.")
         except Exception as e:
