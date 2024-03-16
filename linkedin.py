@@ -11,6 +11,7 @@ import requests
 import httpx
 import json
 import asyncio
+import re
 from typing import List
 from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
@@ -439,19 +440,18 @@ class Linkedin:
        
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                 totalJobs = "0"
-                try:
-                    # Wait for the element containing the total number of jobs to be present and visible
-                    totalJobs = WebDriverWait(self.driver, 30).until(
-                        EC.visibility_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text span"))
-                    ).text
-                    print(f"Found total jobs element: {totalJobs}")
-                except Exception as e:
-                    print(f"Error occurred while finding total jobs element:")
-                    print(f"URL: {self.driver.current_url}")
-                    print(f"Error message: {str(e)}")
-                    print(f"Stacktrace:")
-                    import traceback
-                    print(traceback.format_exc())
+                # Wait for a specific element that indicates the page has loaded
+                WebDriverWait(self.driver, 30).until(
+                    EC.presence_of_element_located((By.CSS_SELECTOR, "ul.jobs-search-results__list"))
+                )
+
+                # Extract the total jobs count from the page source
+                page_source = self.driver.page_source
+                total_jobs_match = re.search(r'<span>(\d+) results<', page_source)
+                if total_jobs_match:
+                    totalJobs = total_jobs_match.group(1)
+                else:
+                    totalJobs = "0"
 
          
 
