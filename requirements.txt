@@ -7,4 +7,3 @@ httpx==0.21.1
 pydantic[email]
 openai
 chromedriver
-google-chrome
