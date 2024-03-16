@@ -448,8 +448,10 @@ class Linkedin:
                 totalJobs = "0"
             
                 try:
-                    total_jobs_element = self.driver.find_element(By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span")
-                    totalJobs = total_jobs_element.text
+                    totalJobs = WebDriverWait(self.driver, 30).until(
+                        EC.visibility_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text span"))
+                    ).text
+                    print(f"Found total jobs element: {totalJobs}")
 
                 except NoSuchElementException:
                     print(f"Couldn't find total jobs for print {url}")
