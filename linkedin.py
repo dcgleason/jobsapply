@@ -32,6 +32,9 @@ from webdriver_manager.chrome import ChromeDriverManager
 from selenium.webdriver.chrome.options import Options
 from selenium.webdriver.common.action_chains import ActionChains
 from selenium.webdriver.support.ui import Select
+import chromedriver_autoinstaller
+
+chromedriver_autoinstaller.install()
 
 
 
@@ -47,19 +50,19 @@ class Linkedin:
            # Set the path to the ChromeDriver executable
         chromedriver_path = os.environ.get("CHROMEDRIVER_PATH")
         
-        # if chromedriver_path:
-        #     # Use the specified ChromeDriver path
-        #     print(f"Using ChromeDriver from the specified path: {chromedriver_path}")
-        #     self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chrome_options)
+        if chromedriver_path:
+             # Use the specified ChromeDriver path
+            print(f"Using ChromeDriver from the specified path: {chromedriver_path}")
+            self.driver = webdriver.Chrome(executable_path=chromedriver_path, chrome_options=chrome_options)
         #     self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
 
-        # else:
+        else:
             # Use ChromeDriverManager to automatically download and install ChromeDriver
-        # print("No chromedriver_path, using ChromeDriverManager to automatically download and install ChromeDriver")
-        # self.driver = webdriver.Chrome(chrome_options=chrome_options, service=ChromeService(ChromeDriverManager().install()))
-        # self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
+         print("No chromedriver_path, using ChromeDriverManager to automatically download and install ChromeDriver")
+         self.driver = webdriver.Chrome(chrome_options=chrome_options, service=ChromeService(ChromeDriverManager().install()))
+         self.driver.set_page_load_timeout(300)  # Increase the timeout to 5 minutes
        # running locally --> 
-        self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
+       # self.driver = webdriver.Chrome(service=ChromeService(ChromeDriverManager().install()), options=chrome_options)
         
         # self.driver.get('https://www.google.com')
         # print(self.driver.page_source)
