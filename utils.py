@@ -7,13 +7,13 @@ from schemas import LinkedinConfig
 def chromeBrowserOptions(config: LinkedinConfig):
     options = webdriver.ChromeOptions()
     options.binary_location = os.environ.get("GOOGLE_CHROME_BIN")
+    options.add_argument("--disable-gpu")
+    options.add_argument("--remote-debugging-port=9222")
     options.add_argument('--no-sandbox')
     options.add_argument("--ignore-certificate-errors")
     options.add_argument("--disable-extensions")
-    options.add_argument('--disable-gpu')
     options.add_argument('--disable-dev-shm-usage')
     options.add_argument("--window-size=1920,1080")
-    options.add_argument("--remote-debugging-port=9222")
 
     if(config.chromeHeadless):
         options.add_argument("--headless")
