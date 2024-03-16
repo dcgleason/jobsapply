@@ -448,14 +448,47 @@ class Linkedin:
                 totalJobs = "0"
             
                 try:
-                    totalJobs = WebDriverWait(self.driver, 30).until(
-                        EC.visibility_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text span"))
-                    ).text
-                    print(f"Found total jobs element: {totalJobs}")
-
-                except NoSuchElementException:
-                    print(f"Couldn't find total jobs for print {url}")
-                    pass
+                    WebDriverWait(self.driver, 90).until(
+                        lambda driver: driver.execute_script("return document.readyState") == "complete"
+                    )
+                    WebDriverWait(self.driver, 90).until(
+                        EC.presence_of_element_located((By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span"))
+                    )
+                    # Extract the total jobs count using XPath
+                    total_jobs_element = self.driver.find_element(By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span")
+                    total_jobs_text = total_jobs_element.text.strip()
+                    total_jobs_match = re.search(r'(\d+)', total_jobs_text)
+                    if total_jobs_match:
+                        totalJobs = total_jobs_match.group(1)
+                    else:
+                        totalJobs = "0"
+                    break
+                except TimeoutException as e:
+                    if attempt == max_retries - 1:
+                        print(f"Error: Timed out waiting for the element to be located.")
+                        print(f"URL: {self.driver.current_url}")
+                        print(f"Error message: {str(e)}")
+                        print("Stacktrace:")
+                        traceback.print_exc()
+                        totalJobs = "0"
+                    else:
+                        print(f"Retry attempt {attempt + 1} failed. Retrying...")
+                except NoSuchElementException as e:
+                    print(f"Error: Element not found on the page.")
+                    print(f"URL: {self.driver.current_url}")
+                    print(f"Error message: {str(e)}")
+                    print("Stacktrace:")
+                    traceback.print_exc()
+                    totalJobs = "0"
+                    break
+                except Exception as e:
+                    print(f"Error: An unexpected error occurred.")
+                    print(f"URL: {self.driver.current_url}")
+                    print(f"Error message: {str(e)}")
+                    print("Stacktrace:")
+                    traceback.print_exc()
+                    totalJobs = "0"
+                    break
 
                         
 
