@@ -473,7 +473,7 @@ class Linkedin:
                         print(f"Error executing JavaScript: {str(script_error)}")
                     
                     totalJobs = "0"
-                    break
+                    
                     
 
                 totalPages = utils.jobsToPages(totalJobs)
