@@ -445,7 +445,7 @@ class Linkedin:
             print(f"Available attributes of self.driver: {dir(self.driver)}")
             self.driver.get(url)
             await asyncio.sleep(random.uniform(10, constants.botSpeed))
-            print(f"Gotten to URL: {url}")
+            print(f"Got to URL: {url}")
             totalJobs = self.driver.find_element(By.TAG_NAME, "//small").text
             print(f"Total jobs: {totalJobs}")
             totalPages = utils.jobsToPages(totalJobs)
