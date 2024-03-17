@@ -17,8 +17,6 @@ import config
 from typing import List
 from utils import LinkedinUrlGenerate
 from schemas import LinkedinConfig, LinkedinCredentials, ApplyDetails
-from selenium.webdriver.support.ui import WebDriverWait
-from selenium.webdriver.common.by import By
 
 
 from selenium.webdriver.common.by import By
@@ -444,15 +442,20 @@ class Linkedin:
             print(f"Type of self.driver: {type(self.driver)}")
             print(f"Available attributes of self.driver: {dir(self.driver)}")
             self.driver.get(url)
-            await asyncio.sleep(random.uniform(10, constants.botSpeed))
+            await asyncio.sleep(random.uniform(20, constants.botSpeed))
             print(f"Got to URL: {url}")
-            totalJobs = self.driver.find_element(By.TAG_NAME, "small").text
-            print(f"Total jobs: {totalJobs}")
-            totalPages = utils.jobsToPages(totalJobs)
-            urlWords = utils.urlToKeywords(url)
-            lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
-            log_message = self.displayWriteResults(lineToWrite)
-            logs.append(log_message)
+            if self.driver.execute_script("return document.readyState") == "complete":
+                print("Page is ready!")
+                totalJobs = self.driver.find_element(By.TAG_NAME, "small").text
+                print(f"Total jobs: {totalJobs}")
+                totalPages = utils.jobsToPages(totalJobs)
+                urlWords = utils.urlToKeywords(url)
+                lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
+                log_message = self.displayWriteResults(lineToWrite)
+                logs.append(log_message)
+            else:
+                print("Page is not ready!")
+                continue
 
             for page in range(totalPages):
                 currentPageJobs = constants.jobsPerPage * page
