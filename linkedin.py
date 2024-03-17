@@ -449,31 +449,46 @@ class Linkedin:
                 # Wait for a specific element that indicates the page has loaded
                 await asyncio.sleep(random.uniform(10, constants.botSpeed))
                 try:
-                    element = self.driver.find_element(By.XPATH, "//small[contains(@class, 'jobs-search-results-list__text')]")
-                    totalJobs = element.text.strip().split(" ")[0]
-                    break
-                except (NoSuchElementException, TimeoutException) as e:
-                    print(f"Error: Element not found or timed out.")
-                    print(f"URL: {self.driver.current_url}")
-                    print(f"Error message: {str(e)}")
+                    # Extract the relevant HTML using JavaScript
+                    relevant_html = self.driver.execute_script("""
+                        var element = document.querySelector("small.jobs-search-results-list__text");
+                        if (element) {
+                            var outerHTML = element.outerHTML;
+                            return outerHTML;
+                        } else {
+                            return "Element not found";
+                        }
+                    """)
+                    print("Relevant HTML:")
+                    print(relevant_html)
+                except Exception as script_error:
+                    print(f"Error executing JavaScript: {str(script_error)}")
+                # try:
+                #     element = self.driver.find_element(By.XPATH, "//small[contains(@class, 'jobs-search-results-list__text')]")
+                #     totalJobs = element.text.strip().split(" ")[0]
+                #     break
+                # except (NoSuchElementException, TimeoutException) as e:
+                #     print(f"Error: Element not found or timed out.")
+                #     print(f"URL: {self.driver.current_url}")
+                #     print(f"Error message: {str(e)}")
                     
-                    try:
-                        # Extract the relevant HTML using JavaScript
-                        relevant_html = self.driver.execute_script("""
-                            var element = document.querySelector("small.jobs-search-results-list__text");
-                            if (element) {
-                                var outerHTML = element.outerHTML;
-                                return outerHTML;
-                            } else {
-                                return "Element not found";
-                            }
-                        """)
-                        print("Relevant HTML:")
-                        print(relevant_html)
-                    except Exception as script_error:
-                        print(f"Error executing JavaScript: {str(script_error)}")
+                #     try:
+                #         # Extract the relevant HTML using JavaScript
+                #         relevant_html = self.driver.execute_script("""
+                #             var element = document.querySelector("small.jobs-search-results-list__text");
+                #             if (element) {
+                #                 var outerHTML = element.outerHTML;
+                #                 return outerHTML;
+                #             } else {
+                #                 return "Element not found";
+                #             }
+                #         """)
+                #         print("Relevant HTML:")
+                #         print(relevant_html)
+                #     except Exception as script_error:
+                #         print(f"Error executing JavaScript: {str(script_error)}")
                     
-                    totalJobs = "0"
+                #     totalJobs = "0"
                     
                     
                     
