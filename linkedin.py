@@ -486,6 +486,9 @@ class Linkedin:
                     except Exception as script_error:
                         print(f"Error executing JavaScript: {str(script_error)}")
                     totalJobs = "0"
+            else:
+                print(f"Error: Page load timeout!!")
+                totalJobs = "0"
 
             for page in range(totalPages):
                 currentPageJobs = constants.jobsPerPage * page
