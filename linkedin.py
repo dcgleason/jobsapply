@@ -449,7 +449,7 @@ class Linkedin:
                 # Wait for a specific element that indicates the page has loaded
                 await asyncio.sleep(random.uniform(10, constants.botSpeed))
                 try:
-                    totalJobs = self.driver.find_element(By.XPATH,"//div[@class='jobs-search-results-list__title-heading']/small/div/span").text
+                    totalJobs = self.driver.find_element(By.XPATH,"//small[@class='display-flex t-normal t-12 t-black--light jobs-search-results-list__text']//span").text
                     break
                 except (NoSuchElementException, TimeoutException) as e:
                     print(f"Error: Element not found or timed out.")
@@ -459,7 +459,7 @@ class Linkedin:
                     try:
                         # Extract the relevant HTML using JavaScript
                         relevant_html = self.driver.execute_script("""
-                            var element = document.evaluate("//div[@class='jobs-search-results-list__title-heading']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                            var element = document.querySelector("small.display-flex.t-normal.t-12.t-black--light.jobs-search-results-list__text");
                             if (element) {
                                 var outerHTML = element.outerHTML;
                                 return outerHTML;
@@ -473,6 +473,7 @@ class Linkedin:
                         print(f"Error executing JavaScript: {str(script_error)}")
                     
                     totalJobs = "0"
+                    
                     
                     
 
