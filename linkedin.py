@@ -443,7 +443,10 @@ class Linkedin:
         except AttributeError:
             print("'driver' object has no attribute 'title'")
             #print the page entire page source of url
-            print(driver.page_source)
+            if driver.page_source is None:
+                print(driver.current_url)
+            else:
+                print(driver.page_source)
 
 
         is_page_loaded = page_title_contains_linkedin
