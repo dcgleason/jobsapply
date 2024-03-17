@@ -444,19 +444,12 @@ class Linkedin:
             self.driver.get(url)
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
             print(f"Gotten to URL: {url}")
-            element = WebDriverWait(self.driver, 90).until(
-                EC.presence_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text div > span"))
-            )
+            totalJobs = self.driver.find_element(By.XPATH,'//small').text
 
-            if element:
-                    # Extract the total jobs text
-                total_jobs_text = element.text.strip()
-                    
-                    # Extract the numeric value from the total jobs text
-                totalJobs = re.findall(r'\d+', total_jobs_text)[0]
-                totalPages = 0
+            if totalJobs:
+                print(f"Total jobs: {totalJobs}")
+                    # Extract the total jobs text and calculate the total number of pages
                 totalPages = utils.jobsToPages(totalJobs)
-
                 urlWords = utils.urlToKeywords(url)
                 lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
                 log_message = self.displayWriteResults(lineToWrite)
