@@ -445,14 +445,12 @@ class Linkedin:
             await asyncio.sleep(random.uniform(20, constants.botSpeed))
             print(f"Got to URL: {url}")
 
-                # Save the page source to an HTML file
-            page_source = self.driver.page_source
-            file_name = f"page_source_{countJobs}.html"
-            with open(file_name, "w", encoding="utf-8") as file:
-                file.write(page_source)
-            print(f"Page source saved to {file_name}")
-            
+
             if self.driver.execute_script("return document.readyState") == "complete":
+
+                # Save the page source to an HTML file
+                page_source = self.driver.page_source
+                print(f"Page source is {page_source}")
                 print("Page is ready!")
                 totalJobs = self.driver.find_element(By.TAG_NAME, "small").text
                 print(f"Total jobs: {totalJobs}")
