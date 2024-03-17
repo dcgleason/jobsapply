@@ -94,8 +94,7 @@ class Linkedin:
             # Accessing credentials from the dynamic configuration
         email = self.credentials.linkedin_email
         password = self.credentials.linkedin_password
-        page_source = self.driver.page_source
-        print(f"Page source for login is: {page_source}")
+
 
         try:
             self.driver.find_element(By.ID, "username").send_keys(email)
@@ -103,6 +102,8 @@ class Linkedin:
                 # Submit the login form
             self.driver.find_element(By.XPATH, '//button[@type="submit"]').click()
             time.sleep(15)  # Adjust timing as necessary
+            page_source = self.driver.page_source
+            print(f"Page source for login is: {page_source}")
         except Exception as e:
             utils.prRed(f"❌ Couldn't log in Linkedin by using Chrome. Please check your Linkedin credentials. Error: {str(e)}")
         self.saveCookies()
@@ -451,8 +452,8 @@ class Linkedin:
             if self.driver.execute_script("return document.readyState") == "complete":
 
                 # Save the page source to an HTML file
-                page_source = self.driver.page_source
-                print(f"Page source is {page_source}")
+                # page_source = self.driver.page_source
+                # print(f"Page source is {page_source}")
                 print("Page is ready!")
                 totalJobs = self.driver.find_element(By.TAG_NAME, "small").text
                 print(f"Total jobs: {totalJobs}")
