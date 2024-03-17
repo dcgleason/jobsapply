@@ -4,7 +4,7 @@ from typing import List, Optional
 
 class LinkedinCredentials(BaseModel):
     linkedin_email: EmailStr
-    linkedin_password: SecretStr
+    linkedin_password: str
 
 class LinkedinConfig(BaseModel):
     credentials: LinkedinCredentials
