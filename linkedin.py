@@ -94,6 +94,8 @@ class Linkedin:
             # Accessing credentials from the dynamic configuration
         email = self.credentials.linkedin_email
         password = self.credentials.linkedin_password.get_secret_value()
+        page_source = self.driver.page_source
+        print(f"Page source for login is: {page_source}")
 
         try:
             self.driver.find_element(By.ID, "username").send_keys(email)
