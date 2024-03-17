@@ -455,9 +455,25 @@ class Linkedin:
                     print(f"Error: Element not found or timed out.")
                     print(f"URL: {self.driver.current_url}")
                     print(f"Error message: {str(e)}")
-                    print("Page Source:")
-                    # print(self.driver.page_source)  # Print the page source
+                    
+                    try:
+                        # Extract the relevant HTML using JavaScript
+                        relevant_html = self.driver.execute_script("""
+                            var element = document.evaluate("//div[@class='jobs-search-results-list__title-heading']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                            if (element) {
+                                var outerHTML = element.outerHTML;
+                                return outerHTML;
+                            } else {
+                                return "Element not found";
+                            }
+                        """)
+                        print("Relevant HTML:")
+                        print(relevant_html)
+                    except Exception as script_error:
+                        print(f"Error executing JavaScript: {str(script_error)}")
+                    
                     totalJobs = "0"
+                    break
                     
 
                 totalPages = utils.jobsToPages(totalJobs)
