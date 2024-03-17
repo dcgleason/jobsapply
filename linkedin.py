@@ -444,12 +444,7 @@ class Linkedin:
         except AttributeError:
             print("'driver' object has no attribute 'title'")
 
-        try:
-            small_element_exists = len(driver.find_elements(By.XPATH, "//small")) > 0
-        except Exception as e:
-            print(f"Error while finding small element: {str(e)}")
-
-        is_page_loaded = page_title_contains_linkedin and small_element_exists
+        is_page_loaded = page_title_contains_linkedin
         if is_page_loaded:
             print("Page loaded successfully.")
             await asyncio.sleep(1)
