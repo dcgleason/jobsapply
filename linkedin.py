@@ -451,10 +451,10 @@ class Linkedin:
                 retry_delay = 10
 
                 for attempt in range(max_retries):
-                    try: 
-                        totalJobs = WebDriverWait(self.driver, 60).until(
-                            EC.presence_of_element_located((By.XPATH, '//small'))
-                        ).text
+                    try:
+                        await asyncio.sleep(random.uniform(10, constants.botSpeed))
+                        totalJobs = self.driver.find_element(By.XPATH,"//div[@class='jobs-search-results-list__title-heading']/small/div/span").text
+                        break
                     except TimeoutException as e:
                         if attempt == max_retries - 1:
                             print(f"Error: Timed out waiting for the element to be located.")
