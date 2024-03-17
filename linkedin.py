@@ -439,12 +439,11 @@ class Linkedin:
             
             page_title_contains_linkedin = "LinkedIn" in driver.title
             small_element_exists = driver.find_elements(By.XPATH, "//small")
-            is_page_loaded = page_title_contains_linkedin and small_element_exists
+            is_page_loaded = page_title_contains_linkedin and bool(small_element_exists)
             if is_page_loaded:
                 return True
-            
             await asyncio.sleep(1)
-        
+            
     async def linkJobApply(self):
         logs = []
 
