@@ -447,40 +447,18 @@ class Linkedin:
                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
                 totalJobs = "0"
                 # Wait for a specific element that indicates the page has loaded
-                max_retries = 3
-                retry_delay = 10
-
-                for attempt in range(max_retries):
-                    try:
-                        await asyncio.sleep(random.uniform(10, constants.botSpeed))
-                        totalJobs = self.driver.find_element(By.XPATH,"//div[@class='jobs-search-results-list__title-heading']/small/div/span").text
-                        break
-                    except TimeoutException as e:
-                        if attempt == max_retries - 1:
-                            print(f"Error: Timed out waiting for the element to be located.")
-                            print(f"URL: {self.driver.current_url}")
-                            print(f"Error message: {str(e)}")
-                            print("Stacktrace:")
-                            traceback.print_exc()
-                            totalJobs = "0"
-                        else:
-                            print(f"Retry attempt {attempt + 1} failed. Retrying...")
-                    except NoSuchElementException as e:
-                        print(f"Error: Element not found on the page.")
-                        print(f"URL: {self.driver.current_url}")
-                        print(f"Error message: {str(e)}")
-                        print("Stacktrace:")
-                        traceback.print_exc()
-                        totalJobs = "0"
-                        break
-                    except Exception as e:
-                        print(f"Error: An unexpected error occurred.")
-                        print(f"URL: {self.driver.current_url}")
-                        print(f"Error message: {str(e)}")
-                        print("Stacktrace:")
-                        traceback.print_exc()
-                        totalJobs = "0"
-                        break
+                await asyncio.sleep(random.uniform(10, constants.botSpeed))
+                try:
+                    totalJobs = self.driver.find_element(By.XPATH,"//div[@class='jobs-search-results-list__title-heading']/small/div/span").text
+                    break
+                except (NoSuchElementException, TimeoutException) as e:
+                    print(f"Error: Element not found or timed out.")
+                    print(f"URL: {self.driver.current_url}")
+                    print(f"Error message: {str(e)}")
+                    print("Page Source:")
+                    print(self.driver.page_source)  # Print the page source
+                    totalJobs = "0"
+                    break
 
                 totalPages = utils.jobsToPages(totalJobs)
 
