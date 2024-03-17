@@ -432,7 +432,6 @@ class Linkedin:
     async def wait_for_page_load_async(driver, timeout=10):
         await asyncio.sleep(30)
         page_title_contains_linkedin = False
-        small_element_exists = False
 
         try:
             title = WebDriverWait(driver, 60).until(
@@ -443,6 +442,9 @@ class Linkedin:
             print("Timed out waiting for the title element.")
         except AttributeError:
             print("'driver' object has no attribute 'title'")
+            #print the page entire page source of url
+            print(driver.page_source)
+
 
         is_page_loaded = page_title_contains_linkedin
         if is_page_loaded:
