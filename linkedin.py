@@ -468,6 +468,8 @@ class Linkedin:
 
         for url in job_urls:
             totalJobs = "0"
+            print(f"Type of self.driver: {type(self.driver)}")
+            print(f"Available attributes of self.driver: {dir(self.driver)}")
             self.driver.get(url)
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
             print(f"Gotten to URL: {url}")
