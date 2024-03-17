@@ -429,34 +429,7 @@ class Linkedin:
         
     #     utils.donate(self)
             
-    async def wait_for_page_load_async(driver, timeout=10):
-        await asyncio.sleep(30)
-        page_title_contains_linkedin = False
 
-        try:
-            title = WebDriverWait(driver, 60).until(
-                EC.presence_of_element_located((By.XPATH, '//title[contains(text(), "LinkedIn")]'))
-            )
-            page_title_contains_linkedin = "LinkedIn" in title.get_attribute("textContent")
-        except TimeoutException:
-            print("Timed out waiting for the title element.")
-        except AttributeError:
-            print("'driver' object has no attribute 'title'")
-            #print the page entire page source of url
-            if driver.page_source is None:
-                print(driver.current_url)
-            else:
-                print(driver.page_source)
-
-
-        is_page_loaded = page_title_contains_linkedin
-        if is_page_loaded:
-            print("Page loaded successfully.")
-            await asyncio.sleep(1)
-            return True
-        else:
-            print("Page load timeout.")
-            return False
         
     async def linkJobApply(self):
         logs = []
@@ -473,12 +446,13 @@ class Linkedin:
             self.driver.get(url)
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
             print(f"Gotten to URL: {url}")
+            title = WebDriverWait(self.driver, 60).until(
+                EC.presence_of_element_located((By.XPATH, '//title[contains(text(), "LinkedIn")]'))
+            )
+            page_title_contains_linkedin = "LinkedIn" in title.get_attribute("textContent")
 
-            if await self.wait_for_page_load_async(self.driver):
-                try:
-                    # WebDriverWait(self.driver, 10).until(
-                    #     lambda driver: driver.execute_script("return document.readyState") == "complete"
-                    # )
+            if page_title_contains_linkedin:
+                
                     element = WebDriverWait(self.driver, 10).until(
                         EC.presence_of_element_located((By.XPATH, '//small'))
                     )
@@ -490,25 +464,6 @@ class Linkedin:
                     lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
                     log_message = self.displayWriteResults(lineToWrite)
                     logs.append(log_message)
-
-                except:
-                    print(f"Error: Element not found.")
-                    print(f"URL: {self.driver.current_url}")
-                    try:
-                        relevant_html = self.driver.execute_script("""
-                            var element = document.evaluate("//div[@class='jobs-search-results-list__title-heading']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                            if (element) {
-                                var outerHTML = element.outerHTML;
-                                return outerHTML;
-                            } else {
-                                return "Element not found";
-                            }
-                        """)
-                        print("Relevant HTML:")
-                        print(relevant_html)
-                    except Exception as script_error:
-                        print(f"Error executing JavaScript: {str(script_error)}")
-                    totalJobs = "0"
             else:
                 print(f"Error: Page load timeout!!")
                 totalJobs = "0"
