@@ -433,12 +433,18 @@ class Linkedin:
         start_time = time.monotonic()
         while True:
             elapsed_time = time.monotonic() - start_time
-            if elapsed_time > timeout:
+            is_timeout_reached = elapsed_time > timeout
+            if is_timeout_reached:
                 return False
-            if "LinkedIn" in driver.title and driver.find_elements(By.XPATH, "//small"):
+            
+            page_title_contains_linkedin = "LinkedIn" in driver.title
+            small_element_exists = driver.find_elements(By.XPATH, "//small")
+            is_page_loaded = page_title_contains_linkedin and small_element_exists
+            if is_page_loaded:
                 return True
+            
             await asyncio.sleep(1)
-    
+        
     async def linkJobApply(self):
         logs = []
 
