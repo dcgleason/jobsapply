@@ -446,7 +446,7 @@ class Linkedin:
             self.driver.get(url)
             await asyncio.sleep(random.uniform(10, constants.botSpeed))
             print(f"Gotten to URL: {url}")
-            totalJobs = self.driver.find_element(By.XPATH, 'small').text
+            totalJobs = self.driver.find_element(By.XPATH, "//small").text
             print(f"Total jobs: {totalJobs}")
             totalPages = utils.jobsToPages(totalJobs)
             urlWords = utils.urlToKeywords(url)
