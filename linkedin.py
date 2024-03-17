@@ -451,22 +451,10 @@ class Linkedin:
                 retry_delay = 10
 
                 for attempt in range(max_retries):
-                    try:
-                        WebDriverWait(self.driver, 30 + attempt * retry_delay).until(
-                            lambda driver: driver.execute_script("return document.readyState") == "complete"
-                        )
-                        WebDriverWait(self.driver, 30 + attempt * retry_delay).until(
-                            EC.presence_of_element_located((By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span"))
-                        )
-                        # Extract the total jobs count using XPath
-                        total_jobs_element = self.driver.find_element(By.XPATH, "//div[@class='jobs-search-results-list__title-heading']/small/div/span")
-                        total_jobs_text = total_jobs_element.text.strip()
-                        total_jobs_match = re.search(r'(\d+)', total_jobs_text)
-                        if total_jobs_match:
-                            totalJobs = total_jobs_match.group(1)
-                        else:
-                            totalJobs = "0"
-                        break
+                    try: 
+                        totalJobs = WebDriverWait(self.driver, 60).until(
+                            EC.presence_of_element_located((By.XPATH, '//small'))
+                        ).text
                     except TimeoutException as e:
                         if attempt == max_retries - 1:
                             print(f"Error: Timed out waiting for the element to be located.")
