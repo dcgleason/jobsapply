@@ -444,29 +444,15 @@ class Linkedin:
             print(f"Type of self.driver: {type(self.driver)}")
             print(f"Available attributes of self.driver: {dir(self.driver)}")
             self.driver.get(url)
-            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+            await asyncio.sleep(random.uniform(10, constants.botSpeed))
             print(f"Gotten to URL: {url}")
-            title = WebDriverWait(self.driver, 60).until(
-                EC.presence_of_element_located((By.XPATH, '//title[contains(text(), "LinkedIn")]'))
-            )
-            page_title_contains_linkedin = "LinkedIn" in title.get_attribute("textContent")
-
-            if page_title_contains_linkedin:
-                
-                    element = WebDriverWait(self.driver, 10).until(
-                        EC.presence_of_element_located((By.XPATH, '//small'))
-                    )
-                    totalJobs = element.text
-                    print(f"Total jobs: {totalJobs}")
-                    totalPages = utils.jobsToPages(totalJobs)
-
-                    urlWords = utils.urlToKeywords(url)
-                    lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
-                    log_message = self.displayWriteResults(lineToWrite)
-                    logs.append(log_message)
-            else:
-                print(f"Error: Page load timeout!!")
-                totalJobs = "0"
+            totalJobs = self.driver.find_element(By.XPATH, 'small').text
+            print(f"Total jobs: {totalJobs}")
+            totalPages = utils.jobsToPages(totalJobs)
+            urlWords = utils.urlToKeywords(url)
+            lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
+            log_message = self.displayWriteResults(lineToWrite)
+            logs.append(log_message)
 
             for page in range(totalPages):
                 currentPageJobs = constants.jobsPerPage * page
