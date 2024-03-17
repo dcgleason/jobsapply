@@ -456,7 +456,7 @@ class Linkedin:
                     print(f"URL: {self.driver.current_url}")
                     print(f"Error message: {str(e)}")
                     print("Page Source:")
-                    print(self.driver.page_source)  # Print the page source
+                    # print(self.driver.page_source)  # Print the page source
                     totalJobs = "0"
                     
 
