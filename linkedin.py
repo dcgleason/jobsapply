@@ -449,25 +449,30 @@ class Linkedin:
                     self.driver.get(url)
                     await asyncio.sleep(random.uniform(1, constants.botSpeed))
                     print(f"Gotten to URL in try block: {url}")
-                    await asyncio.sleep(random.uniform(3, constants.botSpeed))
-                        # Wait for the element to be present (adjust the timeout as needed)
-                    element = WebDriverWait(self.driver, 10).until(
+                    element = WebDriverWait(self.driver, 90).until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text div > span"))
                     )
+
+                    if element:
+                        # Extract the total jobs text
+                        total_jobs_text = element.text.strip()
+                        
+                        # Extract the numeric value from the total jobs text
+                        totalJobs = re.findall(r'\d+', total_jobs_text)[0]
+                        totalPages = 0
+                        totalPages = utils.jobsToPages(totalJobs)
+
+                        urlWords = utils.urlToKeywords(url)
+                        lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
+                        log_message = self.displayWriteResults(lineToWrite)
+
+                        logs.append(log_message)
                     
-                    # Extract the total jobs text
-                    total_jobs_text = element.text.strip()
-                    
-                    # Extract the numeric value from the total jobs text
-                    totalJobs = re.findall(r'\d+', total_jobs_text)[0]
-
-                    totalPages = utils.jobsToPages(totalJobs)
-
-                    urlWords = utils.urlToKeywords(url)
-                    lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
-                    log_message = self.displayWriteResults(lineToWrite)
-
-                    logs.append(log_message)
+                    else:
+                        print(f"Error: Element not found.")
+                        print(f"URL: {self.driver.current_url}")
+                        totalJobs = "0"
+                     
 
                 except (NoSuchElementException, TimeoutException) as e:
                     print(f"Error: Element not found or timed out.")
@@ -489,11 +494,7 @@ class Linkedin:
                         print(relevant_html)
                     except Exception as script_error:
                         print(f"Error executing JavaScript: {str(script_error)}")
-                    
-                    totalJobs = "0"
-                    
-                    
-
+      
 
                 for page in range(totalPages):
                     currentPageJobs = constants.jobsPerPage * page
