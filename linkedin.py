@@ -440,17 +440,35 @@ class Linkedin:
         try:   
 
             for url in job_urls:
-                await asyncio.sleep(random.uniform(1, constants.botSpeed))
-             
-                totalJobs = 0
-  
+               
+       
+                # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
+                totalJobs = "0"
+                # Wait for a specific element that indicates the page has loaded
                 try:
                     self.driver.get(url)
-                    await asyncio.sleep(random.uniform(3, constants.botSpeed))  # Wait for the page to load
-                    print(f"Got to URL in try block: {url}")
-                    element = self.driver.find_element(By.XPATH, "//small[contains(@class, 'jobs-search-results-list__text')]")
-                    totalJobs = element.text.strip().split(" ")[0]
-                    break
+                    await asyncio.sleep(random.uniform(1, constants.botSpeed))
+                    print(f"Gotten to URL in try block: {url}")
+                    await asyncio.sleep(random.uniform(10, constants.botSpeed))
+                        # Wait for the element to be present (adjust the timeout as needed)
+                    element = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text div > span"))
+                    )
+                    
+                    # Extract the total jobs text
+                    total_jobs_text = element.text.strip()
+                    
+                    # Extract the numeric value from the total jobs text
+                    totalJobs = re.findall(r'\d+', total_jobs_text)[0]
+
+                    totalPages = utils.jobsToPages(totalJobs)
+
+                    urlWords = utils.urlToKeywords(url)
+                    lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
+                    log_message = self.displayWriteResults(lineToWrite)
+
+                    logs.append(log_message)
+
                 except (NoSuchElementException, TimeoutException) as e:
                     print(f"Error: Element not found or timed out.")
                     print(f"URL: {self.driver.current_url}")
@@ -459,7 +477,7 @@ class Linkedin:
                     try:
                         # Extract the relevant HTML using JavaScript
                         relevant_html = self.driver.execute_script("""
-                            var element = document.querySelector("small.jobs-search-results-list__text");
+                            var element = document.evaluate("//div[@class='jobs-search-results-list__title-heading']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                             if (element) {
                                 var outerHTML = element.outerHTML;
                                 return outerHTML;
@@ -475,16 +493,7 @@ class Linkedin:
                     totalJobs = "0"
                     
                     
-                    
-                    
 
-                totalPages = utils.jobsToPages(totalJobs)
-
-                urlWords = utils.urlToKeywords(url)
-                lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
-                log_message = self.displayWriteResults(lineToWrite)
-
-                logs.append(log_message)
 
                 for page in range(totalPages):
                     currentPageJobs = constants.jobsPerPage * page
