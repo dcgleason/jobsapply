@@ -53,15 +53,27 @@ class GPT4Response(BaseModel):
 def home():
     return {"message": "HOME"}
 
+
 @app.post("/apply")
 async def apply_jobs(apply_details: ApplyDetails, background_tasks: BackgroundTasks):
-    logs = await run_linkedin_application(apply_details)
-    return {"message": "Application process completed.", "logs": logs}
+    try:
+        background_tasks.add_task(run_linkedin_application, apply_details)
+        return {"message": "Application process started in the background."}
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=f"An error occurred while starting the application process: {str(e)}")
 
 async def run_linkedin_application(apply_details: ApplyDetails):
     linkedin_app = Linkedin(apply_details=apply_details, userInfo=apply_details.userInfo)
-    logs = await linkedin_app.linkJobApply()
-    return logs
+    try:
+        logs = await linkedin_app.linkJobApply()
+        print("Application process completed.")
+    except Exception as e:
+        # Handle any exceptions that occur during the LinkedIn application process
+        print(f"Error during LinkedIn application process: {str(e)}")
+    finally:
+        # Clean up resources, close browser, etc.
+        linkedin_app.driver.quit()
+
 
 class GPT4Request(BaseModel):
     question: str
