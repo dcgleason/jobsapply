@@ -93,7 +93,7 @@ class Linkedin:
         self.driver.get("https://www.linkedin.com/login")
             # Accessing credentials from the dynamic configuration
         email = self.credentials.linkedin_email
-        password = self.credentials.linkedin_password.get_secret_value()
+        password = self.credentials.linkedin_password
         page_source = self.driver.page_source
         print(f"Page source for login is: {page_source}")
 
