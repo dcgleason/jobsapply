@@ -428,6 +428,14 @@ class Linkedin:
     #               " jobs out of " + str(countJobs) + ".")
         
     #     utils.donate(self)
+            
+    def wait_for_page_load(driver, timeout=10):
+        start_time = time.time()
+        while time.time() - start_time < timeout:
+            if "LinkedIn" in driver.title and driver.find_elements(By.XPATH, "//small"):
+                 return True
+            time.sleep(1)
+        return False
 
     async def linkJobApply(self):
         logs = []
@@ -441,10 +449,19 @@ class Linkedin:
             # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
             totalJobs = "0"
             # Wait for a specific element that indicates the page has loaded
-            self.driver.get(url)
+            # self.driver.get(url)
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
-            print(f"Gotten to URL: {url}")
-            totalJobs = self.driver.find_element(By.XPATH,'//small').text
+            print(f"Got to URL: {url}")
+
+            self.driver.get(url)
+            if self.wait_for_page_load(self.driver):
+                totalJobs = self.driver.find_element(By.XPATH, '//small').text
+                # Rest of your code
+            else:
+                print(f"Error: Page did NOT LOAD.")
+
+
+            # totalJobs = self.driver.find_element(By.XPATH,'//small').text
 
             if totalJobs:
                 print(f"Total jobs: {totalJobs}")
@@ -599,6 +616,8 @@ class Linkedin:
 
         return logs
 
+  
+        
     async def answer_additional_questions(self, **user_details):
         additional_questions = self.driver.find_elements(By.XPATH, "//div[contains(@class, 'jobs-easy-apply-form-element')]")
         all_questions_answered = True
