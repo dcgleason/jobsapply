@@ -429,12 +429,12 @@ class Linkedin:
         
     #     utils.donate(self)
             
-    def wait_for_page_load(driver, timeout=10):
+    async def wait_for_page_load_async(driver, timeout=10):
         start_time = time.time()
         while time.time() - start_time < timeout:
             if "LinkedIn" in driver.title and driver.find_elements(By.XPATH, "//small"):
-                 return True
-            time.sleep(1)
+                return True
+            await asyncio.sleep(1)
         return False
 
     async def linkJobApply(self):
@@ -451,40 +451,41 @@ class Linkedin:
             await asyncio.sleep(random.uniform(1, constants.botSpeed))
             print(f"Gotten to URL: {url}")
 
-            try:
-                WebDriverWait(self.driver, 10).until(
-                    lambda driver: driver.execute_script("return document.readyState") == "complete"
-                )
-                element = WebDriverWait(self.driver, 10).until(
-                    EC.presence_of_element_located((By.XPATH, '//small'))
-                )
-                totalJobs = element.text
-                print(f"Total jobs: {totalJobs}")
-                totalPages = utils.jobsToPages(totalJobs)
-
-                urlWords = utils.urlToKeywords(url)
-                lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
-                log_message = self.displayWriteResults(lineToWrite)
-                logs.append(log_message)
-
-            except:
-                print(f"Error: Element not found.")
-                print(f"URL: {self.driver.current_url}")
+            if await self.wait_for_page_load_async(self.driver):
                 try:
-                    relevant_html = self.driver.execute_script("""
-                        var element = document.evaluate("//div[@class='jobs-search-results-list__title-heading']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
-                        if (element) {
-                            var outerHTML = element.outerHTML;
-                            return outerHTML;
-                        } else {
-                            return "Element not found";
-                        }
-                    """)
-                    print("Relevant HTML:")
-                    print(relevant_html)
-                except Exception as script_error:
-                    print(f"Error executing JavaScript: {str(script_error)}")
-                totalJobs = "0"
+                    # WebDriverWait(self.driver, 10).until(
+                    #     lambda driver: driver.execute_script("return document.readyState") == "complete"
+                    # )
+                    element = WebDriverWait(self.driver, 10).until(
+                        EC.presence_of_element_located((By.XPATH, '//small'))
+                    )
+                    totalJobs = element.text
+                    print(f"Total jobs: {totalJobs}")
+                    totalPages = utils.jobsToPages(totalJobs)
+
+                    urlWords = utils.urlToKeywords(url)
+                    lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
+                    log_message = self.displayWriteResults(lineToWrite)
+                    logs.append(log_message)
+
+                except:
+                    print(f"Error: Element not found.")
+                    print(f"URL: {self.driver.current_url}")
+                    try:
+                        relevant_html = self.driver.execute_script("""
+                            var element = document.evaluate("//div[@class='jobs-search-results-list__title-heading']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
+                            if (element) {
+                                var outerHTML = element.outerHTML;
+                                return outerHTML;
+                            } else {
+                                return "Element not found";
+                            }
+                        """)
+                        print("Relevant HTML:")
+                        print(relevant_html)
+                    except Exception as script_error:
+                        print(f"Error executing JavaScript: {str(script_error)}")
+                    totalJobs = "0"
 
             for page in range(totalPages):
                 currentPageJobs = constants.jobsPerPage * page
