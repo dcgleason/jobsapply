@@ -431,12 +431,12 @@ class Linkedin:
             
     async def wait_for_page_load_async(driver, timeout=10):
         start_time = time.time()
-        while time.time() - start_time < timeout:
+        while not (time.time() - start_time >= timeout):
             if "LinkedIn" in driver.title and driver.find_elements(By.XPATH, "//small"):
                 return True
             await asyncio.sleep(1)
         return False
-
+    
     async def linkJobApply(self):
         logs = []
 
