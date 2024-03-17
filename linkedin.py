@@ -430,23 +430,21 @@ class Linkedin:
     #     utils.donate(self)
             
     async def wait_for_page_load_async(driver, timeout=10):
-        start_time = time.monotonic()
-        while True:
-            elapsed_time = time.monotonic() - start_time
-            is_timeout_reached = elapsed_time > timeout
-            if is_timeout_reached:
-                print(f"Error: Page load timeout!!")
-                return False
+        await asyncio.sleep(30)
             
-            page_title_contains_linkedin = 1
-            small_element_exists = 1
-            page_title_contains_linkedin = "LinkedIn" in driver.title
-            small_element_exists = driver.find_elements(By.XPATH, "//small")
-            is_page_loaded = page_title_contains_linkedin != 1 and small_element_exists != 1
-            if is_page_loaded:
-                print(f"Page loaded successfully.")
-                return True
+        page_title_contains_linkedin = 1
+        small_element_exists = 1
+        page_title_contains_linkedin = "LinkedIn" in driver.title
+        small_element_exists = driver.find_elements(By.XPATH, "//small")
+        is_page_loaded = page_title_contains_linkedin != 1 and small_element_exists != 1
+        if is_page_loaded:
+            print(f"Page loaded successfully.")
             await asyncio.sleep(1)
+            return True
+        else:
+            print(f"Page load timeout.")
+            return False
+        
 
     async def linkJobApply(self):
         logs = []
