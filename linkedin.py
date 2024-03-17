@@ -446,38 +446,31 @@ class Linkedin:
         print(f"Got job urls: {job_urls}")
 
         for url in job_urls:
-            # totalJobs = self.driver.find_element(By.XPATH,'//small').text 
             totalJobs = "0"
-            # Wait for a specific element that indicates the page has loaded
-            # self.driver.get(url)
-            await asyncio.sleep(random.uniform(1, constants.botSpeed))
-            print(f"Got to URL: {url}")
-
             self.driver.get(url)
-            if self.wait_for_page_load(self.driver):
-                totalJobs = self.driver.find_element(By.XPATH, '//small').text
-                # Rest of your code
-            else:
-                print(f"Error: Page did NOT LOAD.")
+            await asyncio.sleep(random.uniform(1, constants.botSpeed))
+            print(f"Gotten to URL: {url}")
 
-
-            # totalJobs = self.driver.find_element(By.XPATH,'//small').text
-
-            if totalJobs:
+            try:
+                WebDriverWait(self.driver, 10).until(
+                    lambda driver: driver.execute_script("return document.readyState") == "complete"
+                )
+                element = WebDriverWait(self.driver, 10).until(
+                    EC.presence_of_element_located((By.XPATH, '//small'))
+                )
+                totalJobs = element.text
                 print(f"Total jobs: {totalJobs}")
-                    # Extract the total jobs text and calculate the total number of pages
                 totalPages = utils.jobsToPages(totalJobs)
+
                 urlWords = utils.urlToKeywords(url)
                 lineToWrite = "\n Category: " + urlWords[0] + ", Location: " + urlWords[1] + ", Applying " + str(totalJobs) + " jobs."
                 log_message = self.displayWriteResults(lineToWrite)
-
                 logs.append(log_message)
-                
-            else:
+
+            except:
                 print(f"Error: Element not found.")
-                print(f"URL: {self.driver.current_url}")       
+                print(f"URL: {self.driver.current_url}")
                 try:
-                        # Extract the relevant HTML using JavaScript
                     relevant_html = self.driver.execute_script("""
                         var element = document.evaluate("//div[@class='jobs-search-results-list__title-heading']", document, null, XPathResult.FIRST_ORDERED_NODE_TYPE, null).singleNodeValue;
                         if (element) {
@@ -491,8 +484,8 @@ class Linkedin:
                     print(relevant_html)
                 except Exception as script_error:
                     print(f"Error executing JavaScript: {str(script_error)}")
-                    totalJobs = "0"
-                
+                totalJobs = "0"
+
             for page in range(totalPages):
                 currentPageJobs = constants.jobsPerPage * page
                 pageUrl = url + "&start=" + str(currentPageJobs)
@@ -612,7 +605,6 @@ class Linkedin:
                             lineToWrite = jobProperties + " | " + f"* 🥵 Cannot apply to this Job! {str(offerPage)}"
                             log_message = self.displayWriteResults(lineToWrite)
                             logs.append(log_message)
-
 
         return logs
 
