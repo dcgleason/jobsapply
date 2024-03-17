@@ -458,7 +458,7 @@ class Linkedin:
                     print("Page Source:")
                     print(self.driver.page_source)  # Print the page source
                     totalJobs = "0"
-                    break
+                    
 
                 totalPages = utils.jobsToPages(totalJobs)
 
