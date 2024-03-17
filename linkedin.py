@@ -449,7 +449,7 @@ class Linkedin:
                     self.driver.get(url)
                     await asyncio.sleep(random.uniform(1, constants.botSpeed))
                     print(f"Gotten to URL in try block: {url}")
-                    await asyncio.sleep(random.uniform(10, constants.botSpeed))
+                    await asyncio.sleep(random.uniform(3, constants.botSpeed))
                         # Wait for the element to be present (adjust the timeout as needed)
                     element = WebDriverWait(self.driver, 10).until(
                         EC.presence_of_element_located((By.CSS_SELECTOR, "small.jobs-search-results-list__text div > span"))
